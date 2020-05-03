@@ -22,7 +22,7 @@ scene.addEventListeners();
 
 // Set up camera
 camera.position.set(0, 2, 0);
-camera.lookAt(new Vector3(1, 2, 1));
+camera.lookAt(new Vector3(0, 2, 1));
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);

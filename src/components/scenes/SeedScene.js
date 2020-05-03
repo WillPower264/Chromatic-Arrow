@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry } from 'three';
-import { Flower, Land } from 'objects';
+import { Flower, Land, Arrow, Target } from 'objects';
 import { BasicLights } from 'lights';
 
 class SeedScene extends Scene {
@@ -23,8 +23,14 @@ class SeedScene extends Scene {
         land.position.set(12, 0, 12);
         const flower = new Flower(this);
         flower.position.set(12, 0, 12);
+        const arrow = new Arrow();
+        arrow.position.set(-2, 4, 2);
+        const target = new Target();
+        target.position.set(-2, 2, 2);
+        const target1 = new Target();
+        target1.position.set(0, 2, 2);
         const lights = new BasicLights();
-        this.add(land, flower, lights);
+        this.add(land, flower, arrow, target, target1, lights);
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
@@ -54,9 +60,9 @@ class SeedScene extends Scene {
 
         // ground material
         ground.material = new MeshStandardMaterial({
-          color: 0x0b6e24, //0x3c3c3c,
-          specular: 0x404761, //0x3c3c3c//,
-          metalness: 0.3,
+          color: 0x091200, //0x3c3c3c,
+        //   specular: 0x404761, //0x3c3c3c//,
+        //   metalness: 0.3,
         });
 
         // ground mesh
