@@ -16,6 +16,9 @@ const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 const clock = new Clock();
 
+// Set up scene
+scene.buildGround();
+
 // Set up camera
 camera.position.set(0, 2, 0);
 camera.lookAt(new Vector3(1, 2, 1));

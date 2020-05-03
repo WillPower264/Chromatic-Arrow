@@ -1,5 +1,5 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color } from 'three';
+import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry } from 'three';
 import { Flower, Land } from 'objects';
 import { BasicLights } from 'lights';
 
@@ -42,6 +42,37 @@ class SeedScene extends Scene {
         for (const obj of updateList) {
             obj.update(timeStamp);
         }
+    }
+
+    buildGround() {
+        const ground = {};
+        ground.textures = {};
+
+        // ground material
+        ground.material = new MeshStandardMaterial({
+          color: 0x0b6e24, //0x3c3c3c,
+          specular: 0x404761, //0x3c3c3c//,
+          metalness: 0.3,
+        });
+
+        // ground mesh
+        ground.geometry = new PlaneBufferGeometry(500, 500);
+        ground.mesh = new Mesh(ground.geometry, ground.material);
+        ground.mesh.position.y = 0;
+        ground.mesh.rotation.x = -Math.PI / 2;
+        ground.mesh.receiveShadow = true;
+
+        // handled in Scene.updateGroundTexture()
+        // needed for ground texture
+        // ground.texture = Scene.loader.load( "textures/terrain/grasslight-big.jpg" );
+        // ground.texture.wrapS = ground.texture.wrapT = THREE.RepeatWrapping;
+        // ground.texture.repeat.set( 25, 25 );
+        // ground.texture.anisotropy = 16;
+        // ground.material.map = ground.texture;
+
+        this.add(ground.mesh); // add ground to scene
+
+        // return ground;
     }
 }
 
