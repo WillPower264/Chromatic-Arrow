@@ -18,6 +18,7 @@ const clock = new Clock();
 
 // Set up scene
 scene.buildGround();
+scene.addEventListeners();
 
 // Set up camera
 camera.position.set(0, 2, 0);

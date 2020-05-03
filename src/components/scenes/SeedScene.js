@@ -44,6 +44,10 @@ class SeedScene extends Scene {
         }
     }
 
+    addEventListeners() {
+        window.addEventListener("click", () => console.log(this), false);
+    }
+
     buildGround() {
         const ground = {};
         ground.textures = {};
