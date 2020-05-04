@@ -6,9 +6,10 @@
  * handles window resizes.
  *
  */
-import { WebGLRenderer, PerspectiveCamera, Vector3, Clock } from 'three';
+import { Object3D, WebGLRenderer, PerspectiveCamera, OrthographicCamera, Vector3, Clock, Scene } from 'three';
 import { SeedScene } from 'scenes';
 import PlayerControls from './PlayerControls';
+import { Powerbar } from 'objects';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -20,7 +21,24 @@ const clock = new Clock();
 camera.position.set(0, 2, 0);
 camera.lookAt(new Vector3(0, 2, 1)); // camera starts looking down the +z axis
 
+// Set up GUI overlay camera
+// From example: https://threejs.org/examples/#webgl_sprites
+const { innerHeight, innerWidth } = window;
+const cameraOrtho = new OrthographicCamera(
+  -innerWidth/2, innerWidth/2, innerHeight/2, -innerHeight/2, 1, 10
+);
+cameraOrtho.position.z = 1;
+
+// GUI overlay scene
+// TODO: move to new file
+const sceneOrtho = new Scene();
+const pbar = new Powerbar(250, 50);
+pbar.position.x = cameraOrtho.right-250/2-25;
+pbar.position.y = cameraOrtho.bottom+50/2+25;
+sceneOrtho.add(pbar);
+
 // Set up renderer, canvas, and minor CSS adjustments
+renderer.autoClear = false;
 renderer.setPixelRatio(window.devicePixelRatio);
 const canvas = renderer.domElement;
 canvas.style.display = 'block'; // Removes padding below canvas
@@ -35,7 +53,10 @@ scene.add(controls.getObject());
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
     controls.update(clock.getDelta());
+    renderer.clear();
     renderer.render(scene, camera);
+    renderer.clearDepth();
+    renderer.render(sceneOrtho, cameraOrtho);
     scene.update && scene.update(timeStamp);
     window.requestAnimationFrame(onAnimationFrameHandler);
 };
@@ -47,6 +68,17 @@ const windowResizeHandler = () => {
     renderer.setSize(innerWidth, innerHeight);
     camera.aspect = innerWidth / innerHeight;
     camera.updateProjectionMatrix();
+    console.log(camera.getFilmHeight())
+
+    // Update ortho camera
+    cameraOrtho.left = -innerWidth/2;
+    cameraOrtho.right = innerWidth/2;
+    cameraOrtho.top = innerHeight/2;
+    cameraOrtho.bottom = -innerHeight/2;
+    cameraOrtho.updateProjectionMatrix();
+    // TODO: Update in render loop with scene.update
+    pbar.position.x = cameraOrtho.right-250/2-25;
+    pbar.position.y = cameraOrtho.bottom+50/2+25;
 };
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
