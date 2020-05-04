@@ -1,6 +1,6 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry } from 'three';
-import { Flower, Land, Target } from 'objects';
+import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry, Vector3 } from 'three';
+import { Arrow, Flower, Land, Target } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
 
@@ -21,6 +21,8 @@ class SeedScene extends Scene {
 
         // Set background to a nice color
         this.background = new Color(0x7ec0ee);
+        // Set arrow
+        this.arrow = new Arrow();
 
         // Add meshes to scene
         this.buildGround();
@@ -72,7 +74,10 @@ class SeedScene extends Scene {
     }
 
     addEventListeners() {
-        window.addEventListener("click", () => console.log(this), false);
+        window.addEventListener("click", () => {
+          this.arrow.setVelocity(new Vector3(0, 2, 5));
+          console.log(this.arrow.velocity);
+        }, false);
     }
 
     buildGround() {
