@@ -68,6 +68,10 @@ Both models were downloaded from the Google Poly project:
 
 * [Flower](https://poly.google.com/view/eydI4__jXpi)
 
+## Tools used
+
+* [Binary to URI](https://gist.github.com/ingeniarius/1118795#file-file_to_data_uri-rb)
+
 This skeleton project was adapted from [edwinwebb's ThreeJS seed project](https://github.com/edwinwebb/three-seed]) by Reilly Bova ’20.
 
 ## License
