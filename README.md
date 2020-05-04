@@ -4,6 +4,19 @@ This skeleton project will help you get started on your ThreeJS project and prov
 
 [Online Demo](https://reillybova.github.io/three-seed/)
 
+## Notes
+### Current steps
+- moving targets
+- arrow launch, flight, collision
+- gui gamestuffs
+
+### Progress
+- generate and display inward-facing targets
+
+### Links
+Arrow: https://poly.google.com/view/6pMBOmBFxGt
+Target: https://poly.google.com/view/3BoFXr40u7h
+
 ## Installation
 To build this project, you will need to use GitHub's NodeJS Package Manager (npm) to manage and install project dependencies. All npm settings, as well as your project dependencies and their versionings, are defined in the file `package.json`. We will unpack this file in the next section.
 

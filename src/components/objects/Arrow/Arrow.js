@@ -10,6 +10,7 @@ class Arrow extends Group {
         const loader = new GLTFLoader();
 
         this.name = 'arrow';
+        this.mass = 5.0;
         this.velocity = new Vector3(0, 0, 0);
 
         loader.load(MODEL, (gltf) => {
