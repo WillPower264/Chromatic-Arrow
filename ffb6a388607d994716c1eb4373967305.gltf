@@ -78,7 +78,7 @@
       {
          "byteLength" : 26160,
          "name" : "model",
-         "uri" : "/src/components/objects/Target/target.bin"
+         "uri" : "src/components/objects/Target/target.bin"
       }
    ],
    "cameras" : [

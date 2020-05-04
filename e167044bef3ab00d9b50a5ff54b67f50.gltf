@@ -94,7 +94,7 @@
       {
          "byteLength" : 5520,
          "name" : "buffer-0",
-         "uri" : "/src/components/objects/Arrow/arrow.bin"
+         "uri" : "src/components/objects/Arrow/arrow.bin"
       }
    ],
    "cameras" : [
@@ -137,7 +137,7 @@
       {
          "mimeType" : "image/jpeg",
          "name" : "Material.001-image",
-         "uri" : "/src/components/objects/Arrow/arrow.jpg"
+         "uri" : "src/components/objects/Arrow/arrow.jpg"
       }
    ],
    "materials" : [
