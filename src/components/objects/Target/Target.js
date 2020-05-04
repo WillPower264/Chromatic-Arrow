@@ -24,7 +24,6 @@ class Target extends Group {
         const pos = new Vector2(x, z);
         const angle = defaultDir.angle() - pos.angle();
         this.rotateOnAxis(yAxis, angle);
-
     }
 }
 
