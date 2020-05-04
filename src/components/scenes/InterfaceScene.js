@@ -1,5 +1,5 @@
 import { Scene } from 'three';
-import { Powerbar } from 'objects';
+import { Crosshairs, Powerbar } from 'objects';
 
 class InterfaceScene extends Scene {
     constructor(width, height) {
@@ -14,6 +14,9 @@ class InterfaceScene extends Scene {
         pbar.update(width, height, 0);
         this.add(pbar);
         this.addToUpdateList(pbar);
+
+        const cross = new Crosshairs();
+        this.add(cross);
     }
 
     addToUpdateList(object) {
