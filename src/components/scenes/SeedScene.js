@@ -1,7 +1,8 @@
 import * as Dat from 'dat.gui';
 import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry } from 'three';
-import { Flower, Land, Arrow, Target } from 'objects';
+import { Flower, Land, Target } from 'objects';
 import { BasicLights } from 'lights';
+import _ from 'lodash';
 
 class SeedScene extends Scene {
     constructor() {
@@ -13,36 +14,56 @@ class SeedScene extends Scene {
             gui: new Dat.GUI(), // Create GUI for scene
             rotationSpeed: 1,
             updateList: [],
+            targets: [],
+            maxTargets: 5,
+            secondsBetweenTargets: 5,
         };
 
         // Set background to a nice color
         this.background = new Color(0x7ec0ee);
 
         // Add meshes to scene
+        this.buildGround();
         const land = new Land();
         land.position.set(12, 0, 12);
         const flower = new Flower(this);
         flower.position.set(12, 0, 12);
-        const arrow = new Arrow();
-        arrow.position.set(-2, 4, 2);
-        const target = new Target();
-        target.position.set(-2, 2, 2);
-        const target1 = new Target();
-        target1.position.set(0, 2, 2);
         const lights = new BasicLights();
-        this.add(land, flower, arrow, target, target1, lights);
+        this.add(land, flower, lights);
+
+        // Throttled function
+        this.throttledCreateTarget = _.throttle(this.createTarget, this.state.secondsBetweenTargets * 1000);
 
         // Populate GUI
         this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
+
+        // Add event listeners
+        this.addEventListeners();
     }
 
     addToUpdateList(object) {
         this.state.updateList.push(object);
     }
 
+    createTarget() {
+        if (this.state.targets.length >= this.state.maxTargets) { return; }
+
+        console.log('creating target');
+        const target = new Target();
+        target.position.setX(_.random(-2, 2, true));
+        target.position.setY(_.random(1, 2, true));
+        target.position.setZ(_.random(-2, 2, true));
+        target.faceCenter();
+        this.state.targets.push(target);
+        this.add(target);
+    }
+
     update(timeStamp) {
         const { rotationSpeed, updateList } = this.state;
         this.rotation.y = (rotationSpeed * timeStamp) / 10000;
+
+        // Create targets if needed
+        this.throttledCreateTarget();
 
         // Call update for each object in the updateList
         for (const obj of updateList) {

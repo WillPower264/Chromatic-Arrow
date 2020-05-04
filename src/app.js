@@ -16,13 +16,9 @@ const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 const clock = new Clock();
 
-// Set up scene
-scene.buildGround();
-scene.addEventListeners();
-
 // Set up camera
 camera.position.set(0, 2, 0);
-camera.lookAt(new Vector3(0, 2, 1));
+camera.lookAt(new Vector3(0, 2, 1)); // camera starts looking down the +z axis
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.setPixelRatio(window.devicePixelRatio);
