@@ -21,8 +21,9 @@ class SeedScene extends Scene {
 
         // Set background to a nice color
         this.background = new Color(0x7ec0ee);
-        // Set arrow
+        // Set arrow and add
         this.arrow = new Arrow();
+        this.add(this.arrow);
 
         // Add meshes to scene
         this.buildGround();
