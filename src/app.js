@@ -91,6 +91,7 @@ window.addEventListener('resize', windowResizeHandler, false);
 
 // Start game handler
 const startGameHandler = () => {
+  if (isStarted) return;
   startScene.clearText();
   startScene.dispose();
   scene = new SeedScene();

@@ -73,7 +73,6 @@ class StartScene extends Scene {
         // Splatter
         if (this.splatterCount < this.maxSplatters &&
             timeStamp-this.lastSplatter > this.splatterInterval*1000) {
-          console.log("Splat")
           const rx = this.xMin + Math.random()*(this.xMax-this.xMin);
           const ry = this.yMin + Math.random()*(this.yMax-this.yMin);
           const randOffset = new Vector3(rx, ry, 0);
