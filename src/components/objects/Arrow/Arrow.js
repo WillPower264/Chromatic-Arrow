@@ -8,44 +8,37 @@ class Arrow extends Group {
         // Call parent Group() constructor
         super();
 
-        // const loader = new GLTFLoader();
-
         this.name = 'arrow';
         this.mass = 10.0; 
         this.netForce = new Vector3(0, 0, 0);
 
         this.fired = false; // behavior is different after arrow is fired
 
-        // note this position is local coords, not world. tho maybe same
-        // this is for testing; should actually be around (0,3.7,0)?
-        // y=4 is completely on the camera. 
-        this.position.set(0, 4, 1); 
+        // 0,4,0 is completely on the camera. 
+        this.position.set(0, 4, 0); 
         this.previous = this.position.clone();
 
-        // arrow body
+        // direction the arrow points
+        this.direction = CONSTS.directions.yAxis.clone();
+
+        // create arrow body
         const { radius, height, radiusSegments } = CONSTS.arrow;
         const cylinder = new CylinderGeometry(radius, radius, height, radiusSegments);
         const mat = new MeshBasicMaterial({ color: 0xEAC18B }); // tan 
         const mesh = new Mesh(cylinder, mat);
         this.add(mesh);
-
-        // this.lookAt(new Vector3(0, 0, 0));
-
-        // loader.load(MODEL, (gltf) => {
-        //     this.add(gltf.scene);
-        // });
     }
 
+    fireArrow() {
+        this.fired = true;
+    }
+    
     setVelocity(v) {
         this.previous = this.position.clone().sub(v.multiplyScalar(1/1000));
     }
 
     addForce(force) {
         this.netForce.add(force);
-    }
-
-    fireArrow() {
-        this.fired = true;
     }
 
     // wrapper to be called for all collisions
@@ -55,13 +48,19 @@ class Arrow extends Group {
 
     handleFloorCollision() {
         // can do something more sophisticated, maybe
-        if (this.position.y < CONSTS.scene.groundPos + CONSTS.EPS) // GROUND + EPS, define in constant
+        if (this.position.y < CONSTS.scene.groundPos + CONSTS.EPS)
             this.position.y = CONSTS.scene.groundPos + CONSTS.EPS;
     }
 
-    // function to rotate arrow to point in correct direction. default points +x
-    // if velocity = 0, arrow points in camera.getWorldDirection() ? 
-    // else arrow points in normalized velocity direction
+    // rotate arrow to point in the direction of v
+    pointToward(v) {
+        const currDir = this.direction;
+        const newDir = v.clone().normalize();
+        const angle = currDir.angleTo(newDir);
+        const axis = currDir.clone().cross(newDir).normalize();
+        this.rotateOnAxis(axis, angle);
+        this.direction = newDir;
+    }
 
     // Perform Verlet integration
     integrate(deltaT) {
@@ -82,10 +81,17 @@ class Arrow extends Group {
         // apply physics after arrow fired
         if (this.fired) {
             // gravity; should be in a different file?
-            const gravForce = new Vector3(0, -10, 0)
+            const gravForce = new Vector3(0, -20, 0)
             this.addForce(gravForce.multiplyScalar(this.mass))
 
             this.integrate(deltaT);
+
+            this.pointToward(this.position.clone().sub(this.previous))
+        }
+        else {
+            // const direction = new Vector3(0);
+            // //camera.getWorldDirection(direction); how to get camera dir??
+            // this.pointToward(direction);
         }
 
         this.handleCollisions() // call this in the simulation file?
