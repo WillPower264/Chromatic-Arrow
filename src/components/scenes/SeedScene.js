@@ -19,9 +19,11 @@ class SeedScene extends Scene {
 
         // Set background to a nice color
         this.background = new Color(0x7ec0ee);
-        // Set arrow and add
+
+        // Set arrow and add, add to update list
         this.arrow = new Arrow();
         this.add(this.arrow);
+        this.addToUpdateList(this.arrow);
 
         // Add meshes to scene
         this.buildGround();
@@ -67,8 +69,9 @@ class SeedScene extends Scene {
 
     addEventListeners() {
         window.addEventListener("click", () => {
-          this.arrow.setVelocity(new Vector3(0, 2, 5));
-          console.log(this.arrow.velocity);
+            this.arrow.setVelocity(new Vector3(0, 2, 5));
+            console.log(this.arrow.velocity);
+            
         }, false);
     }
 
