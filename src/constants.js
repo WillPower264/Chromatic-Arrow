@@ -24,9 +24,9 @@ const CONSTS = {
         msBetweenTargets: 5 * 1000,
     },
     target: {
-        ringSize: 0.5,
-        thickness: 0.5,
-        minDistApart: 10,
+        ringSize: 0.5,              // total radius is 5
+        thickness: 0.5,             // yellow is 0.5 thick, white is 0.1
+        minDistApart: 15,
         colors: [
             0xFFFF3D, // yellow
             0xED242C, // red
@@ -34,7 +34,7 @@ const CONSTS = {
             0x221E20, // black
             0xFFFFFF, // white
         ],
-        radiusSegments: 16,
+        radiusSegments: 16,             // more segments = rounder target
         spawn: {
             innerRadius: 30,
             outerRadius: 40,
