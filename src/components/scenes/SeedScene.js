@@ -1,4 +1,4 @@
-import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry, Vector3, Spherical } from 'three';
+import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry, Vector3 } from 'three';
 import { Arrow, Target } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
@@ -14,6 +14,7 @@ class SeedScene extends Scene {
             updateList: [],
             targets: [],
             maxTargets: 5,
+            numTargetsInUse: 0,
             secondsBetweenTargets: 5,
         };
 
@@ -25,13 +26,19 @@ class SeedScene extends Scene {
         this.add(this.arrow);
         this.addToUpdateList(this.arrow);
 
+        // Set up targets
+        this.initializeTargets();
+
         // Add meshes to scene
-        this.buildGround();
+        this.initializeGround();
         const lights = new BasicLights();
         this.add(lights);
 
         // Throttled function
-        this.throttledCreateTarget = _.throttle(this.createTarget, this.state.secondsBetweenTargets * 1000);
+        this.throttledCreateTarget = _.throttle(
+            this.createTarget,
+            this.state.secondsBetweenTargets * 1000
+        );
 
         // Add event listeners
         this.addEventListeners();
@@ -41,21 +48,33 @@ class SeedScene extends Scene {
         this.state.updateList.push(object);
     }
 
-    getRandomSphericalPosition() {
-        const radius = _.random(20, 30);
-        const phi = _.random(Math.PI / 6, Math.PI / 3);
-        const theta = _.random(0, 2 * Math.PI);
-        return new Spherical(radius, phi, theta);
+    createTarget() {
+        // Check how many targets are in use
+        if (this.state.numTargetsInUse >= this.state.maxTargets) { return; }
+
+        const target = this.state.targets[this.state.numTargetsInUse];
+        target.setRandomPosition(this.state.targets, this.state.numTargetsInUse);
+        target.faceCenter(new Vector3(0, 2, 0));
+        this.state.numTargetsInUse++;
+        this.add(target);
     }
 
-    createTarget() {
-        if (this.state.targets.length >= this.state.maxTargets) { return; }
+    initializeTargets() {
+        _.times(this.state.maxTargets, () => {
+            this.state.targets.push(new Target());
+        });
+    }
 
-        const target = new Target();
-        target.position.setFromSpherical(this.getRandomSphericalPosition());
-        target.faceCenter(new Vector3(0, 2, 0));
-        this.state.targets.push(target);
-        this.add(target);
+    removeTarget(target) {
+        // This should be impossible
+        if (this.state.numTargetsInUse === 0) { return; }
+
+        // Swap the places so there is no hole
+        const ind = this.state.targets.indexOf(target);
+        this.state.numTargetsInUse--;
+        this.state.targets[ind] = this.state.targets[this.state.numTargetsInUse];
+        this.state.targets[this.state.numTargetsInUse] = new Target();
+        this.remove(target);
     }
 
     update(timeStamp) {
@@ -79,7 +98,7 @@ class SeedScene extends Scene {
         }, false);
     }
 
-    buildGround() {
+    initializeGround() {
         const ground = {};
         ground.textures = {};
 

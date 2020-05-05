@@ -1,4 +1,5 @@
-import { Group, Vector3, MeshBasicMaterial, CylinderGeometry, Mesh } from 'three';
+import { Group, Vector3, MeshBasicMaterial, CylinderGeometry, Mesh, Spherical } from 'three';
+import _ from 'lodash';
 
 class Target extends Group {
     constructor() {
@@ -6,6 +7,7 @@ class Target extends Group {
         super();
 
         this.name = 'target';
+        this.minDistApart = 10;
         const colorHex = [
             0xFFFF3D, // yellow
             0xED242C, // red
@@ -30,6 +32,33 @@ class Target extends Group {
         const angle = defaultDir.angleTo(desiredDir);
         const axis = defaultDir.cross(desiredDir).normalize();
         this.rotateOnAxis(axis, angle);
+    }
+
+    getRandomSphericalPosition() {
+        const radius = _.random(30, 40);
+        const phi = _.random(Math.PI / 4, 5 * Math.PI / 12);
+        const theta = _.random(0, 2 * Math.PI);
+        return new Spherical(radius, phi, theta);
+    }
+
+    checkPosition(pos, targets, numSet) {
+        for (let i = 0; i < numSet; i++) {
+            const targetPos = targets[i].position;
+            if (pos.distanceTo(targetPos) < this.minDistApart) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Gives the target a random location away from other targets
+    setRandomPosition(targets, numSet) {
+        let randSpherical, pos;
+        do {
+            randSpherical = this.getRandomSphericalPosition();
+            pos = new Vector3().setFromSpherical(randSpherical);
+        } while (!this.checkPosition(pos, targets, numSet));
+        this.position.copy(pos);
     }
 }
 
