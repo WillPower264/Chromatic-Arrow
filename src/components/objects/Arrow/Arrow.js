@@ -1,4 +1,4 @@
-import { Group, Vector3 } from 'three';
+import { Group, Vector3, CylinderGeometry, MeshBasicMaterial, Mesh} from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './arrow.gltf';
 import CONSTS from '../../../constants';
@@ -8,7 +8,7 @@ class Arrow extends Group {
         // Call parent Group() constructor
         super();
 
-        const loader = new GLTFLoader();
+        // const loader = new GLTFLoader();
 
         this.name = 'arrow';
         this.mass = 10.0; 
@@ -16,17 +16,24 @@ class Arrow extends Group {
 
         this.fired = false; // behavior is different after arrow is fired
 
-        // note this position is local coordinates, not world. tho they may be the same
+        // note this position is local coords, not world. tho maybe same
         // this is for testing; should actually be around (0,3.7,0)?
         // y=4 is completely on the camera. 
-        this.position.set(0, 4, 5); 
+        this.position.set(0, 4, 1); 
         this.previous = this.position.clone();
+
+        // arrow body
+        const { radius, height, radiusSegments } = CONSTS.arrow;
+        const cylinder = new CylinderGeometry(radius, radius, height, radiusSegments);
+        const mat = new MeshBasicMaterial({ color: 0xEAC18B }); // tan 
+        const mesh = new Mesh(cylinder, mat);
+        this.add(mesh);
 
         // this.lookAt(new Vector3(0, 0, 0));
 
-        loader.load(MODEL, (gltf) => {
-            this.add(gltf.scene);
-        });
+        // loader.load(MODEL, (gltf) => {
+        //     this.add(gltf.scene);
+        // });
     }
 
     setVelocity(v) {

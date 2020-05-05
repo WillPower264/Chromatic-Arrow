@@ -5,6 +5,9 @@ const CONSTS = {
     // keep these top level objects in alphabetical order
     arrow: {
         damping: 0.03,
+        radius: 0.02,
+        height: 1.0,
+        radiusSegments: 8,
     },
     camera: {
         position: new Vector3(0, 2, 0),
