@@ -29,8 +29,9 @@ class Arrow extends Group {
         this.add(mesh);
     }
 
-    fireArrow() {
+    fireArrow(v) {
         this.fired = true;
+        this.setVelocity(v);
     }
     
     setVelocity(v) {
