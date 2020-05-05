@@ -24,7 +24,6 @@ class StartScene extends Scene {
         this.add(lights);
 
         // Canvas
-        // TODO: Fit to screen size
         const geometry = new BoxGeometry(100, 100, 1);
         const material = new MeshBasicMaterial({color: 0xffffff});
         const mesh = new Mesh(geometry, material);
@@ -35,6 +34,7 @@ class StartScene extends Scene {
 
         // Text
         this.textIds = [];
+        this.currWidth = window.innerWidth;
         this.createText("Chromatic Arrow", '30%');
         this.createText("Click Anywhere to Begin", '60%');
     }
@@ -56,12 +56,21 @@ class StartScene extends Scene {
     }
 
     clearText() {
-      for (let i = 0; i < this.textIds.length; i++) {
-        document.getElementById(this.textIds[i]).remove();
-      }
+        for (let i = 0; i < this.textIds.length; i++) {
+          document.getElementById(this.textIds[i]).remove();
+        }
     }
 
     update(timeStamp) {
+        // Re-center text
+        if (window.innerWidth !== this.currentWidth) {
+          for (let i = 0; i < this.textIds.length; i++) {
+            const elt = document.getElementById(this.textIds[i]);
+            elt.style.left = (window.innerWidth - elt.clientWidth)/2 + 'px';
+          }
+          this.currentWidth = window.innerWidth;
+        }
+        // Splatter
         if (this.splatterCount < this.maxSplatters &&
             timeStamp-this.lastSplatter > this.splatterInterval*1000) {
           console.log("Splat")
