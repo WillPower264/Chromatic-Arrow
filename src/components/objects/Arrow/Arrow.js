@@ -1,6 +1,7 @@
 import { Group, Vector3 } from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import MODEL from './arrow.gltf';
+import CONSTS from '../../../constants';
 
 class Arrow extends Group {
     constructor() {
@@ -11,16 +12,17 @@ class Arrow extends Group {
 
         this.name = 'arrow';
         this.mass = 10.0; 
-        // this.velocity = new Vector3(0, 0, 0);
         this.netForce = new Vector3(0, 0, 0);
 
         this.fired = false; // behavior is different after arrow is fired
 
         // note this position is local coordinates, not world. tho they may be the same
-        // this is for testing; should actually be around (0,3.78,0)
+        // this is for testing; should actually be around (0,3.7,0)?
         // y=4 is completely on the camera. 
-        this.position.set(0, 8, 5); 
+        this.position.set(0, 4, 5); 
         this.previous = this.position.clone();
+
+        // this.lookAt(new Vector3(0, 0, 0));
 
         loader.load(MODEL, (gltf) => {
             this.add(gltf.scene);
@@ -35,13 +37,19 @@ class Arrow extends Group {
         this.netForce.add(force);
     }
 
+    fireArrow() {
+        this.fired = true;
+    }
+
+    // wrapper to be called for all collisions
     handleCollisions() {
         this.handleFloorCollision();
     }
 
     handleFloorCollision() {
-        if (this.position.y < 0.0001) // GROUND + EPS) 
-            this.position.y = 0.0001;
+        // can do something more sophisticated, maybe
+        if (this.position.y < CONSTS.scene.groundPos + CONSTS.EPS) // GROUND + EPS, define in constant
+            this.position.y = CONSTS.scene.groundPos + CONSTS.EPS;
     }
 
     // function to rotate arrow to point in correct direction. default points +x
@@ -50,11 +58,9 @@ class Arrow extends Group {
 
     // Perform Verlet integration
     integrate(deltaT) {
-        const DAMPING = 0.03;   // define this elsewhere
-
         const currPos = this.position.clone();
         let nextPos = currPos.clone();
-        nextPos.addScaledVector(currPos.clone().sub(this.previous), 1-DAMPING)
+        nextPos.addScaledVector(currPos.clone().sub(this.previous), 1-CONSTS.arrow.damping);
         nextPos.addScaledVector(this.netForce.clone().multiplyScalar(1/this.mass), deltaT*deltaT);
         this.position.set(nextPos.x, nextPos.y, nextPos.z);
         this.previous = currPos;
@@ -64,15 +70,18 @@ class Arrow extends Group {
 
     //
     update(timeStamp) {
-        const deltaT = 18/1000; // where should I get this value?
+        const deltaT = 18/1000; // define this in constants
 
-        // gravity; should be in a different file
-        const gravForce = new Vector3(0, -10, 0)
-        this.addForce(gravForce.multiplyScalar(this.mass))
+        // apply physics after arrow fired
+        if (this.fired) {
+            // gravity; should be in a different file?
+            const gravForce = new Vector3(0, -10, 0)
+            this.addForce(gravForce.multiplyScalar(this.mass))
 
-        this.integrate(deltaT);
+            this.integrate(deltaT);
+        }
 
-        this.handleCollisions() // different file?
+        this.handleCollisions() // call this in the simulation file?
     }
 }
 

@@ -1,9 +1,10 @@
 import { Vector3 } from 'three';
 
 const CONSTS = {
+    EPS: 0.0001,
     // keep these top level objects in alphabetical order
     arrow: {
-
+        damping: 0.03,
     },
     camera: {
         position: new Vector3(0, 2, 0),
@@ -22,6 +23,7 @@ const CONSTS = {
         groundColor: 0x091200,
         maxTargets: 5,
         msBetweenTargets: 5 * 1000,
+        groundPos: 0,
     },
     target: {
         ringSize: 0.5,              // total radius is 5
