@@ -2,24 +2,25 @@ import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry, Vector3 
 import { Arrow, Target } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
+import CONSTS from '../../constants';
 
 class SeedScene extends Scene {
     constructor() {
         // Call parent Scene() constructor
         super();
 
+        // Get constants
+        const { backgroundColor, msBetweenTargets } = CONSTS.scene;
+
         // Init state
         this.state = {
-            rotationSpeed: 1,
             updateList: [],
             targets: [],
-            maxTargets: 5,
             numTargetsInUse: 0,
-            secondsBetweenTargets: 5,
         };
 
         // Set background to a nice color
-        this.background = new Color(0x7ec0ee);
+        this.background = new Color(backgroundColor);
 
         // Set arrow and add, add to update list
         this.arrow = new Arrow();
@@ -37,7 +38,7 @@ class SeedScene extends Scene {
         // Throttled function
         this.throttledCreateTarget = _.throttle(
             this.createTarget,
-            this.state.secondsBetweenTargets * 1000
+            msBetweenTargets
         );
 
         // Add event listeners
@@ -50,17 +51,17 @@ class SeedScene extends Scene {
 
     createTarget() {
         // Check how many targets are in use
-        if (this.state.numTargetsInUse >= this.state.maxTargets) { return; }
+        if (this.state.numTargetsInUse >= CONSTS.scene.maxTargets) { return; }
 
         const target = this.state.targets[this.state.numTargetsInUse];
         target.setRandomPosition(this.state.targets, this.state.numTargetsInUse);
-        target.faceCenter(new Vector3(0, 2, 0));
+        target.faceCenter();
         this.state.numTargetsInUse++;
         this.add(target);
     }
 
     initializeTargets() {
-        _.times(this.state.maxTargets, () => {
+        _.times(CONSTS.scene.maxTargets, () => {
             this.state.targets.push(new Target());
         });
     }
@@ -78,8 +79,7 @@ class SeedScene extends Scene {
     }
 
     update(timeStamp) {
-        const { rotationSpeed, updateList } = this.state;
-        this.rotation.y = (rotationSpeed * timeStamp) / 10000;
+        const { updateList } = this.state;
 
         // Create targets if needed
         this.throttledCreateTarget();
@@ -104,9 +104,9 @@ class SeedScene extends Scene {
 
         // ground material
         ground.material = new MeshStandardMaterial({
-          color: 0x091200, //0x3c3c3c,
-        //   specular: 0x404761, //0x3c3c3c//,
-        //   metalness: 0.3,
+            color: CONSTS.scene.groundColor, //0x3c3c3c,
+            //   specular: 0x404761, //0x3c3c3c//,
+            //   metalness: 0.3,
         });
 
         // ground mesh

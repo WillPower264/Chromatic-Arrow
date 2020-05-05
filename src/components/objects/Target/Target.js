@@ -1,5 +1,6 @@
 import { Group, Vector3, MeshBasicMaterial, CylinderGeometry, Mesh, Spherical } from 'three';
 import _ from 'lodash';
+import CONSTS from '../../../constants';
 
 class Target extends Group {
     constructor() {
@@ -7,44 +8,39 @@ class Target extends Group {
         super();
 
         this.name = 'target';
-        this.minDistApart = 10;
-        const colorHex = [
-            0xFFFF3D, // yellow
-            0xED242C, // red
-            0x62BDEC, // blue
-            0x221E20, // black
-            0xFFFFFF, // white
-        ];
-        for (let i = 0; i < colorHex.length; i++) {
-            const radius = (i + 1) / 2;
-            const height = 0.5 - 0.1 * i;
-            const cylinder = new CylinderGeometry(radius, radius, height, 16);
-            const mat = new MeshBasicMaterial({ color: colorHex[i] });
+        const { colors, ringSize, thickness, radiusSegments } = CONSTS.target;
+        for (let i = 0; i < colors.length; i++) {
+            const radius = (i + 1) * ringSize;
+            const height = thickness - 0.1 * i;
+            const cylinder = new CylinderGeometry(radius, radius, height, radiusSegments);
+            const mat = new MeshBasicMaterial({ color: colors[i] });
             const mesh = new Mesh(cylinder, mat);
             this.add(mesh);
         }
     }
 
     // Automatically rotates the target to face the camera
-    faceCenter(center) {
-        const defaultDir = new Vector3(0, 1, 0);
-        const desiredDir = center.clone().sub(this.position);
+    faceCenter() {
+        const defaultDir = CONSTS.directions.yAxis;
+        const desiredDir = CONSTS.camera.position.clone().sub(this.position);
         const angle = defaultDir.angleTo(desiredDir);
-        const axis = defaultDir.cross(desiredDir).normalize();
+        const axis = defaultDir.clone().cross(desiredDir).normalize();
         this.rotateOnAxis(axis, angle);
     }
 
     getRandomSphericalPosition() {
-        const radius = _.random(30, 40);
-        const phi = _.random(Math.PI / 4, 5 * Math.PI / 12);
-        const theta = _.random(0, 2 * Math.PI);
+        const { innerRadius, outerRadius, minPhi, maxPhi, fullRotation } = CONSTS.target.spawn;
+        const radius = _.random(innerRadius, outerRadius);
+        const phi = _.random(minPhi, maxPhi);
+        const theta = _.random(0, fullRotation);
         return new Spherical(radius, phi, theta);
     }
 
     checkPosition(pos, targets, numSet) {
+        const minDistSquared = Math.pow(CONSTS.target.minDistApart, 2);
         for (let i = 0; i < numSet; i++) {
             const targetPos = targets[i].position;
-            if (pos.distanceTo(targetPos) < this.minDistApart) {
+            if (pos.distanceToSquared(targetPos) < minDistSquared) {
                 return false;
             }
         }

@@ -6,9 +6,10 @@
  * handles window resizes.
  *
  */
-import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Vector3, Clock, Scene } from 'three';
+import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Clock } from 'three';
 import { InterfaceScene, SeedScene } from 'scenes';
 import PlayerControls from './PlayerControls';
+import CONSTS from './constants';
 
 // Initialize core ThreeJS components
 const scene = new SeedScene();
@@ -17,17 +18,22 @@ const renderer = new WebGLRenderer({ antialias: true });
 const clock = new Clock();
 
 // Set up camera
-camera.position.set(0, 2, 0);
-camera.lookAt(new Vector3(0, 2, 1)); // camera starts looking down the +z axis
+camera.position.copy(CONSTS.camera.position);
+camera.lookAt(CONSTS.camera.initialDirection); // camera starts looking down the +z axis
 
 // Set up interface overlay camera
 // From example: https://threejs.org/examples/#webgl_sprites
 const { innerHeight, innerWidth } = window;
 const cameraOrtho = new OrthographicCamera(
-  -innerWidth/2, innerWidth/2, innerHeight/2, -innerHeight/2, 1, 10
+  -innerWidth / 2,
+  innerWidth / 2,
+  innerHeight / 2,
+  -innerHeight / 2,
+  CONSTS.camera.near,
+  CONSTS.camera.far
 );
 cameraOrtho.position.z = 1;
-const sceneOrtho = new InterfaceScene(innerWidth/2, innerHeight/2);
+const sceneOrtho = new InterfaceScene(innerWidth / 2, innerHeight / 2);
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.autoClear = false;
@@ -44,33 +50,33 @@ scene.add(controls.getObject());
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
-    controls.update(clock.getDelta());
-    renderer.clear();
-    renderer.render(scene, camera);
-    renderer.clearDepth();
-    renderer.render(sceneOrtho, cameraOrtho);
-    scene.update && scene.update(timeStamp);
-    sceneOrtho.update && sceneOrtho.update(
-      cameraOrtho.right, cameraOrtho.top, timeStamp
-    );
-    window.requestAnimationFrame(onAnimationFrameHandler);
+  controls.update(clock.getDelta());
+  renderer.clear();
+  renderer.render(scene, camera);
+  renderer.clearDepth();
+  renderer.render(sceneOrtho, cameraOrtho);
+  scene.update && scene.update(timeStamp);
+  sceneOrtho.update && sceneOrtho.update(
+    cameraOrtho.right, cameraOrtho.top, timeStamp
+  );
+  window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
 
 // Resize Handler
 const windowResizeHandler = () => {
-    const { innerHeight, innerWidth } = window;
-    renderer.setSize(innerWidth, innerHeight);
-    camera.aspect = innerWidth / innerHeight;
-    camera.updateProjectionMatrix();
-    console.log(camera.getFilmHeight())
+  const { innerHeight, innerWidth } = window;
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+  console.log(camera.getFilmHeight());
 
-    // Update ortho camera
-    cameraOrtho.left = -innerWidth/2;
-    cameraOrtho.right = innerWidth/2;
-    cameraOrtho.top = innerHeight/2;
-    cameraOrtho.bottom = -innerHeight/2;
-    cameraOrtho.updateProjectionMatrix();
+  // Update ortho camera
+  cameraOrtho.left = -innerWidth / 2;
+  cameraOrtho.right = innerWidth / 2;
+  cameraOrtho.top = innerHeight / 2;
+  cameraOrtho.bottom = -innerHeight / 2;
+  cameraOrtho.updateProjectionMatrix();
 };
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
