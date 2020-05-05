@@ -1,5 +1,5 @@
 import { Scene } from 'three';
-import { Crosshairs, Powerbar } from 'objects';
+import { Crosshairs, Powerbar, Timer } from 'objects';
 
 class InterfaceScene extends Scene {
     constructor(width, height) {
@@ -10,13 +10,23 @@ class InterfaceScene extends Scene {
             updateList: [],
         };
 
+        // Interface objects
         const pbar = new Powerbar(250, 50);
         pbar.update(width, height, 0);
         this.add(pbar);
         this.addToUpdateList(pbar);
+        this.pbar = pbar;
 
         const cross = new Crosshairs();
         this.add(cross);
+
+        const timer = new Timer(60);
+        timer.update(width, height, 0);
+        this.add(timer);
+        this.addToUpdateList(timer);
+
+        // Listeners
+        this.addEventListeners();
     }
 
     addToUpdateList(object) {
@@ -27,6 +37,15 @@ class InterfaceScene extends Scene {
         for (const obj of this.state.updateList) {
             obj.update(width, height, timeStamp);
         }
+    }
+
+    addEventListeners() {
+        window.addEventListener("mousedown", () => {
+          this.pbar.beginFill();
+        }, false);
+        window.addEventListener("mouseup", () => {
+          this.pbar.stopFill();
+        }, false);
     }
 }
 
