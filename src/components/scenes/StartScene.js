@@ -40,11 +40,10 @@ class StartScene extends Scene {
     }
 
     createText(str, top) {
-
         const text = document.createElement('div');
         text.id = str;
-        text.style.position = 'absolute';
         text.innerHTML = str;
+        text.style.position = 'absolute';
         text.style.fontSize = '55px';
         text.style.color = 'white';
         document.body.appendChild(text);
@@ -59,6 +58,7 @@ class StartScene extends Scene {
         for (let i = 0; i < this.textIds.length; i++) {
           document.getElementById(this.textIds[i]).remove();
         }
+        this.textIds.length = [];
     }
 
     update(timeStamp) {

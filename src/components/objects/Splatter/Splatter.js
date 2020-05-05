@@ -7,15 +7,8 @@ class Splatter extends Group {
         // Call parent Group() constructor
         super();
 
-        // testing
-        const testG = new BoxGeometry(1, 1, 0.01);
-        const testMat = new MeshBasicMaterial({color: 0xffffff});
-        const testM = new Mesh(testG, testMat);
-        testM.position.set(0, 1, 10)
-        testM.updateMatrix();
-        //parent.add(testM);
-
         this.name = 'splatter';
+        // Inspired by https://threejs.org/examples/webgl_decals.html
         const textureLoader = new TextureLoader();
         const splatter = textureLoader.load(SPLATTER);
         const decalMat = new MeshBasicMaterial({
