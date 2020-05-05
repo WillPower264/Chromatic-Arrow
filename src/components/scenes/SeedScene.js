@@ -1,5 +1,5 @@
 import * as Dat from 'dat.gui';
-import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry, Vector3 } from 'three';
+import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry, Vector3, Spherical } from 'three';
 import { Arrow, Flower, Land, Target } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
@@ -48,15 +48,19 @@ class SeedScene extends Scene {
         this.state.updateList.push(object);
     }
 
+    getRandomSphericalPosition() {
+        const radius = _.random(20, 30);
+        const phi = _.random(Math.PI / 6, Math.PI / 3);
+        const theta = _.random(0, 2 * Math.PI);
+        return new Spherical(radius, phi, theta);
+    }
+
     createTarget() {
         if (this.state.targets.length >= this.state.maxTargets) { return; }
 
-        console.log('creating target');
         const target = new Target();
-        target.position.setX(_.random(-2, 2, true));
-        target.position.setY(_.random(1, 2, true));
-        target.position.setZ(_.random(-2, 2, true));
-        target.faceCenter();
+        target.position.setFromSpherical(this.getRandomSphericalPosition());
+        target.faceCenter(new Vector3(0, 2, 0));
         this.state.targets.push(target);
         this.add(target);
     }
