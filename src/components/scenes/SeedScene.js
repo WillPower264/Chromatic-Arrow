@@ -73,8 +73,9 @@ class SeedScene extends Scene {
 
     addEventListeners() {
         window.addEventListener("click", () => {
-            this.arrow.setVelocity(new Vector3(0, 2, 5));
-            console.log(this.arrow.velocity);
+            this.arrow.setVelocity(new Vector3(0, 200, 500));
+            // this.arrow.addForce(new Vector3(0, 2, 5));
+            console.log(this.arrow.getWorldPosition(new Vector3()));
         }, false);
     }
 
