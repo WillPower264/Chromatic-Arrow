@@ -7,15 +7,23 @@
  *
  */
 import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Clock } from 'three';
-import { InterfaceScene, SeedScene } from 'scenes';
+import { InterfaceScene, StartScene, SeedScene } from 'scenes';
 import PlayerControls from './PlayerControls';
 import CONSTS from './constants';
 
 // Initialize core ThreeJS components
-const scene = new SeedScene();
 const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 const clock = new Clock();
+
+// Title screen objects
+const startScene = new StartScene(0);
+
+// Game objects
+let isStarted = false;
+let scene;
+let sceneOrtho;
+let controls;
 
 // Set up camera
 camera.position.copy(CONSTS.camera.position);
@@ -33,7 +41,6 @@ const cameraOrtho = new OrthographicCamera(
   CONSTS.camera.far
 );
 cameraOrtho.position.z = 1;
-const sceneOrtho = new InterfaceScene(innerWidth / 2, innerHeight / 2);
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.autoClear = false;
@@ -44,21 +51,22 @@ document.body.style.margin = 0; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
-// Set up controls
-const controls = new PlayerControls(camera, document.body);
-scene.add(controls.getObject());
-
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
-  controls.update(clock.getDelta());
-  renderer.clear();
-  renderer.render(scene, camera);
-  renderer.clearDepth();
-  renderer.render(sceneOrtho, cameraOrtho);
-  scene.update && scene.update(timeStamp);
-  sceneOrtho.update && sceneOrtho.update(
-    cameraOrtho.right, cameraOrtho.top, timeStamp
-  );
+  if (isStarted) {
+    controls.update(clock.getDelta());
+    renderer.clear();
+    renderer.render(scene, camera);
+    renderer.clearDepth();
+    renderer.render(sceneOrtho, cameraOrtho);
+    scene.update && scene.update(timeStamp);
+    sceneOrtho.update && sceneOrtho.update(
+      cameraOrtho.right, cameraOrtho.top, timeStamp
+    );
+  } else {
+    renderer.render(startScene, camera);
+    startScene.update && startScene.update(timeStamp);
+  }
   window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
@@ -80,3 +88,17 @@ const windowResizeHandler = () => {
 };
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
+
+// Start game handler
+const startGameHandler = () => {
+  startScene.clearText();
+  startScene.dispose();
+  scene = new SeedScene();
+  // Set up controls
+  controls = new PlayerControls(camera, document.body);
+  scene.add(controls.getObject());
+  const { innerHeight, innerWidth } = window;
+  sceneOrtho = new InterfaceScene(innerWidth / 2, innerHeight / 2);
+  isStarted = true;
+};
+window.addEventListener('click', startGameHandler, false);

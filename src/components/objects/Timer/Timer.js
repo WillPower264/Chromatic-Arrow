@@ -20,7 +20,7 @@ class Timer extends Group {
         // Line
         const points = [];
         points.push(new Vector3(0, 0, 0));
-        points.push(new Vector3(0, 40, 0));
+        points.push(new Vector3(0, rad, 0));
 
         const linGeometry = new PlaneGeometry(0.1*rad, rad);
         const linMaterial = new MeshBasicMaterial({ color: 0x000000 });
