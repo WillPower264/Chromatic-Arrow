@@ -10,10 +10,12 @@ class InterfaceScene extends Scene {
             updateList: [],
         };
 
+        // Interface objects
         const pbar = new Powerbar(250, 50);
         pbar.update(width, height, 0);
         this.add(pbar);
         this.addToUpdateList(pbar);
+        this.pbar = pbar;
 
         const cross = new Crosshairs();
         this.add(cross);
@@ -22,6 +24,9 @@ class InterfaceScene extends Scene {
         timer.update(width, height, 0);
         this.add(timer);
         this.addToUpdateList(timer);
+
+        // Listeners
+        this.addEventListeners();
     }
 
     addToUpdateList(object) {
@@ -32,6 +37,15 @@ class InterfaceScene extends Scene {
         for (const obj of this.state.updateList) {
             obj.update(width, height, timeStamp);
         }
+    }
+
+    addEventListeners() {
+        window.addEventListener("mousedown", () => {
+          this.pbar.beginFill();
+        }, false);
+        window.addEventListener("mouseup", () => {
+          this.pbar.stopFill();
+        }, false);
     }
 }
 

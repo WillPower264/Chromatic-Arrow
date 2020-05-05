@@ -28,9 +28,6 @@ class Timer extends Group {
         linMesh.position.y += rad/2;
         this.line = linMesh;
         this.add(linMesh);
-
-        // this.setText(text, this);
-        // console.log(this)
     }
 
     update(width, height, timestamp) {
@@ -39,21 +36,6 @@ class Timer extends Group {
       this.position.x = width - this.initRad - this.buffer;
       this.position.y = height - this.initRad - this.buffer;
     }
-
-    // setText(text, group) {
-    //   const loader = new FontLoader();
-    //
-    //   loader.load(FONT, function (font) {
-    //     const geometry = new TextGeometry(text, {
-    //       font: font,
-    //       size: 80,
-    //       height: 5,
-    //     });
-    //     const material = new MeshBasicMaterial({color: 0x00ff00});
-    //     const mesh = new Mesh(geometry, material);
-    //     group.add(mesh);
-    //   });
-    // }
 }
 
 export default Timer;
