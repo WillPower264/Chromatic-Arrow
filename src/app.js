@@ -27,7 +27,7 @@ const cameraOrtho = new OrthographicCamera(
   -innerWidth/2, innerWidth/2, innerHeight/2, -innerHeight/2, 1, 10
 );
 cameraOrtho.position.z = 1;
-const sceneOrtho = new InterfaceScene(innerWidth, innerHeight);
+const sceneOrtho = new InterfaceScene(innerWidth/2, innerHeight/2);
 
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.autoClear = false;
@@ -51,7 +51,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     renderer.render(sceneOrtho, cameraOrtho);
     scene.update && scene.update(timeStamp);
     sceneOrtho.update && sceneOrtho.update(
-      cameraOrtho.right, cameraOrtho.bottom, timeStamp
+      cameraOrtho.right, cameraOrtho.top, timeStamp
     );
     window.requestAnimationFrame(onAnimationFrameHandler);
 };

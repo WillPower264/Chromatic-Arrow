@@ -1,6 +1,5 @@
-import * as Dat from 'dat.gui';
 import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry, Vector3 } from 'three';
-import { Arrow, Flower, Land, Target } from 'objects';
+import { Arrow, Target } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
 
@@ -11,7 +10,6 @@ class SeedScene extends Scene {
 
         // Init state
         this.state = {
-            gui: new Dat.GUI(), // Create GUI for scene
             rotationSpeed: 1,
             updateList: [],
             targets: [],
@@ -29,18 +27,11 @@ class SeedScene extends Scene {
 
         // Add meshes to scene
         this.buildGround();
-        const land = new Land();
-        land.position.set(12, 0, 12);
-        const flower = new Flower(this);
-        flower.position.set(12, 0, 12);
         const lights = new BasicLights();
-        this.add(land, flower, lights);
+        this.add(lights);
 
         // Throttled function
         this.throttledCreateTarget = _.throttle(this.createTarget, this.state.secondsBetweenTargets * 1000);
-
-        // Populate GUI
-        this.state.gui.add(this.state, 'rotationSpeed', -5, 5);
 
         // Add event listeners
         this.addEventListeners();
