@@ -9,7 +9,7 @@ class StartScene extends Scene {
         // Timing
         this.splatterInterval = 0.1;
         this.lastSplatter = creationTime;
-        this.maxSplatters = 50;
+        this.maxSplatters = 30;
         this.splatterCount = 0;
 
         // Appearance
@@ -19,6 +19,10 @@ class StartScene extends Scene {
         this.yMax = 5;
         this.minSize = 5;
         this.maxSize = 7;
+
+        // Fixed points to make sure text is revealed
+        this.xs = [-2, -1.5, 0, 1, 2];
+        this.ys = [1, 3, 2, 3, 1];
 
         const lights = new BasicLights();
         this.add(lights);
@@ -73,11 +77,20 @@ class StartScene extends Scene {
         // Splatter
         if (this.splatterCount < this.maxSplatters &&
             timeStamp-this.lastSplatter > this.splatterInterval*1000) {
-          const rx = this.xMin + Math.random()*(this.xMax-this.xMin);
-          const ry = this.yMin + Math.random()*(this.yMax-this.yMin);
+          let rx;
+          let ry;
+          let size;
+          if (this.splatterCount < this.xs.length) {
+            rx = this.xs[this.splatterCount];
+            ry = this.ys[this.splatterCount];
+            size = this.maxSize;
+          } else {
+            rx = this.xMin + Math.random()*(this.xMax-this.xMin);
+            ry = this.yMin + Math.random()*(this.yMax-this.yMin);
+            size = this.minSize + Math.random()*(this.maxSize-this.minSize);
+          }
           const randOffset = new Vector3(rx, ry, 0);
           const pos = this.screen.position.clone().add(randOffset);
-          const size = this.minSize + Math.random()*(this.maxSize-this.minSize);
           const rot = new Euler();
           const splat = new Splatter(this.screen, pos, rot, size);
           this.add(splat.mesh);
