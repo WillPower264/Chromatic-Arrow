@@ -5,16 +5,17 @@ const CONSTS = {
     // keep these top level objects in alphabetical order
     arrow: {
         damping: 0.03,
-        //radius: 0.02,
-        radius: 0.1, // TODO: Debug...remove when tracking exists
+        radius: 0.02,
+        // radius: 0.1, // TODO: Debug...remove when tracking exists
         height: 1.0,
         radiusSegments: 8,
         chargeRate: 0.01,
         maxForce: 100000,
     },
     barrier: {
-        width: 3,
-        height: 3,
+        width: 6,
+        height: 6,
+        depth: 0.2,
         spawn: {
             innerRadius: 15,
             outerRadius: 30,
@@ -24,7 +25,7 @@ const CONSTS = {
             fullRotation: 2 * Math.PI,
         },
         movement: {
-            baseTheta: 0.01,
+            baseTheta: 0.005,
             basePhiPeriod: 0.001,
             basePhiScale: 0.001,
         },
@@ -46,7 +47,7 @@ const CONSTS = {
         groundColor: 0x091200,
         maxTargets: 10,
         msBetweenTargets: 5 * 1000,
-        numBarriers: 10,
+        numBarriers: 15,
         groundPos: 0,
     },
     target: {

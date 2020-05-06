@@ -1,4 +1,4 @@
-import { Group, Vector3, CylinderGeometry, ConeGeometry, MeshBasicMaterial, Mesh, Plane } from 'three';
+import { Group, Vector3, CylinderGeometry, ConeGeometry, MeshBasicMaterial, Mesh, Plane, Shape, ShapeGeometry, DoubleSide } from 'three';
 import CONSTS from '../../../constants';
 
 class Arrow extends Group {
@@ -18,7 +18,7 @@ class Arrow extends Group {
 
         // 0,4,0 is completely on the camera.
         this.position.set(0, 4, 0);
-        // this.position.set(0, 3, 5); // testing to build arrow
+        // this.position.set(0, 3, 1); // testing to build arrow
         this.previous = this.position.clone();
 
         // direction the arrow points
@@ -33,16 +33,33 @@ class Arrow extends Group {
         const cylinder = new CylinderGeometry(radius, radius, height, radiusSegments);
         const mat = new MeshBasicMaterial({ color: this.color }); // tan 0xEAC18B
         const mesh = new Mesh(cylinder, mat);
-        arrowGroup.add(mesh);
+        this.add(mesh);
 
         // create arrow tip
-        const cone = new ConeGeometry(radius*2, height/10.0, radiusSegments);
-        const coneMat = new MeshBasicMaterial({ color: 0xFFFFFF});
-        const coneMesh = new Mesh(cone, coneMat);
+        const tipLen = height/10.0
+        const cone = new ConeGeometry(radius*2, tipLen, radiusSegments);
+        const whiteMat = new MeshBasicMaterial({ color: 0xFFFFFF});
+        whiteMat.side = DoubleSide;
+        const coneMesh = new Mesh(cone, whiteMat);
         coneMesh.position.set(0, this.halfLen, 0);
-        arrowGroup.add(coneMesh);
+        this.add(coneMesh);
 
-        this.add(arrowGroup);
+        // create arrow tail
+        const featherShape = new Shape();
+        // draw starting from (0, 0)
+        featherShape.lineTo(0, tipLen*2);
+        featherShape.lineTo(tipLen, tipLen);
+        featherShape.lineTo(tipLen, -tipLen);
+        featherShape.lineTo(0, 0);
+        const feather = new ShapeGeometry(featherShape);
+
+        for (let i = 0; i < 3; i++) {
+            const featherMesh = new Mesh(feather, whiteMat);
+            featherMesh.position.set(0, -this.halfLen, 0);
+            featherMesh.rotateOnAxis(this.direction, i*2*Math.PI/3.0);
+            this.add(featherMesh);
+        }
+
     }
 
     addForce(force) {
