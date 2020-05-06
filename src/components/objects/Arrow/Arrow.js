@@ -50,19 +50,12 @@ class Arrow extends Group {
         featherShape.lineTo(0, 0);
         const feather = new ShapeGeometry(featherShape);
 
-        const featherMesh1 = new Mesh(feather, whiteMat);
-        featherMesh1.position.set(0, -this.halfLen, 0);
-        this.add(featherMesh1);
-
-        const featherMesh2 = new Mesh(feather, whiteMat);
-        featherMesh2.position.set(0, -this.halfLen, 0);
-        featherMesh2.rotateOnAxis(this.direction, 2*Math.PI/3.0);
-        this.add(featherMesh2);
-
-        const featherMesh3 = new Mesh(feather, whiteMat);
-        featherMesh3.position.set(0, -this.halfLen, 0);
-        featherMesh3.rotateOnAxis(this.direction, 4*Math.PI/3.0);
-        this.add(featherMesh3);
+        for (let i = 0; i < 3; i++) {
+            const featherMesh = new Mesh(feather, whiteMat);
+            featherMesh.position.set(0, -this.halfLen, 0);
+            featherMesh.rotateOnAxis(this.direction, i*2*Math.PI/3.0);
+            this.add(featherMesh);
+        }
 
     }
 
