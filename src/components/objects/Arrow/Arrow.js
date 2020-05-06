@@ -1,6 +1,4 @@
 import { Group, Vector3, CylinderGeometry, MeshBasicMaterial, Mesh} from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import MODEL from './arrow.gltf';
 import CONSTS from '../../../constants';
 
 class Arrow extends Group {
@@ -24,6 +22,7 @@ class Arrow extends Group {
 
         // create arrow body
         const { radius, height, radiusSegments } = CONSTS.arrow;
+        this.halfLen = height / 2.0;
         const cylinder = new CylinderGeometry(radius, radius, height, radiusSegments);
         const mat = new MeshBasicMaterial({ color: 0xEAC18B }); // tan
         const mesh = new Mesh(cylinder, mat);
@@ -77,7 +76,7 @@ class Arrow extends Group {
         // apply physics after arrow fired
         if (this.fired) {
             // gravity; should be in a different file?
-            const gravForce = new Vector3(0, -20, 0);
+            const gravForce = new Vector3(0, -100, 0);
             this.addForce(gravForce.multiplyScalar(this.mass));
 
             this.integrate(deltaT);

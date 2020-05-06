@@ -50,7 +50,8 @@ const CONSTS = {
         groundPos: 0,
     },
     target: {
-        ringSize: 0.5,              // total radius is 5
+        radius: 2.5,
+        ringSize: 0.5,              // total diameter is 5
         thickness: 0.5,             // yellow is 0.5 thick, white is 0.1
         minDistApart: 15,
         colors: [
