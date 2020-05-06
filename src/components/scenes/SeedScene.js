@@ -66,7 +66,7 @@ class SeedScene extends Scene {
         if (this.state.numTargetsInUse >= CONSTS.scene.maxTargets) { return; }
 
         const target = this.state.targets[this.state.numTargetsInUse];
-        target.setRandomPosition(this.state.targets, this.state.numTargetsInUse);
+        target.setRandomPosition();
         target.faceCenter();
         this.state.numTargetsInUse++;
         this.add(target);
@@ -74,7 +74,7 @@ class SeedScene extends Scene {
 
     initializeTargets() {
         _.times(CONSTS.scene.maxTargets, () => {
-            this.state.targets.push(new Target());
+            this.state.targets.push(new Target(this));
         });
     }
 
@@ -143,6 +143,12 @@ class SeedScene extends Scene {
             this.addToUpdateList(this.currentArrow);
             this.isFiring = false;
         }, false);
+
+        window.addEventListener('keydown', () => {
+            console.log('removing');
+            this.state.targets[0].remove();
+            console.log(this.state.numTargetsInUse);
+        });
     }
 
     initializeGround() {
