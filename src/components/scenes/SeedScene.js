@@ -1,5 +1,5 @@
-import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry, Vector3 } from 'three';
-import { Arrow, Target, Barrier } from 'objects';
+import { Scene, BoxGeometry, Color, Euler, MeshStandardMaterial, Mesh, Vector3 } from 'three';
+import { Arrow, Target, Barrier, Splatter } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
 import CONSTS from '../../constants';
@@ -43,7 +43,7 @@ class SeedScene extends Scene {
         this.initializeBarriers();
 
         // Add meshes to scene
-        this.initializeGround();
+        this.ground = this.initializeGround();
         const lights = new BasicLights();
         this.add(lights);
 
@@ -98,6 +98,15 @@ class SeedScene extends Scene {
         });
     }
 
+    // TODO: scale by impact velocity
+    // TODO: make color match arrow color
+    addSplatterGround(position) {
+        const splat = new Splatter(
+          this.ground.mesh, position, new Euler(-Math.PI/2, 0, 0), 1
+        );
+        this.add(splat.mesh);
+    }
+
     update(timeStamp) {
         const { updateList } = this.state;
 
@@ -108,7 +117,10 @@ class SeedScene extends Scene {
 
         // Arrow collisions
         for (let i = this.state.arrows.length-1; i >= 0; i--) {
+            // Assumes ground
+            // TODO: Add for other collisions
             if (this.state.arrows[i].hasCollided) {
+                this.addSplatterGround(this.state.arrows[i].position);
                 this.removeArrow(this.state.arrows[i]);
             }
         }
@@ -161,10 +173,9 @@ class SeedScene extends Scene {
         });
 
         // ground mesh
-        ground.geometry = new PlaneBufferGeometry(500, 500);
+        ground.geometry = new BoxGeometry(500, 1, 500);
         ground.mesh = new Mesh(ground.geometry, ground.material);
         ground.mesh.position.y = CONSTS.scene.groundPos;
-        ground.mesh.rotation.x = -Math.PI / 2;
         ground.mesh.receiveShadow = true;
 
         // handled in Scene.updateGroundTexture()
@@ -174,10 +185,8 @@ class SeedScene extends Scene {
         // ground.texture.repeat.set( 25, 25 );
         // ground.texture.anisotropy = 16;
         // ground.material.map = ground.texture;
-
         this.add(ground.mesh); // add ground to scene
-
-        // return ground;
+        return ground;
     }
 }
 
