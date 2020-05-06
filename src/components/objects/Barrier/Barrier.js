@@ -18,8 +18,8 @@ class Barrier extends Group {
         };
 
         // Create invisible barrier with random position
-        const { width, height } = CONSTS.barrier;
-        const geometry = new BoxGeometry(width, height, 0.5);
+        const { width, height, depth } = CONSTS.barrier;
+        const geometry = new BoxGeometry(width, height, depth);
         const material = new MeshBasicMaterial();
         this.add(new Mesh(geometry, material));
         this.visible = false;

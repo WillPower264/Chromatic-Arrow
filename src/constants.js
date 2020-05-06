@@ -15,6 +15,7 @@ const CONSTS = {
     barrier: {
         width: 6,
         height: 6,
+        depth: 0.2,
         spawn: {
             innerRadius: 15,
             outerRadius: 30,
@@ -46,7 +47,7 @@ const CONSTS = {
         groundColor: 0x091200,
         maxTargets: 10,
         msBetweenTargets: 5 * 1000,
-        numBarriers: 10,
+        numBarriers: 15,
         groundPos: 0,
     },
     target: {
