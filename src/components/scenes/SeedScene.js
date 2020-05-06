@@ -31,7 +31,7 @@ class SeedScene extends Scene {
         this.background = new Color(backgroundColor);
 
         // Set arrow and add, add to update list
-        this.currentArrow = new Arrow();
+        this.currentArrow = new Arrow(this);
         this.add(this.currentArrow);
         this.state.arrows.push(this.currentArrow);
         this.addToUpdateList(this.currentArrow);
@@ -89,6 +89,15 @@ class SeedScene extends Scene {
         this.remove(arrow);
     }
 
+    // TODO: scale by impact velocity
+    // TODO: make color match arrow color
+    addSplatterGround(position, color) {
+        const splat = new Splatter(
+          this.ground.mesh, position, new Euler(-Math.PI/2, 0, 0), 1, color
+        );
+        this.add(splat.mesh);
+    }
+
     initializeBarriers() {
         _.times(CONSTS.scene.numBarriers, (n) => {
             const barrier = new Barrier(n);
@@ -96,15 +105,6 @@ class SeedScene extends Scene {
             this.addToUpdateList(barrier);
             this.state.barriers.push(barrier);
         });
-    }
-
-    // TODO: scale by impact velocity
-    // TODO: make color match arrow color
-    addSplatterGround(position) {
-        const splat = new Splatter(
-          this.ground.mesh, position, new Euler(-Math.PI/2, 0, 0), 1
-        );
-        this.add(splat.mesh);
     }
 
     update(timeStamp) {
@@ -117,10 +117,7 @@ class SeedScene extends Scene {
 
         // Arrow collisions
         for (let i = this.state.arrows.length-1; i >= 0; i--) {
-            // Assumes ground
-            // TODO: Add for other collisions
             if (this.state.arrows[i].hasCollided) {
-                this.addSplatterGround(this.state.arrows[i].position);
                 this.removeArrow(this.state.arrows[i]);
             }
         }
@@ -149,7 +146,7 @@ class SeedScene extends Scene {
               )
             );
             // Create new arrow
-            this.currentArrow = new Arrow();
+            this.currentArrow = new Arrow(this);
             this.add(this.currentArrow);
             this.state.arrows.push(this.currentArrow);
             this.addToUpdateList(this.currentArrow);

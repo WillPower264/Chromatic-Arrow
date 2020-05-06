@@ -2,14 +2,17 @@ import { Group, Vector3, CylinderGeometry, MeshBasicMaterial, Mesh} from 'three'
 import CONSTS from '../../../constants';
 
 class Arrow extends Group {
-    constructor() {
+    constructor(parent) {
         // Call parent Group() constructor
         super();
+
+        this.parent = parent;
 
         this.name = 'arrow';
         this.mass = 10.0;
         this.netForce = new Vector3(0, 0, 0);
         this.hasCollided = false;
+        this.color = Math.random() * 0xffffff;
 
         this.fired = false; // behavior is different after arrow is fired
 
@@ -24,7 +27,7 @@ class Arrow extends Group {
         const { radius, height, radiusSegments } = CONSTS.arrow;
         this.halfLen = height / 2.0;
         const cylinder = new CylinderGeometry(radius, radius, height, radiusSegments);
-        const mat = new MeshBasicMaterial({ color: 0xEAC18B }); // tan
+        const mat = new MeshBasicMaterial({ color: this.color }); // tan
         const mesh = new Mesh(cylinder, mat);
         this.add(mesh);
     }
@@ -46,6 +49,7 @@ class Arrow extends Group {
         if (this.position.y < CONSTS.scene.groundPos + CONSTS.EPS) {
             this.hasCollided = true;
             this.position.y = CONSTS.scene.groundPos + CONSTS.EPS;
+            this.parent.addSplatterGround(this.position, this.color);
         }
     }
 
@@ -65,6 +69,7 @@ class Arrow extends Group {
             if (distTtoCam - distPtoCam > CONSTS.target.thickness / 2.0 + CONSTS.EPS) continue;
 
             targets[i].remove();
+            this.hasCollided = true;
             console.log('hit target');
             // this.hasCollided = true; // remove arrow after target hit
         }

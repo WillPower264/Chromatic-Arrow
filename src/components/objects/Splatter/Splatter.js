@@ -3,17 +3,20 @@ import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry.js'
 import SPLATTER from './splatter.png';
 
 class Splatter extends Group {
-    constructor(mesh, position, rotation, scale) {
+    constructor(mesh, position, rotation, scale, color) {
         // Call parent Group() constructor
         super();
 
         this.name = 'splatter';
         // Inspired by https://threejs.org/examples/webgl_decals.html
+        if (color === undefined) {
+          color = Math.random() * 0xffffff;
+        }
         const textureLoader = new TextureLoader();
         const splatter = textureLoader.load(SPLATTER);
         const decalMat = new MeshBasicMaterial({
           map: splatter,
-          color: Math.random() * 0xffffff,
+          color: color,
           transparent: true,
           depthTest: true,
   				depthWrite: false,
