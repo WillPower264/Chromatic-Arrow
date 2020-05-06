@@ -52,7 +52,8 @@ class Arrow extends Group {
 
     // wrapper to be called for all collisions
     handleCollisions() {
-        this.hasCollided || this.handleFloorCollision() || this.handleTargetCollision();
+        this.hasCollided || this.handleFloorCollision() ||
+          this.handleTargetCollision() || this.handleBarrierCollision();
     }
 
     handleFloorCollision() {
@@ -82,6 +83,51 @@ class Arrow extends Group {
             const targetPlane = new Plane(normal, dist);
             if (targetPlane.distanceToPoint(arrowTipPos) <= CONSTS.target.thickness + CONSTS.EPS) {
                 targets[i].remove();
+                this.hasCollided = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    handleBarrierCollision() {
+        const arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
+        const barriers = this.parent.state.barriers;
+        for (let i = 0; i < barriers.length; i++) {
+            const barrierPos = barriers[i].position;
+
+            // intersect barrier's bounding sphere
+            const halfW = CONSTS.barrier.width/2;
+            const halfH = CONSTS.barrier.height/2;
+            const halfDiagLen = Math.sqrt(halfW**2 + halfH**2);
+            if (barrierPos.distanceTo(arrowTipPos) > halfDiagLen) { continue; }
+
+            // travels at least far enough to hit target
+            const cameraPos = CONSTS.camera.position.clone();
+            const dist = -cameraPos.distanceTo(barrierPos);
+            const normal = cameraPos.sub(barrierPos).normalize();
+            const targetPlane = new Plane(normal, dist);
+            const eps = CONSTS.target.thickness + CONSTS.EPS;
+            if (targetPlane.distanceToPoint(arrowTipPos) <= eps) {
+                // Check y
+                if (arrowTipPos.y > barrierPos.y+halfH+eps ||
+                    arrowTipPos.y < barrierPos.y-halfH-eps) {
+                      continue;
+                }
+                // Check x/z
+                const vec = new Vector3(
+                  barrierPos.z, 0, -barrierPos.x
+                ).normalize().multiplyScalar(halfW); // Perp to normal vec
+                const right = barrierPos.clone().add(vec);
+                const left = barrierPos.clone().add(vec.multiplyScalar(-1));
+                if (arrowTipPos.x > right.x+halfH+eps ||
+                    arrowTipPos.x < left.x-halfH-eps ||
+                    arrowTipPos.z > right.z+halfH+eps ||
+                    arrowTipPos.z < left.z-halfH-eps) {
+                      continue;
+                }
+                console.log("barrier collision")
+                barriers[i].reveal();
                 this.hasCollided = true;
                 return true;
             }
