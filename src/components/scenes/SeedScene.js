@@ -19,6 +19,12 @@ class SeedScene extends Scene {
             numTargetsInUse: 0,
         };
 
+        // Firing arrow
+        this.isFiring = false;
+        this.direction = new Vector3();
+        this.beginFireStep = 0;
+        this.currentStep = 0;
+
         // Set background to a nice color
         this.background = new Color(backgroundColor);
 
@@ -81,6 +87,10 @@ class SeedScene extends Scene {
     update(timeStamp) {
         const { updateList } = this.state;
 
+        this.currentStep++;
+        this.beginFireStep = !this.isFiring ?
+            this.currentStep : this.beginFireStep;
+
         // Create targets if needed
         this.throttledCreateTarget();
 
@@ -91,9 +101,19 @@ class SeedScene extends Scene {
     }
 
     addEventListeners() {
-        window.addEventListener("click", () => {
-            this.arrow.fireArrow(new Vector3(0, 500, 500));
-            console.log(this.arrow.getWorldPosition(new Vector3()));
+        window.addEventListener("mousedown", () => {
+            this.isFiring = true;
+        }, false);
+
+        window.addEventListener("mouseup", () => {
+            const totalTime = this.currentStep - this.beginFireStep;
+            const factor = Math.min(totalTime*CONSTS.arrow.chargeRate, 1);
+            this.arrow.addForce(
+              this.direction.normalize().clone().multiplyScalar(
+                factor*CONSTS.arrow.maxForce
+              )
+            );
+            this.isFiring = false;
         }, false);
     }
 
