@@ -1,4 +1,4 @@
-import { Group, Vector3, CylinderGeometry, MeshBasicMaterial, Mesh, Plane } from 'three';
+import { Group, Vector3, CylinderGeometry, ConeGeometry, MeshBasicMaterial, Mesh, Plane } from 'three';
 import CONSTS from '../../../constants';
 
 class Arrow extends Group {
@@ -18,18 +18,31 @@ class Arrow extends Group {
 
         // 0,4,0 is completely on the camera.
         this.position.set(0, 4, 0);
+        // this.position.set(0, 3, 5); // testing to build arrow
         this.previous = this.position.clone();
 
         // direction the arrow points
         this.direction = CONSTS.directions.yAxis.clone();
 
+        // create arrow group
+        const arrowGroup = new Group();
+
         // create arrow body
         const { radius, height, radiusSegments } = CONSTS.arrow;
         this.halfLen = height / 2.0;
         const cylinder = new CylinderGeometry(radius, radius, height, radiusSegments);
-        const mat = new MeshBasicMaterial({ color: this.color }); // tan
+        const mat = new MeshBasicMaterial({ color: this.color }); // tan 0xEAC18B
         const mesh = new Mesh(cylinder, mat);
-        this.add(mesh);
+        arrowGroup.add(mesh);
+
+        // create arrow tip
+        const cone = new ConeGeometry(radius*2, height/10.0, radiusSegments);
+        const coneMat = new MeshBasicMaterial({ color: 0xFFFFFF});
+        const coneMesh = new Mesh(cone, coneMat);
+        coneMesh.position.set(0, this.halfLen, 0);
+        arrowGroup.add(coneMesh);
+
+        this.add(arrowGroup);
     }
 
     addForce(force) {
@@ -86,16 +99,20 @@ class Arrow extends Group {
             // intersect barrier's bounding sphere
             const halfW = CONSTS.barrier.width/2;
             const halfH = CONSTS.barrier.height/2;
-            const halfDiagLen = Math.sqrt(halfW**2 + halfH**2);
-            if (barrierPos.distanceTo(arrowTipPos) > halfDiagLen) { continue; }
+            const halfDiagLen = halfW**2 + halfH**2;
+            if (barrierPos.distanceToSquared(arrowTipPos) > halfDiagLen) {
+              continue;
+            }
 
             // travels at least far enough to hit target
             const cameraPos = CONSTS.camera.position.clone();
-            const dist = -cameraPos.distanceTo(barrierPos);
-            const normal = cameraPos.sub(barrierPos).normalize();
-            const targetPlane = new Plane(normal, dist);
+            const dist = Math.sqrt(barrierPos.x**2 + barrierPos.z**2);
+            const normal = new Vector3(
+              -barrierPos.x, 0, -barrierPos.z
+            ).normalize();
+            const barrierPlane = new Plane(normal, dist);
             const eps = CONSTS.target.thickness + CONSTS.EPS;
-            if (targetPlane.distanceToPoint(arrowTipPos) <= eps) {
+            if (barrierPlane.distanceToPoint(arrowTipPos) <= eps) {
                 // Check y
                 if (arrowTipPos.y > barrierPos.y+halfH+eps ||
                     arrowTipPos.y < barrierPos.y-halfH-eps) {
@@ -107,14 +124,20 @@ class Arrow extends Group {
                 ).normalize().multiplyScalar(halfW); // Perp to normal vec
                 const right = barrierPos.clone().add(vec);
                 const left = barrierPos.clone().add(vec.multiplyScalar(-1));
-                if (arrowTipPos.x > right.x+halfH+eps ||
-                    arrowTipPos.x < left.x-halfH-eps ||
-                    arrowTipPos.z > right.z+halfH+eps ||
-                    arrowTipPos.z < left.z-halfH-eps) {
+                const minX = right.x < left.x ? right.x : left.x;
+                const maxX = right.x < left.x ? left.x : right.x;
+                const minZ = right.z < left.z ? right.z : left.z;
+                const maxZ = right.z < left.z ? left.z : right.z;
+                if (arrowTipPos.x > maxX+halfH+eps ||
+                    arrowTipPos.x < minX-halfH-eps ||
+                    arrowTipPos.z > maxZ+halfH+eps ||
+                    arrowTipPos.z < minZ-halfH-eps) {
                       continue;
                 }
-                console.log("barrier collision")
-                barriers[i].reveal();
+                barriers[i].reveal()
+                this.parent.addSplatterBarrier(
+                  arrowTipPos.clone(), barriers[i], barrierPlane, this.color
+                );
                 this.hasCollided = true;
                 return true;
             }

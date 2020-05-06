@@ -90,12 +90,22 @@ class SeedScene extends Scene {
     }
 
     // TODO: scale by impact velocity
-    // TODO: make color match arrow color
     addSplatterGround(position, color) {
         const splat = new Splatter(
           this.ground.mesh, position, new Euler(-Math.PI/2, 0, 0), 1, color
         );
         this.add(splat.mesh);
+    }
+
+    // TODO: scale by impact velocity
+    addSplatterBarrier(position, barrier, plane, color) {
+        position = plane.projectPoint(position);
+        const rot = new Euler(0, Math.atan2(plane.normal.x, plane.normal.z), 0);
+        const splat = new Splatter(
+          barrier.children[0], position, rot, 1, color
+        );
+        barrier.attach(splat.mesh);
+        barrier.children[0].visible = false;
     }
 
     initializeBarriers() {
