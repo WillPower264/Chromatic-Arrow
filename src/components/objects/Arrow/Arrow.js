@@ -36,7 +36,9 @@ class Arrow extends Group {
 
     // wrapper to be called for all collisions
     handleCollisions() {
+        if (this.hasCollided) return;
         this.handleFloorCollision();
+        this.handleTargetCollision();
     }
 
     handleFloorCollision() {
@@ -44,6 +46,27 @@ class Arrow extends Group {
         if (this.position.y < CONSTS.scene.groundPos + CONSTS.EPS) {
             this.hasCollided = true;
             this.position.y = CONSTS.scene.groundPos + CONSTS.EPS;
+        }
+    }
+
+    handleTargetCollision() {
+        const arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
+        const targets = this.parent.state.targets;
+        for (let i = 0; i < this.parent.state.numTargetsInUse; i++) {
+            const targetPos = targets[i].position;
+
+            // intersect bounding sphere
+            if (targetPos.distanceTo(arrowTipPos) > CONSTS.target.radius) continue;
+
+            // travels at least far enough to hit target
+            // could be optional for efficiency
+            const distTtoCam = targetPos.distanceToSquared(CONSTS.camera.position);
+            const distPtoCam = arrowTipPos.distanceToSquared(CONSTS.camera.position);
+            if (distTtoCam - distPtoCam > CONSTS.target.thickness / 2.0 + CONSTS.EPS) continue;
+
+            targets[i].remove();
+            console.log('hit target');
+            // this.hasCollided = true; // remove arrow after target hit
         }
     }
 
