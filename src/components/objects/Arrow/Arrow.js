@@ -1,4 +1,4 @@
-import { Group, Vector3, CylinderGeometry, MeshBasicMaterial, Mesh, Plane } from 'three';
+import { Group, Vector3, CylinderGeometry, ConeGeometry, MeshBasicMaterial, Mesh, Plane } from 'three';
 import CONSTS from '../../../constants';
 
 class Arrow extends Group {
@@ -18,18 +18,31 @@ class Arrow extends Group {
 
         // 0,4,0 is completely on the camera.
         this.position.set(0, 4, 0);
+        // this.position.set(0, 3, 5); // testing to build arrow
         this.previous = this.position.clone();
 
         // direction the arrow points
         this.direction = CONSTS.directions.yAxis.clone();
 
+        // create arrow group
+        const arrowGroup = new Group();
+
         // create arrow body
         const { radius, height, radiusSegments } = CONSTS.arrow;
         this.halfLen = height / 2.0;
         const cylinder = new CylinderGeometry(radius, radius, height, radiusSegments);
-        const mat = new MeshBasicMaterial({ color: this.color }); // tan
+        const mat = new MeshBasicMaterial({ color: this.color }); // tan 0xEAC18B
         const mesh = new Mesh(cylinder, mat);
-        this.add(mesh);
+        arrowGroup.add(mesh);
+
+        // create arrow tip
+        const cone = new ConeGeometry(radius*2, height/10.0, radiusSegments);
+        const coneMat = new MeshBasicMaterial({ color: 0xFFFFFF});
+        const coneMesh = new Mesh(cone, coneMat);
+        coneMesh.position.set(0, this.halfLen, 0);
+        arrowGroup.add(coneMesh);
+
+        this.add(arrowGroup);
     }
 
     addForce(force) {
