@@ -63,9 +63,9 @@ class Target extends Group {
 
     remove() {
         const ind = this.parent.state.targets.indexOf(this);
+
         // This target isn't even in use
         if (ind >= this.parent.state.numTargetsInUse) { return; }
-
 
         // Remove this target from the scene
         this.parent.state.numTargetsInUse--;

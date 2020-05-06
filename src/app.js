@@ -20,7 +20,7 @@ const clock = new Clock();
 let isStarted = false;
 let scene;
 let sceneOrtho;
-let controls = new PlayerControls(camera, document.body);
+const controls = new PlayerControls(camera, document.body);
 
 // Title screen objects
 const startScene = new StartScene(0);
@@ -93,7 +93,7 @@ window.addEventListener('resize', windowResizeHandler, false);
 
 // Start game handler
 const startGameHandler = () => {
-  if (isStarted) return;
+  if (isStarted) { return; }
   startScene.clearText();
   startScene.dispose();
   scene = new SeedScene();
@@ -102,5 +102,6 @@ const startGameHandler = () => {
   const { innerHeight, innerWidth } = window;
   sceneOrtho = new InterfaceScene(innerWidth / 2, innerHeight / 2);
   isStarted = true;
+  window.removeEventListener('click', startGameHandler, false);
 };
 window.addEventListener('click', startGameHandler, false);

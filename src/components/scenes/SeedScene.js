@@ -145,9 +145,7 @@ class SeedScene extends Scene {
         }, false);
 
         window.addEventListener('keydown', () => {
-            console.log('removing');
             this.state.targets[0].remove();
-            console.log(this.state.numTargetsInUse);
         });
     }
 
