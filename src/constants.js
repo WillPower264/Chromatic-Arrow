@@ -16,7 +16,7 @@ const CONSTS = {
         width: 3,
         height: 3,
         spawn: {
-            innerRadius: 20,
+            innerRadius: 15,
             outerRadius: 30,
             minPhi: Math.PI / 4,        // angle down from y axis
             maxPhi: 11 * Math.PI / 24,  // angle down from y axis

@@ -79,7 +79,7 @@ class SeedScene extends Scene {
     }
 
     removeArrow(arrow) {
-        const len = this.state.arrows.length
+        const len = this.state.arrows.length;
         if (len === 0) { return; }
 
         // Swap the places so there is no hole
@@ -90,8 +90,8 @@ class SeedScene extends Scene {
     }
 
     initializeBarriers() {
-        _.times(CONSTS.scene.numBarriers, () => {
-            const barrier = new Barrier();
+        _.times(CONSTS.scene.numBarriers, (n) => {
+            const barrier = new Barrier(n);
             this.add(barrier);
             this.addToUpdateList(barrier);
             this.state.barriers.push(barrier);
@@ -157,7 +157,7 @@ class SeedScene extends Scene {
         }, false);
 
         window.addEventListener('keydown', () => {
-            this.state.targets[0].remove();
+            this.state.barriers[_.random(CONSTS.scene.numBarriers - 1)].reveal(Math.random() * 0xffffff);
         });
     }
 

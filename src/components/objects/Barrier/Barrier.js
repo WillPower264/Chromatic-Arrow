@@ -1,9 +1,9 @@
-import { Group, BoxGeometry, Mesh, MeshBasicMaterial, Spherical } from 'three';
+import { Group, BoxGeometry, Mesh, MeshBasicMaterial, Spherical, Color } from 'three';
 import CONSTS from '../../../constants';
 import _ from 'lodash';
 
 class Barrier extends Group {
-    constructor() {
+    constructor(n) {
         // Call parent Group() constructor
         super();
 
@@ -17,32 +17,50 @@ class Barrier extends Group {
             phiScale: _.random(basePhiScale * 0.5, basePhiScale * 1.5) * (_.random(0, 1) * 2 - 1),
         };
 
+        // Create invisible barrier with random position
         const { width, height } = CONSTS.barrier;
         const geometry = new BoxGeometry(width, height, 0.5);
-        const material = new MeshBasicMaterial({color: 0xffff00});
-        const sphere = new Mesh(geometry, material);
-        this.add(sphere);
-        this.setRandomPosition();
+        const material = new MeshBasicMaterial();
+        this.add(new Mesh(geometry, material));
+        this.visible = false;
+        this.setRandomPosition(n);
     }
 
-    setRandomPosition() {
+    setRandomPosition(n) {
+        // Calculate unique radius (so no intersections)
         const { innerRadius, outerRadius, minPhi, maxPhi, fullRotation } = CONSTS.barrier.spawn;
-        const radius = _.random(innerRadius, outerRadius);
+        const { numBarriers } = CONSTS.scene;
+        const bandWidth = (outerRadius - innerRadius) / numBarriers;
+        const radius = innerRadius + bandWidth * (n + 0.5);
+
+        // Randomize spherical coordinates and set position
         const phi = _.random(minPhi, maxPhi);
         const theta = _.random(0, fullRotation);
         this.position.setFromSphericalCoords(radius, phi, theta);
+
+        // Rotate to face camera
         this.rotateOnAxis(CONSTS.directions.yAxis.clone(), theta);
     }
 
+    reveal(color) {
+        // Give the mesh a color and reveal it
+        this.children[0].material.color = new Color(color || 'white');
+        this.visible = true;
+    }
+
     update(timestamp) {
-        const { minPhi, maxPhi } = CONSTS.barrier.spawn;
+        // Move in circle with sinusoidal vertical motion
         const spherical = new Spherical().setFromVector3(this.position);
         spherical.theta += this.state.thetaDelta;
-        spherical.theta %= 2 * Math.PI;
         spherical.phi += Math.sin(timestamp * this.state.phiPeriod) * this.state.phiScale;
-        if (spherical.phi < minPhi) { spherical.phi = minPhi; }
-        if (spherical.phi > maxPhi) { spherical.phi = maxPhi; }
+
+        // Validate coordinates
+        const { minPhi, maxPhi, fullRotation } = CONSTS.barrier.spawn;
+        spherical.theta %= fullRotation;
+        spherical.phi = _.clamp(spherical.phi, minPhi, maxPhi);
         this.position.setFromSpherical(spherical);
+
+        // Rotate to face camera
         this.rotateOnAxis(CONSTS.directions.yAxis.clone(), this.state.thetaDelta);
     }
 }
