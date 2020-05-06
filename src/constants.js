@@ -13,8 +13,8 @@ const CONSTS = {
         maxForce: 100000,
     },
     barrier: {
-        width: 3,
-        height: 3,
+        width: 6,
+        height: 6,
         spawn: {
             innerRadius: 15,
             outerRadius: 30,
@@ -24,7 +24,7 @@ const CONSTS = {
             fullRotation: 2 * Math.PI,
         },
         movement: {
-            baseTheta: 0.01,
+            baseTheta: 0.005,
             basePhiPeriod: 0.001,
             basePhiScale: 0.001,
         },

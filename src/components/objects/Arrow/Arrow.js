@@ -114,7 +114,7 @@ class Arrow extends Group {
                       continue;
                 }
                 console.log("barrier collision")
-                barriers[i].reveal();
+                barriers[i].reveal(this.color);
                 this.hasCollided = true;
                 return true;
             }
