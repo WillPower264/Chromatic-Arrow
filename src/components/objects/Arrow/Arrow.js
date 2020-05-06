@@ -11,6 +11,7 @@ class Arrow extends Group {
         this.name = 'arrow';
         this.mass = 10.0;
         this.netForce = new Vector3(0, 0, 0);
+        this.hasCollided = false;
 
         this.fired = false; // behavior is different after arrow is fired
 
@@ -41,8 +42,10 @@ class Arrow extends Group {
 
     handleFloorCollision() {
         // can do something more sophisticated, maybe
-        if (this.position.y < CONSTS.scene.groundPos + CONSTS.EPS)
+        if (this.position.y < CONSTS.scene.groundPos + CONSTS.EPS) {
+            this.hasCollided = true;
             this.position.y = CONSTS.scene.groundPos + CONSTS.EPS;
+        }
     }
 
     // rotate arrow to point in the direction of v

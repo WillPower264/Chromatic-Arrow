@@ -18,6 +18,7 @@ class SeedScene extends Scene {
             targets: [],
             numTargetsInUse: 0,
             barriers: [],
+            arrows: []
         };
 
         // Firing arrow
@@ -30,9 +31,10 @@ class SeedScene extends Scene {
         this.background = new Color(backgroundColor);
 
         // Set arrow and add, add to update list
-        this.arrow = new Arrow();
-        this.add(this.arrow);
-        this.addToUpdateList(this.arrow);
+        this.currentArrow = new Arrow();
+        this.add(this.currentArrow);
+        this.state.arrows.push(this.currentArrow);
+        this.addToUpdateList(this.currentArrow);
 
         // Set up targets
         this.initializeTargets();
@@ -76,16 +78,15 @@ class SeedScene extends Scene {
         });
     }
 
-    removeTarget(target) {
-        // This should be impossible
-        if (this.state.numTargetsInUse === 0) { return; }
+    removeArrow(arrow) {
+        const len = this.state.arrows.length
+        if (len === 0) { return; }
 
         // Swap the places so there is no hole
-        const ind = this.state.targets.indexOf(target);
-        this.state.numTargetsInUse--;
-        this.state.targets[ind] = this.state.targets[this.state.numTargetsInUse];
-        this.state.targets[this.state.numTargetsInUse] = new Target();
-        this.remove(target);
+        const ind = this.state.arrows.indexOf(arrow);
+        this.state.arrows[ind] = this.state.arrows[len-1];
+        this.state.arrows.pop();
+        this.remove(arrow);
     }
 
     initializeBarriers() {
@@ -100,9 +101,17 @@ class SeedScene extends Scene {
     update(timeStamp) {
         const { updateList } = this.state;
 
+        // Firing arrow
         this.currentStep++;
         this.beginFireStep = !this.isFiring ?
             this.currentStep : this.beginFireStep;
+
+        // Arrow collisions
+        for (let i = this.state.arrows.length-1; i >= 0; i--) {
+            if (this.state.arrows[i].hasCollided) {
+                this.removeArrow(this.state.arrows[i]);
+            }
+        }
 
         // Create targets if needed
         this.throttledCreateTarget();
@@ -119,13 +128,19 @@ class SeedScene extends Scene {
         }, false);
 
         window.addEventListener("mouseup", () => {
+            // Shoot this arrow
             const totalTime = this.currentStep - this.beginFireStep;
             const factor = Math.min(totalTime*CONSTS.arrow.chargeRate, 1);
-            this.arrow.addForce(
+            this.currentArrow.addForce(
               this.direction.normalize().clone().multiplyScalar(
                 factor*CONSTS.arrow.maxForce
               )
             );
+            // Create new arrow
+            this.currentArrow = new Arrow();
+            this.add(this.currentArrow);
+            this.state.arrows.push(this.currentArrow);
+            this.addToUpdateList(this.currentArrow);
             this.isFiring = false;
         }, false);
     }
