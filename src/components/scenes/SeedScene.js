@@ -105,8 +105,7 @@ class SeedScene extends Scene {
 
     addEventListeners() {
         window.addEventListener("click", () => {
-            this.arrow.setVelocity(new Vector3(0, 200, 500));
-            // this.arrow.addForce(new Vector3(0, 2, 5));
+            this.arrow.fireArrow(new Vector3(0, 500, 500));
             console.log(this.arrow.getWorldPosition(new Vector3()));
         }, false);
     }
@@ -125,7 +124,7 @@ class SeedScene extends Scene {
         // ground mesh
         ground.geometry = new PlaneBufferGeometry(500, 500);
         ground.mesh = new Mesh(ground.geometry, ground.material);
-        ground.mesh.position.y = 0;
+        ground.mesh.position.y = CONSTS.scene.groundPos;
         ground.mesh.rotation.x = -Math.PI / 2;
         ground.mesh.receiveShadow = true;
 

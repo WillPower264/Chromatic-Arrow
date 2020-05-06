@@ -1,9 +1,13 @@
 import { Vector3 } from 'three';
 
 const CONSTS = {
+    EPS: 0.0001,
     // keep these top level objects in alphabetical order
     arrow: {
-
+        damping: 0.03,
+        radius: 0.02,
+        height: 1.0,
+        radiusSegments: 8,
     },
     barrier: {
         width: 3,
@@ -40,6 +44,7 @@ const CONSTS = {
         maxTargets: 10,
         msBetweenTargets: 5 * 1000,
         numBarriers: 10,
+        groundPos: 0,
     },
     target: {
         ringSize: 0.5,              // total radius is 5

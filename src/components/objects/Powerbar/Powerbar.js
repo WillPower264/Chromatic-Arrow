@@ -63,8 +63,7 @@ class Powerbar extends Group {
       this.position.x = width - this.initWidth/2 - this.buffer;
       this.position.y = -height + this.initHeight/2 + this.buffer;
       if (this.isFilling && this.bar.scale.x < this.initWidth) {
-        const currWidth = this.bar.scale.x;
-        this.bar.scale.setX(currWidth+this.step);
+        this.bar.scale.x += this.step;
         this.bar.position.x -= this.step/2;
       }
     }
