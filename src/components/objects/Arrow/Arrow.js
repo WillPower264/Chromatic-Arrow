@@ -24,25 +24,20 @@ class Arrow extends Group {
         // direction the arrow points
         this.direction = CONSTS.directions.yAxis.clone();
 
-        // create arrow group
-        const arrowGroup = new Group();
-
         // create arrow body
         const { radius, height, radiusSegments } = CONSTS.arrow;
         this.halfLen = height / 2.0;
         const cylinder = new CylinderGeometry(radius, radius, height, radiusSegments);
         const mat = new MeshBasicMaterial({ color: this.color }); // tan 0xEAC18B
         const mesh = new Mesh(cylinder, mat);
-        arrowGroup.add(mesh);
+        this.add(mesh);
 
         // create arrow tip
         const cone = new ConeGeometry(radius*2, height/10.0, radiusSegments);
         const coneMat = new MeshBasicMaterial({ color: 0xFFFFFF});
         const coneMesh = new Mesh(cone, coneMat);
         coneMesh.position.set(0, this.halfLen, 0);
-        arrowGroup.add(coneMesh);
-
-        this.add(arrowGroup);
+        this.add(coneMesh);
     }
 
     addForce(force) {
