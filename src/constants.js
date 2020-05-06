@@ -5,6 +5,23 @@ const CONSTS = {
     arrow: {
 
     },
+    barrier: {
+        width: 3,
+        height: 3,
+        spawn: {
+            innerRadius: 20,
+            outerRadius: 30,
+            minPhi: Math.PI / 4,        // angle down from y axis
+            maxPhi: 11 * Math.PI / 24,  // angle down from y axis
+            halfRotation: Math.PI,
+            fullRotation: 2 * Math.PI,
+        },
+        movement: {
+            baseTheta: 0.01,
+            basePhiPeriod: 0.001,
+            basePhiScale: 0.001,
+        },
+    },
     camera: {
         position: new Vector3(0, 2, 0),
         initialDirection: new Vector3(0, 2, 1), // +z axis
@@ -20,8 +37,9 @@ const CONSTS = {
     scene: {
         backgroundColor: 0x7ec0ee,
         groundColor: 0x091200,
-        maxTargets: 5,
+        maxTargets: 10,
         msBetweenTargets: 5 * 1000,
+        numBarriers: 10,
     },
     target: {
         ringSize: 0.5,              // total radius is 5
@@ -34,7 +52,7 @@ const CONSTS = {
             0x221E20, // black
             0xFFFFFF, // white
         ],
-        radiusSegments: 16,             // more segments = rounder target
+        radiusSegments: 32,             // more segments = rounder target
         spawn: {
             innerRadius: 30,
             outerRadius: 40,

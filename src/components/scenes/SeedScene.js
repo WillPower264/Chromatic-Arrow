@@ -1,5 +1,5 @@
 import { Scene, Color, MeshStandardMaterial, Mesh, PlaneBufferGeometry, Vector3 } from 'three';
-import { Arrow, Target } from 'objects';
+import { Arrow, Target, Barrier } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
 import CONSTS from '../../constants';
@@ -17,6 +17,7 @@ class SeedScene extends Scene {
             updateList: [],
             targets: [],
             numTargetsInUse: 0,
+            barriers: [],
         };
 
         // Set background to a nice color
@@ -29,6 +30,9 @@ class SeedScene extends Scene {
 
         // Set up targets
         this.initializeTargets();
+
+        // Set up barriers
+        this.initializeBarriers();
 
         // Add meshes to scene
         this.initializeGround();
@@ -76,6 +80,15 @@ class SeedScene extends Scene {
         this.state.targets[ind] = this.state.targets[this.state.numTargetsInUse];
         this.state.targets[this.state.numTargetsInUse] = new Target();
         this.remove(target);
+    }
+
+    initializeBarriers() {
+        _.times(CONSTS.scene.numBarriers, () => {
+            const barrier = new Barrier();
+            this.add(barrier);
+            this.addToUpdateList(barrier);
+            this.state.barriers.push(barrier);
+        });
     }
 
     update(timeStamp) {
