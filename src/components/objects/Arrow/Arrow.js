@@ -9,13 +9,13 @@ class Arrow extends Group {
         super();
 
         this.name = 'arrow';
-        this.mass = 10.0; 
+        this.mass = 10.0;
         this.netForce = new Vector3(0, 0, 0);
 
         this.fired = false; // behavior is different after arrow is fired
 
-        // 0,4,0 is completely on the camera. 
-        this.position.set(0, 4, 0); 
+        // 0,4,0 is completely on the camera.
+        this.position.set(0, 4, 0);
         this.previous = this.position.clone();
 
         // direction the arrow points
@@ -24,21 +24,13 @@ class Arrow extends Group {
         // create arrow body
         const { radius, height, radiusSegments } = CONSTS.arrow;
         const cylinder = new CylinderGeometry(radius, radius, height, radiusSegments);
-        const mat = new MeshBasicMaterial({ color: 0xEAC18B }); // tan 
+        const mat = new MeshBasicMaterial({ color: 0xEAC18B }); // tan
         const mesh = new Mesh(cylinder, mat);
         this.add(mesh);
     }
 
-    fireArrow(v) {
-        this.fired = true;
-        this.setVelocity(v);
-    }
-    
-    setVelocity(v) {
-        this.previous = this.position.clone().sub(v.multiplyScalar(1/1000));
-    }
-
     addForce(force) {
+        this.fired = true;
         this.netForce.add(force);
     }
 
@@ -82,12 +74,12 @@ class Arrow extends Group {
         // apply physics after arrow fired
         if (this.fired) {
             // gravity; should be in a different file?
-            const gravForce = new Vector3(0, -20, 0)
-            this.addForce(gravForce.multiplyScalar(this.mass))
+            const gravForce = new Vector3(0, -20, 0);
+            this.addForce(gravForce.multiplyScalar(this.mass));
 
             this.integrate(deltaT);
 
-            this.pointToward(this.position.clone().sub(this.previous))
+            this.pointToward(this.position.clone().sub(this.previous));
         }
         else {
             // const direction = new Vector3(0);

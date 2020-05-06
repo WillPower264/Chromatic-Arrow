@@ -16,14 +16,15 @@ const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 const clock = new Clock();
 
-// Title screen objects
-const startScene = new StartScene(0);
-
 // Game objects
 let isStarted = false;
 let scene;
 let sceneOrtho;
-let controls;
+let controls = new PlayerControls(camera, document.body);
+
+// Title screen objects
+const startScene = new StartScene(0);
+startScene.add(controls.getObject());
 
 // Set up camera
 camera.position.copy(CONSTS.camera.position);
@@ -60,6 +61,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     renderer.clearDepth();
     renderer.render(sceneOrtho, cameraOrtho);
     scene.update && scene.update(timeStamp);
+    camera.getWorldDirection(scene.direction);
     sceneOrtho.update && sceneOrtho.update(
       cameraOrtho.right, cameraOrtho.top, timeStamp
     );
@@ -96,7 +98,6 @@ const startGameHandler = () => {
   startScene.dispose();
   scene = new SeedScene();
   // Set up controls
-  controls = new PlayerControls(camera, document.body);
   scene.add(controls.getObject());
   const { innerHeight, innerWidth } = window;
   sceneOrtho = new InterfaceScene(innerWidth / 2, innerHeight / 2);

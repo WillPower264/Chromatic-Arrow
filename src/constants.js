@@ -5,9 +5,12 @@ const CONSTS = {
     // keep these top level objects in alphabetical order
     arrow: {
         damping: 0.03,
-        radius: 0.02,
+        //radius: 0.02,
+        radius: 2, // TODO: Debug...remove when tracking exists
         height: 1.0,
         radiusSegments: 8,
+        chargeRate: 0.01,
+        maxForce: 100000,
     },
     barrier: {
         width: 3,

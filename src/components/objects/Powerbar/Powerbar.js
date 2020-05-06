@@ -1,4 +1,5 @@
 import { Group, PlaneGeometry, Mesh, MeshBasicMaterial, Sprite } from 'three';
+import CONSTS from '../../../constants';
 
 class Powerbar extends Group {
     constructor(width, height) {
@@ -11,7 +12,7 @@ class Powerbar extends Group {
         this.buffer = 25;
         this.isFilling = false;
         this.bar = undefined;
-        this.step = width / 100;
+        this.step = width*CONSTS.arrow.chargeRate;
         const edgeThickness = 5;
 
         // Bar
