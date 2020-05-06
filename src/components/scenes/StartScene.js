@@ -78,7 +78,7 @@ class StartScene extends Scene {
           const randOffset = new Vector3(rx, ry, 0);
           const pos = this.screen.position.clone().add(randOffset);
           const size = this.minSize + Math.random()*(this.maxSize-this.minSize);
-          const rot = new Euler(0, 0, Math.random()*2*Math.PI);
+          const rot = new Euler();
           const splat = new Splatter(this.screen, pos, rot, size);
           this.add(splat.mesh);
           this.splatterCount++;

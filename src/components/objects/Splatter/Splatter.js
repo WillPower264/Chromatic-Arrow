@@ -20,6 +20,8 @@ class Splatter extends Group {
   				polygonOffset: true,
   				polygonOffsetFactor: -4
         });
+        rotation.z = Math.random()*2*Math.PI;
+        console.log(rotation)
         const decalGeom = new DecalGeometry(
           mesh, position, rotation, new Vector3(scale,scale,scale)
         );
