@@ -32,7 +32,7 @@ class Wind extends Group {
     createCurve(direction) {
         direction.normalize();
         let currPos = new Vector3(
-          2*(Math.random()-0.5), Math.random()-0.5, 2*(Math.random()-0.5)
+          2*(Math.random()-0.5), 0.75*(Math.random()-0.2), 2*(Math.random()-0.5)
         );
         currPos.add(CONSTS.camera.position.clone());
         // Bias slightly away from direction of motion
@@ -58,7 +58,7 @@ class Wind extends Group {
         currPos.y -= CONSTS.wind.loopRad;
         ps.push(currPos.clone());
         // Add tail at end
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 1; i++) {
             currPos.add(direction.clone().multiplyScalar(CONSTS.wind.pathStep/2));
             currPos.y += CONSTS.wind.loopRad/2;
             ps.push(currPos.clone());
