@@ -43,6 +43,11 @@ const CONSTS = {
         near: 1,    // for orthographic camera
         far: 10,    // for orthographic camera
     },
+    crosshairs: {
+        thickness: 1,
+        size: 25,
+        color: 0x999999,
+    },
     directions: {
         // make sure you don't change these! use .clone()
         xAxis: new Vector3(1, 0, 0),

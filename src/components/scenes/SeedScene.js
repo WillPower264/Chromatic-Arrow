@@ -163,7 +163,6 @@ class SeedScene extends Scene {
 
         // Call update for each object in the updateList
         const len = updateList.length;
-        console.log(updateList)
         for (let i = len-1; i >= 0; i--) {
             const obj = updateList[i];
             if (obj.isDone()) {
@@ -172,7 +171,6 @@ class SeedScene extends Scene {
                 obj.update(timeStamp);
             }
         }
-        console.log(updateList.length)
     }
 
     addEventListeners() {
