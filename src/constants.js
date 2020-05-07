@@ -85,7 +85,6 @@ const CONSTS = {
         thickness: 0.02,
         loopRad: 0.005,
         pathStep: 0.05,
-        pathAmp: 1,
     },
 };
 

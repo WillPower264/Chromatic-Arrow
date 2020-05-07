@@ -73,10 +73,11 @@ class Wind extends Group {
         geom.setAttribute(
           'position', new BufferAttribute(geom.vertices, 3)
         );
-        // Fit to curve
+        // Fit to curve. Referenced:
+        // https://discourse.threejs.org/t/create-a-curved-plane-surface-which-dynamically-changes-its-size/6161/10
         const points = curve.getPoints(CONSTS.wind.nPoints);
-        var normal = new Vector3(0, 0, 0);
-        var binormal = new Vector3(0, 1, 0);
+        const normal = new Vector3(0, 0, 0);
+        const binormal = new Vector3(0, 1, 0);
         let stepIdx = 0;
         for (let j = 0; j <= CONSTS.wind.nPoints; j++) {
           const tangent = curve.getTangent(j / CONSTS.wind.nPoints);
