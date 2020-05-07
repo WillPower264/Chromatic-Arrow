@@ -2,15 +2,22 @@ import { Vector3 } from 'three';
 
 const CONSTS = {
     EPS: 0.0001,
+    fullRotation: 2 * Math.PI,
     // keep these top level objects in alphabetical order
     arrow: {
+        deltaT: 18 / 1000,
+        gravity: new Vector3(0, -100, 0),
+        position: new Vector3(0, 4, 0),
         damping: 0.03,
+        mass: 10,
         radius: 0.02,
-        // radius: 0.1, // TODO: Debug...remove when tracking exists
         height: 1.0,
         radiusSegments: 8,
         chargeRate: 0.01,
         maxForce: 100000,
+        tipColor: 0xFFFFFF,
+        featherColor: 0xFFFFFF,
+        numFeathers: 3,
     },
     barrier: {
         width: 6,
