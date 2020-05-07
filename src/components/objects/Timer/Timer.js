@@ -1,15 +1,16 @@
 import { RingGeometry, Group, Mesh, MeshBasicMaterial, PlaneGeometry, Vector3 } from 'three';
+import CONSTS from '../../../constants';
 
 class Timer extends Group {
-    constructor(maxSec) {
+    constructor(creationTime) {
         // Call parent Group() constructor
         super();
 
         this.name = 'timer';
-        this.maxTime = maxSec;
         this.buffer = 25;
         const rad = 40;
         this.initRad = rad;
+        this.creationTime = creationTime;
 
         // Circle
         const cirGeometry = new RingGeometry(0.9*rad, rad, 32);
@@ -32,8 +33,9 @@ class Timer extends Group {
         this.addEventListeners();
     }
 
-    update(timestamp) {
-      const angle = (timestamp*2*Math.PI) / (this.maxTime * 1000);
+    update(timeStamp) {
+      const time = timeStamp - this.creationTime;
+      const angle = (time*2*Math.PI) / CONSTS.msTimeLimit;
       this.rotation.z = -angle;
     }
 

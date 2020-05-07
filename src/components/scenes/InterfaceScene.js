@@ -2,7 +2,7 @@ import { Scene } from 'three';
 import { Crosshairs, Powerbar, Timer } from 'objects';
 
 class InterfaceScene extends Scene {
-    constructor(width, height) {
+    constructor(width, height, creationTime) {
         // Call parent Scene() constructor
         super();
 
@@ -21,7 +21,7 @@ class InterfaceScene extends Scene {
         const cross = new Crosshairs();
         this.add(cross);
 
-        const timer = new Timer(60);
+        const timer = new Timer(creationTime);
         timer.update(width, height, 0);
         this.add(timer);
         this.addToUpdateList(timer);
