@@ -1,4 +1,4 @@
-import { Group, Vector3, MeshBasicMaterial, CylinderGeometry, Mesh, Spherical } from 'three';
+import { Group, Vector3, MeshBasicMaterial, CylinderGeometry, Mesh, Spherical, Line3 } from 'three';
 import _ from 'lodash';
 import CONSTS from '../../../constants';
 
@@ -61,6 +61,16 @@ class Target extends Group {
         this.position.copy(pos);
     }
 
+    // 1 for outer ring, 5 for inner circle, < 1 if missed target
+    getScore(pos) {
+        const { colors, ringSize } = CONSTS.target;
+        const line = new Line3(this.position, CONSTS.camera.position);
+        const closest = new Vector3();
+        line.closestPointToPoint(pos, true, closest);
+        const dist = pos.distanceTo(closest);
+        return colors.length - Math.floor(dist / ringSize);
+    }
+
     remove() {
         const ind = this.parent.state.targets.indexOf(this);
 
@@ -72,8 +82,6 @@ class Target extends Group {
         this.parent.state.targets[ind] = this.parent.state.targets[this.parent.state.numTargetsInUse];
         this.parent.state.targets[this.parent.state.numTargetsInUse] = new Target(this.parent);
         this.parent.remove(this);
-
-        // Increase score?
     }
 }
 

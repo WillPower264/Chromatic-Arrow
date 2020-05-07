@@ -8,6 +8,7 @@ class InterfaceScene extends Scene {
 
         this.state = {
             updateList: [],
+            score: 0,
         };
 
         // Interface objects
@@ -45,6 +46,10 @@ class InterfaceScene extends Scene {
         }, false);
         window.addEventListener("mouseup", () => {
           this.pbar.stopFill();
+        }, false);
+        window.addEventListener('addScore', (e) => {
+            this.state.score += e.detail.score;
+            console.log(`score: ${this.state.score}`);
         }, false);
     }
 }

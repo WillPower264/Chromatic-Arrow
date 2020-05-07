@@ -88,18 +88,17 @@ class Arrow extends Group {
         const arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
         const targets = this.parent.state.targets;
         for (let i = 0; i < this.parent.state.numTargetsInUse; i++) {
-            const targetPos = targets[i].position;
+            const target = targets[i];
+            const { position, plane } = target;
 
             // intersect target's bounding sphere
-            if (targetPos.distanceTo(arrowTipPos) > CONSTS.target.radius) { continue; }
+            if (position.distanceTo(arrowTipPos) > CONSTS.target.radius) { continue; }
 
             // travels at least far enough to hit target
-            const cameraPos = CONSTS.camera.position.clone();
-            const dist = -cameraPos.distanceTo(targetPos);
-            const normal = cameraPos.sub(targetPos).normalize();
-            const targetPlane = new Plane(normal, dist);
-            if (targetPlane.distanceToPoint(arrowTipPos) <= CONSTS.target.thickness + CONSTS.EPS) {
-                targets[i].remove();
+            const score = target.getScore(arrowTipPos);
+            if (score > 0) {
+                window.dispatchEvent(new CustomEvent('addScore', {detail: {score}}));
+                target.remove();
                 this.hasCollided = true;
                 return true;
             }
