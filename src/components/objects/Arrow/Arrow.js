@@ -197,6 +197,10 @@ class Arrow extends Group {
         this.netForce.set(0, 0, 0);
     }
 
+    isDone() {
+        return this.hasCollided;
+    }
+
     //
     update(timeStamp) {
         const { gravity, mass } = CONSTS.arrow.movement;

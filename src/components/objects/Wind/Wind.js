@@ -126,11 +126,11 @@ class Wind extends Group {
     }
 
     setVisibility() {
-        const len = this.isDoneTracing() ? 0 : CONSTS.wind.shownLength*6;
+        const len = this.isDone() ? 0 : CONSTS.wind.shownLength*6;
         this.geom.setDrawRange(this.currStart, len);
     }
 
-    isDoneTracing() {
+    isDone() {
         return this.currStart + CONSTS.wind.shownLength*6 >=
                  this.geom.attributes.position.count;
     }

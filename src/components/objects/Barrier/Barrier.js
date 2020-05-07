@@ -48,6 +48,11 @@ class Barrier extends Group {
         this.visible = true;
     }
 
+    // Barriers always exist
+    isDone() {
+        return false;
+    }
+
     update(timestamp) {
         // Move in circle with sinusoidal vertical motion
         const spherical = new Spherical().setFromVector3(this.position);

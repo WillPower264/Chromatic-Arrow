@@ -20,7 +20,6 @@ class SeedScene extends Scene {
             targets: [],
             numTargetsInUse: 0,
             barriers: [],
-            arrows: [],
         };
 
         // Firing arrow
@@ -35,7 +34,6 @@ class SeedScene extends Scene {
         // Set arrow and add, add to update list
         this.currentArrow = new Arrow(this);
         this.add(this.currentArrow);
-        this.state.arrows.push(this.currentArrow);
         this.addToUpdateList(this.currentArrow);
 
         // Set up targets
@@ -93,15 +91,13 @@ class SeedScene extends Scene {
         });
     }
 
-    removeArrow(arrow) {
-        const len = this.state.arrows.length;
-        if (len === 0) { return; }
-
+    removeObj(obj) {
         // Swap the places so there is no hole
-        const ind = this.state.arrows.indexOf(arrow);
-        this.state.arrows[ind] = this.state.arrows[len-1];
-        this.state.arrows.pop();
-        this.remove(arrow);
+        const len = this.state.updateList.length;
+        const ind = this.state.updateList.indexOf(obj);
+        this.state.updateList[ind] = this.state.updateList[len-1];
+        this.state.updateList.pop();
+        this.remove(obj);
     }
 
     // TODO: scale by impact velocity
@@ -141,22 +137,23 @@ class SeedScene extends Scene {
         this.beginFireStep = !this.isFiring ?
             this.currentStep : this.beginFireStep;
 
-        // Arrow collisions
-        for (let i = this.state.arrows.length-1; i >= 0; i--) {
-            if (this.state.arrows[i].hasCollided) {
-                this.removeArrow(this.state.arrows[i]);
-            }
-        }
-
         // Create targets if needed
         this.throttledCreateTarget();
 
         this.throttledCreateWind();
 
         // Call update for each object in the updateList
-        for (const obj of updateList) {
-            obj.update(timeStamp);
+        const len = updateList.length;
+        console.log(updateList)
+        for (let i = len-1; i >= 0; i--) {
+            const obj = updateList[i];
+            if (obj.isDone()) {
+                this.removeObj(obj);
+            } else {
+                obj.update(timeStamp);
+            }
         }
+        console.log(updateList.length)
     }
 
     addEventListeners() {
@@ -176,7 +173,6 @@ class SeedScene extends Scene {
             // Create new arrow
             this.currentArrow = new Arrow(this);
             this.add(this.currentArrow);
-            this.state.arrows.push(this.currentArrow);
             this.addToUpdateList(this.currentArrow);
             this.isFiring = false;
         }, false);
