@@ -169,7 +169,10 @@ class SeedScene extends Scene {
             if (obj.isDone()) {
                 this.removeObj(obj);
             } else {
-                obj.update(timeStamp);
+                const windForce = this.windVec.clone().multiplyScalar(
+                  this.windSpeed
+                );
+                obj.update(timeStamp, windForce);
             }
         }
     }

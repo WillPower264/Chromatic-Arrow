@@ -15,10 +15,11 @@ const CONSTS = {
         movement: {
             deltaT: 18 / 1000,
             damping: 0.03,
-            gravity: new Vector3(0, -100, 0),
+            gravity: new Vector3(0, -10, 0),
+            forceFactor: 10,
             mass: 10,
             chargeRate: 0.01,
-            maxForce: 100000,
+            maxForce: 80000,
         },
     },
     barrier: {
