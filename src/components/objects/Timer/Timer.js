@@ -1,4 +1,4 @@
-import { BufferGeometry,  RingGeometry, Group, Mesh, MeshBasicMaterial, PlaneGeometry, Vector3 } from 'three';
+import { RingGeometry, Group, Mesh, MeshBasicMaterial, PlaneGeometry, Vector3 } from 'three';
 
 class Timer extends Group {
     constructor(maxSec) {
@@ -15,7 +15,7 @@ class Timer extends Group {
         const cirGeometry = new RingGeometry(0.9*rad, rad, 32);
         const cirMaterial = new MeshBasicMaterial({ color: 0x000000 });
         const cirMesh = new Mesh(cirGeometry, cirMaterial);
-      	this.add(cirMesh);
+        this.add(cirMesh);
 
         // Line
         const points = [];
@@ -28,13 +28,23 @@ class Timer extends Group {
         linMesh.position.y += rad/2;
         this.line = linMesh;
         this.add(linMesh);
+
+        this.addEventListeners();
     }
 
-    update(width, height, timestamp) {
+    update(timestamp) {
       const angle = (timestamp*2*Math.PI) / (this.maxTime * 1000);
       this.rotation.z = -angle;
-      this.position.x = width - this.initRad - this.buffer;
-      this.position.y = height - this.initRad - this.buffer;
+    }
+
+    windowResizeHandler() {
+      this.position.x = window.innerWidth / 2 - this.initRad - this.buffer;
+      this.position.y = window.innerHeight / 2 - this.initRad - this.buffer;
+    }
+
+    addEventListeners() {
+      this.windowResizeHandler();
+      window.addEventListener('resize', () => this.windowResizeHandler(), false);
     }
 }
 

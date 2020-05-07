@@ -1,4 +1,5 @@
 import { Group, PlaneGeometry, Mesh, MeshBasicMaterial } from 'three';
+import CONSTS from '../../../constants';
 
 class Crosshairs extends Group {
     constructor() {
@@ -6,9 +7,10 @@ class Crosshairs extends Group {
         super();
 
         this.name = 'crosshairs';
-        const vert = new PlaneGeometry(1, 25);
-        const hor = new PlaneGeometry(25, 1);
-        const material = new MeshBasicMaterial( {color: 0x999999} );
+        const { thickness, size, color } = CONSTS.crosshairs;
+        const vert = new PlaneGeometry(thickness, size);
+        const hor = new PlaneGeometry(size, thickness);
+        const material = new MeshBasicMaterial({color});
         this.add(new Mesh(vert, material));
         this.add(new Mesh(hor, material));
     }

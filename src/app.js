@@ -62,9 +62,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     renderer.render(sceneOrtho, cameraOrtho);
     scene.update && scene.update(timeStamp);
     camera.getWorldDirection(scene.direction);
-    sceneOrtho.update && sceneOrtho.update(
-      cameraOrtho.right, cameraOrtho.top, timeStamp
-    );
+    sceneOrtho.update && sceneOrtho.update(timeStamp);
   } else {
     renderer.render(startScene, camera);
     startScene.update && startScene.update(timeStamp);
@@ -79,7 +77,6 @@ const windowResizeHandler = () => {
   renderer.setSize(innerWidth, innerHeight);
   camera.aspect = innerWidth / innerHeight;
   camera.updateProjectionMatrix();
-  console.log(camera.getFilmHeight());
 
   // Update ortho camera
   cameraOrtho.left = -innerWidth / 2;

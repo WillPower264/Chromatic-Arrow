@@ -1,4 +1,4 @@
-import { Group, PlaneGeometry, Mesh, MeshBasicMaterial, Sprite } from 'three';
+import { Group, PlaneGeometry, Mesh, MeshBasicMaterial } from 'three';
 import CONSTS from '../../../constants';
 
 class Powerbar extends Group {
@@ -48,6 +48,8 @@ class Powerbar extends Group {
         const mesh4 = new Mesh(e4, mat4);
         mesh4.position.x -= width/2;
         this.add(mesh4);
+
+        this.addEventListeners();
     }
 
     beginFill() {
@@ -60,14 +62,23 @@ class Powerbar extends Group {
       this.bar.position.setX(this.initWidth/2);
     }
 
-    update(width, height, timestamp) {
-      this.position.x = width - this.initWidth/2 - this.buffer;
-      this.position.y = -height + this.initHeight/2 + this.buffer;
+    update() {
       if (this.isFilling && this.bar.scale.x < this.initWidth) {
         this.bar.scale.x += this.step;
         this.bar.position.x -= this.step/2;
       }
     }
+
+    windowResizeHandler() {
+      this.position.x = window.innerWidth / 2 - this.initWidth/2 - this.buffer;
+      this.position.y = -window.innerHeight / 2 + this.initHeight/2 + this.buffer;
+    }
+
+    addEventListeners() {
+      this.windowResizeHandler();
+      window.addEventListener('resize', () => this.windowResizeHandler(), false);
+    }
+
 }
 
 export default Powerbar;
