@@ -68,6 +68,13 @@ class SeedScene extends Scene {
         this.state.updateList.push(object);
     }
 
+    removeFromUpdateList(object) {
+        const { updateList } = this.state;
+        const ind = updateList.indexOf(object);
+        if (ind === -1) { return; }
+        updateList.splice(ind, 1);
+    }
+
     createTarget() {
         // Check how many targets are in use
         if (this.state.numTargetsInUse >= CONSTS.scene.maxTargets) { return; }
@@ -77,6 +84,13 @@ class SeedScene extends Scene {
         target.faceCenter();
         this.state.numTargetsInUse++;
         this.add(target);
+        if (CONSTS.target.disappearing) {
+            _.delay(() => {
+                if (target.parent !== null) {
+                    target.remove();
+                }
+            }, CONSTS.target.msDuration);
+        }
     }
 
     // TODO: Change wind direction/speed
@@ -85,6 +99,10 @@ class SeedScene extends Scene {
         const wind = new Wind(2, new Vector3(0.1, 0, 1));
         this.add(wind);
         this.state.updateList.push(wind);
+        _.delay(() => {
+            this.remove(wind);
+            this.removeFromUpdateList(wind);
+        }, CONSTS.wind.msApproxDuration);
     }
 
     initializeTargets() {
@@ -93,15 +111,13 @@ class SeedScene extends Scene {
         });
     }
 
-    removeArrow(arrow) {
-        const len = this.state.arrows.length;
-        if (len === 0) { return; }
-
+    removeArrow(ind) {
         // Swap the places so there is no hole
-        const ind = this.state.arrows.indexOf(arrow);
-        this.state.arrows[ind] = this.state.arrows[len-1];
-        this.state.arrows.pop();
+        const { arrows } = this.state;
+        const arrow = arrows[ind];
         this.remove(arrow);
+        this.removeFromUpdateList(arrow);
+        arrows[ind] = arrows.pop();
     }
 
     // TODO: scale by impact velocity
@@ -138,15 +154,16 @@ class SeedScene extends Scene {
 
         // Firing arrow
         this.currentStep++;
-        this.beginFireStep = !this.isFiring ?
-            this.currentStep : this.beginFireStep;
+        if (!this.isFiring) {
+            this.beginFireStep = this.currentStep;
+        }
 
         // Arrow collisions
-        for (let i = this.state.arrows.length-1; i >= 0; i--) {
-            if (this.state.arrows[i].hasCollided) {
-                this.removeArrow(this.state.arrows[i]);
+        this.state.arrows.forEach((arrow, n) => {
+            if (arrow.hasCollided) {
+                this.removeArrow(n);
             }
-        }
+        });
 
         // Create targets if needed
         this.throttledCreateTarget();

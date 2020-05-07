@@ -1,12 +1,13 @@
 import { Group, Vector3, CylinderGeometry, ConeGeometry, MeshBasicMaterial, Mesh, Plane, Shape, ShapeGeometry, DoubleSide } from 'three';
 import CONSTS from '../../../constants';
+import _ from 'lodash';
 
 class Arrow extends Group {
-    constructor(parent) {
+    constructor(scene) {
         // Call parent Group() constructor
         super();
 
-        this.parent = parent;
+        this.scene = scene;
 
         this.name = 'arrow';
         this.netForce = new Vector3(0, 0, 0);
@@ -30,7 +31,7 @@ class Arrow extends Group {
         this.add(mesh);
 
         // create arrow tip
-        const tipLen = height / 10.0
+        const tipLen = height / 10.0;
         const cone = new ConeGeometry(radius * 2, tipLen, radiusSegments);
         const tipMat = new MeshBasicMaterial({ color: tipColor });
         tipMat.side = DoubleSide;
@@ -75,7 +76,7 @@ class Arrow extends Group {
         if (this.position.y < CONSTS.scene.groundPos + CONSTS.EPS) {
             this.hasCollided = true;
             this.position.y = CONSTS.scene.groundPos + CONSTS.EPS;
-            this.parent.addSplatterGround(this.position, this.color);
+            this.scene.addSplatterGround(this.position, this.color);
             return true;
         }
         return false;
@@ -91,7 +92,7 @@ class Arrow extends Group {
         if (arrowDist > outerRadius) { return false; }
 
         // Check each target for collision
-        const { targets, numTargetsInUse } = this.parent.state;
+        const { targets, numTargetsInUse } = this.scene.state;
         for (let i = 0; i < numTargetsInUse; i++) {
             const target = targets[i];
             const targetDist = target.position.distanceTo(camPos) - thickness / 2;
@@ -122,7 +123,7 @@ class Arrow extends Group {
         if (arrowDist > outerRadius) { return false; }
 
         // Check each barrier for collision
-        const { barriers } = this.parent.state;
+        const { barriers } = this.scene.state;
         for (let i = 0; i < barriers.length; i++) {
             const barrierPos = barriers[i].position;
 
@@ -163,14 +164,14 @@ class Arrow extends Group {
                     arrowTipPos.z < minZ - halfH - eps) {
                     continue;
                 }
-                barriers[i].reveal()
-                this.parent.addSplatterBarrier(
+                barriers[i].reveal();
+                this.scene.addSplatterBarrier(
                     arrowTipPos.clone(), barriers[i], barrierPlane, this.color
                 );
                 this.hasCollided = true;
                 return true;
             }
-        };
+        }
         return false;
     }
 
@@ -198,7 +199,7 @@ class Arrow extends Group {
     }
 
     //
-    update(timeStamp) {
+    update() {
         const { gravity, mass } = CONSTS.arrow.movement;
         // apply physics after arrow fired
         if (this.fired) {
@@ -209,7 +210,7 @@ class Arrow extends Group {
             this.pointToward(this.position.clone().sub(this.previous));
         }
         this.arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
-        this.handleCollisions() // call this in the simulation file?
+        this.handleCollisions(); // call this in the simulation file?
     }
 }
 

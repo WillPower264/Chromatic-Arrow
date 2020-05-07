@@ -77,6 +77,8 @@ const CONSTS = {
             minPhi: Math.PI / 4,        // angle down from y axis
             maxPhi: 11 * Math.PI / 24,  // angle down from y axis
         },
+        disappearing: false,
+        msDuration: 5 * 1000,
     },
     wind: {
         nPoints: 300,
@@ -85,6 +87,7 @@ const CONSTS = {
         thickness: 0.02,
         loopRad: 0.005,
         pathStep: 0.05,
+        msApproxDuration: 3 * 1000,
     },
 };
 
