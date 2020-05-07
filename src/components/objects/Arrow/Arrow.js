@@ -186,7 +186,7 @@ class Arrow extends Group {
 
     // Perform Verlet integration
     integrate() {
-        const { damping, deltaT, mass } = CONSTS.arrow;
+        const { damping, deltaT, mass } = CONSTS.arrow.movement;
         const currPos = this.position.clone();
         const nextPos = currPos.clone();
         nextPos.addScaledVector(currPos.clone().sub(this.previous), 1 - damping);
@@ -199,7 +199,7 @@ class Arrow extends Group {
 
     //
     update(timeStamp) {
-        const { gravity, mass } = CONSTS.arrow;
+        const { gravity, mass } = CONSTS.arrow.movement;
         // apply physics after arrow fired
         if (this.fired) {
             const gravForce = gravity.clone();

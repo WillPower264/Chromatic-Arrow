@@ -5,19 +5,21 @@ const CONSTS = {
     fullRotation: 2 * Math.PI,
     // keep these top level objects in alphabetical order
     arrow: {
-        deltaT: 18 / 1000,
-        gravity: new Vector3(0, -100, 0),
         position: new Vector3(0, 4, 0),
-        damping: 0.03,
-        mass: 10,
         radius: 0.02,
         height: 1.0,
         radiusSegments: 8,
-        chargeRate: 0.01,
-        maxForce: 100000,
         tipColor: 0xFFFFFF,
         featherColor: 0xFFFFFF,
         numFeathers: 3,
+        movement: {
+            deltaT: 18 / 1000,
+            damping: 0.03,
+            gravity: new Vector3(0, -100, 0),
+            mass: 10,
+            chargeRate: 0.01,
+            maxForce: 100000,
+        },
     },
     barrier: {
         width: 6,
@@ -28,8 +30,6 @@ const CONSTS = {
             outerRadius: 30,
             minPhi: Math.PI / 4,        // angle down from y axis
             maxPhi: 11 * Math.PI / 24,  // angle down from y axis
-            halfRotation: Math.PI,
-            fullRotation: 2 * Math.PI,
         },
         movement: {
             baseTheta: 0.005,
@@ -75,7 +75,6 @@ const CONSTS = {
             outerRadius: 40,
             minPhi: Math.PI / 4,        // angle down from y axis
             maxPhi: 11 * Math.PI / 24,  // angle down from y axis
-            fullRotation: 2 * Math.PI,
         },
     },
 };

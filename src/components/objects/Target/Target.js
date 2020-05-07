@@ -32,10 +32,10 @@ class Target extends Group {
     }
 
     getRandomSphericalPosition() {
-        const { innerRadius, outerRadius, minPhi, maxPhi, fullRotation } = CONSTS.target.spawn;
+        const { innerRadius, outerRadius, minPhi, maxPhi } = CONSTS.target.spawn;
         const radius = _.random(innerRadius, outerRadius);
         const phi = _.random(minPhi, maxPhi);
-        const theta = _.random(0, fullRotation);
+        const theta = _.random(CONSTS.fullRotation);
         return new Spherical(radius, phi, theta);
     }
 

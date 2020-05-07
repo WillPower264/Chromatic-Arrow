@@ -28,14 +28,14 @@ class Barrier extends Group {
 
     setRandomPosition(n) {
         // Calculate unique radius (so no intersections)
-        const { innerRadius, outerRadius, minPhi, maxPhi, fullRotation } = CONSTS.barrier.spawn;
+        const { innerRadius, outerRadius, minPhi, maxPhi } = CONSTS.barrier.spawn;
         const { numBarriers } = CONSTS.scene;
         const bandWidth = (outerRadius - innerRadius) / numBarriers;
         const radius = innerRadius + bandWidth * (n + 0.5);
 
         // Randomize spherical coordinates and set position
         const phi = _.random(minPhi, maxPhi);
-        const theta = _.random(0, fullRotation);
+        const theta = _.random(CONSTS.fullRotation);
         this.position.setFromSphericalCoords(radius, phi, theta);
 
         // Rotate to face camera
@@ -55,8 +55,8 @@ class Barrier extends Group {
         spherical.phi += Math.sin(timestamp * this.state.phiPeriod) * this.state.phiScale;
 
         // Validate coordinates
-        const { minPhi, maxPhi, fullRotation } = CONSTS.barrier.spawn;
-        spherical.theta %= fullRotation;
+        const { minPhi, maxPhi } = CONSTS.barrier.spawn;
+        spherical.theta %= CONSTS.fullRotation;
         spherical.phi = _.clamp(spherical.phi, minPhi, maxPhi);
         this.position.setFromSpherical(spherical);
 
