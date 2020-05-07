@@ -24,9 +24,6 @@ class Arrow extends Group {
         // direction the arrow points
         this.direction = CONSTS.directions.yAxis.clone();
 
-        // create arrow group
-        const arrowGroup = new Group();
-
         // create arrow body
         const { radius, height, radiusSegments } = CONSTS.arrow;
         this.halfLen = height / 2.0;
@@ -42,6 +39,7 @@ class Arrow extends Group {
         whiteMat.side = DoubleSide;
         const coneMesh = new Mesh(cone, whiteMat);
         coneMesh.position.set(0, this.halfLen, 0);
+        this.arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
         this.add(coneMesh);
 
         // create arrow tail
@@ -85,17 +83,25 @@ class Arrow extends Group {
     }
 
     handleTargetCollision() {
-        const arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
-        const targets = this.parent.state.targets;
-        for (let i = 0; i < this.parent.state.numTargetsInUse; i++) {
+        // Check if arrow is in target area
+        const camPos = CONSTS.camera.position;
+        const arrowDist = this.arrowTipPos.distanceTo(camPos);
+        const { thickness, spawn } = CONSTS.target;
+        const { innerRadius, outerRadius } = spawn;
+        if (arrowDist < innerRadius - thickness) { return false; }
+        if (arrowDist > outerRadius) { return false; }
+
+        // Check each target for collision
+        const { targets, numTargetsInUse } = this.parent.state;
+        for (let i = 0; i < numTargetsInUse; i++) {
             const target = targets[i];
-            const { position, plane } = target;
+            const targetDist = target.position.distanceTo(camPos) - thickness / 2;
 
-            // intersect target's bounding sphere
-            if (position.distanceTo(arrowTipPos) > CONSTS.target.radius) { continue; }
+            // check arrow has reached target's distance
+            if (arrowDist < targetDist) { continue; }
 
-            // travels at least far enough to hit target
-            const score = target.getScore(arrowTipPos);
+            // check arrow close enough to target
+            const score = target.getScore(this.arrowTipPos);
             if (score > 0) {
                 window.dispatchEvent(new CustomEvent('addScore', {detail: {score}}));
                 target.remove();
@@ -107,8 +113,17 @@ class Arrow extends Group {
     }
 
     handleBarrierCollision() {
-        const arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
-        const barriers = this.parent.state.barriers;
+        // Check if arrow is in barrier area
+        const arrowTipPos = this.arrowTipPos;
+        const camPos = CONSTS.camera.position;
+        const arrowDist = arrowTipPos.distanceTo(camPos);
+        const { depth, spawn } = CONSTS.barrier;
+        const { innerRadius, outerRadius } = spawn;
+        if (arrowDist < innerRadius - depth) { return false; }
+        if (arrowDist > outerRadius) { return false; }
+
+        // Check each barrier for collision
+        const { barriers } = this.parent.state;
         for (let i = 0; i < barriers.length; i++) {
             const barrierPos = barriers[i].position;
 
@@ -121,7 +136,6 @@ class Arrow extends Group {
             }
 
             // travels at least far enough to hit target
-            const cameraPos = CONSTS.camera.position.clone();
             const dist = Math.sqrt(barrierPos.x**2 + barrierPos.z**2);
             const normal = new Vector3(
               -barrierPos.x, 0, -barrierPos.z
@@ -202,7 +216,7 @@ class Arrow extends Group {
             // //camera.getWorldDirection(direction); how to get camera dir??
             // this.pointToward(direction);
         }
-
+        this.arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
         this.handleCollisions() // call this in the simulation file?
     }
 }
