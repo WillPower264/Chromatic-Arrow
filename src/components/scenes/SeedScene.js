@@ -1,5 +1,5 @@
 import { Scene, BoxGeometry, Color, Euler, MeshStandardMaterial, Mesh, Vector3 } from 'three';
-import { Arrow, Target, Barrier, Splatter } from 'objects';
+import { Arrow, Target, Barrier, Splatter, Wind } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
 import CONSTS from '../../constants';
@@ -10,7 +10,9 @@ class SeedScene extends Scene {
         super();
 
         // Get constants
-        const { backgroundColor, msBetweenTargets } = CONSTS.scene;
+        const {
+          backgroundColor, msBetweenTargets, msBetweenWind
+        } = CONSTS.scene;
 
         // Init state
         this.state = {
@@ -18,7 +20,7 @@ class SeedScene extends Scene {
             targets: [],
             numTargetsInUse: 0,
             barriers: [],
-            arrows: []
+            arrows: [],
         };
 
         // Firing arrow
@@ -53,6 +55,11 @@ class SeedScene extends Scene {
             msBetweenTargets
         );
 
+        this.throttledCreateWind = _.throttle(
+            this.createWind,
+            msBetweenWind
+        );
+
         // Add event listeners
         this.addEventListeners();
     }
@@ -70,6 +77,14 @@ class SeedScene extends Scene {
         target.faceCenter();
         this.state.numTargetsInUse++;
         this.add(target);
+    }
+
+    // TODO: Change wind direction/speed
+    // TODO: Dispose when done
+    createWind() {
+        const wind = new Wind(2, new Vector3(0.1, 0, 1));
+        this.add(wind);
+        this.state.updateList.push(wind);
     }
 
     initializeTargets() {
@@ -135,6 +150,8 @@ class SeedScene extends Scene {
 
         // Create targets if needed
         this.throttledCreateTarget();
+
+        this.throttledCreateWind();
 
         // Call update for each object in the updateList
         for (const obj of updateList) {

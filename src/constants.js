@@ -54,6 +54,7 @@ const CONSTS = {
         groundColor: 0x091200,
         maxTargets: 10,
         msBetweenTargets: 5 * 1000,
+        msBetweenWind: 100,
         numBarriers: 15,
         groundPos: 0,
     },
@@ -76,6 +77,15 @@ const CONSTS = {
             minPhi: Math.PI / 4,        // angle down from y axis
             maxPhi: 11 * Math.PI / 24,  // angle down from y axis
         },
+    },
+    wind: {
+        nPoints: 300,
+        shownLength: 60,
+        opacity: 0.4,
+        thickness: 0.02,
+        loopRad: 0.005,
+        pathStep: 0.05,
+        pathAmp: 1,
     },
 };
 
