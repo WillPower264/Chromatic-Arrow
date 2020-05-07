@@ -3,6 +3,7 @@ import { Vector3 } from 'three';
 const CONSTS = {
     EPS: 0.0001,
     fullRotation: 2 * Math.PI,
+    msTimeLimit: 60 * 1000,
     // keep these top level objects in alphabetical order
     arrow: {
         position: new Vector3(0, 4, 0),
@@ -15,10 +16,11 @@ const CONSTS = {
         movement: {
             deltaT: 18 / 1000,
             damping: 0.03,
-            gravity: new Vector3(0, -100, 0),
+            gravity: new Vector3(0, -10, 0),
+            forceFactor: 10,
             mass: 10,
             chargeRate: 0.01,
-            maxForce: 100000,
+            maxForce: 80000,
         },
     },
     barrier: {
@@ -77,7 +79,17 @@ const CONSTS = {
             textAlign: 'left',
             paddingLeft: '10px',
             top: '10px',
-        }
+        },
+    },
+    start: {
+      stepsPerSplatter: 6,
+      maxSplatters: 30,
+      xMin: -7,
+      xMax: 7,
+      yMin: -3,
+      yMax: 5,
+      minSize: 5,
+      maxSize: 7,
     },
     target: {
         radius: 2.5,

@@ -20,10 +20,11 @@ const clock = new Clock();
 let isStarted = false;
 let scene;
 let sceneOrtho;
+let startTimeStamp;
 const controls = new PlayerControls(camera, document.body);
 
 // Title screen objects
-const startScene = new StartScene(0);
+let startScene = new StartScene();
 startScene.add(controls.getObject());
 
 // Set up camera
@@ -55,6 +56,14 @@ document.body.appendChild(canvas);
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
   if (isStarted) {
+    if (timeStamp > startTimeStamp + CONSTS.msTimeLimit) {
+      scene.dispose();
+      sceneOrtho.dispose();
+      startScene = new StartScene();
+      isStarted = false;
+      // Re-enable listener
+      window.addEventListener('click', startGameHandler, false);
+    }
     controls.update(clock.getDelta());
     renderer.clear();
     renderer.render(scene, camera);
@@ -66,6 +75,7 @@ const onAnimationFrameHandler = (timeStamp) => {
   } else {
     renderer.render(startScene, camera);
     startScene.update && startScene.update(timeStamp);
+    startTimeStamp = timeStamp;
   }
   window.requestAnimationFrame(onAnimationFrameHandler);
 };
@@ -89,14 +99,14 @@ windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
 // Start game handler
-const startGameHandler = () => {
+const startGameHandler = (timeStamp) => {
   if (isStarted) { return; }
   startScene.clearText();
   startScene.dispose();
   scene = new SeedScene();
   // Set up controls
   scene.add(controls.getObject());
-  sceneOrtho = new InterfaceScene();
+  sceneOrtho = new InterfaceScene(startTimeStamp);
   isStarted = true;
   window.removeEventListener('click', startGameHandler, false);
 };

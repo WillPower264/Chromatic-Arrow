@@ -4,7 +4,7 @@ import CONSTS from '../../constants';
 import _ from 'lodash';
 
 class InterfaceScene extends Scene {
-    constructor() {
+    constructor(creationTime) {
         // Call parent Scene() constructor
         super();
 
@@ -22,7 +22,7 @@ class InterfaceScene extends Scene {
         const cross = new Crosshairs();
         this.add(cross);
 
-        const timer = new Timer(60);
+        const timer = new Timer(creationTime);
         timer.update(0);
         this.add(timer);
         this.addToUpdateList(timer);

@@ -203,12 +203,13 @@ class Arrow extends Group {
     }
 
     //
-    update() {
-        const { gravity, mass } = CONSTS.arrow.movement;
+    update(timeStamp, windForce) {
+        const { gravity, mass, forceFactor } = CONSTS.arrow.movement;
         // apply physics after arrow fired
         if (this.fired) {
             const gravForce = gravity.clone();
-            this.addForce(gravForce.multiplyScalar(mass));
+            this.addForce(gravForce.multiplyScalar(mass*forceFactor));
+            this.addForce(windForce.multiplyScalar(mass*forceFactor));
             this.integrate();
 
             this.pointToward(this.position.clone().sub(this.previous));

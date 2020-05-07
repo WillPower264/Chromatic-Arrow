@@ -1,24 +1,15 @@
 import { Scene, BoxGeometry, DoubleSide, Euler, Mesh, MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry, Texture, Vector3 } from 'three';
 import { BasicLights } from 'lights';
 import { Splatter } from 'objects';
+import CONSTS from '../../constants';
 
 class StartScene extends Scene {
-    constructor(creationTime) {
+    constructor() {
         // Call parent Scene() constructor
         super();
         // Timing
-        this.splatterInterval = 0.1;
-        this.lastSplatter = creationTime;
-        this.maxSplatters = 30;
+        this.stepCount = 0;
         this.splatterCount = 0;
-
-        // Appearance
-        this.xMin = -7;
-        this.xMax = 7;
-        this.yMin = -3;
-        this.yMax = 5;
-        this.minSize = 5;
-        this.maxSize = 7;
 
         // Fixed points to make sure text is revealed
         this.xs = [-2, -1.5, 0, 1, 2];
@@ -75,19 +66,22 @@ class StartScene extends Scene {
           this.currentWidth = window.innerWidth;
         }
         // Splatter
-        if (this.splatterCount < this.maxSplatters &&
-            timeStamp-this.lastSplatter > this.splatterInterval*1000) {
+        const {
+          stepsPerSplatter, maxSplatters, xMin, xMax, yMin, yMax, minSize, maxSize
+        } = CONSTS.start;
+        if (this.splatterCount < maxSplatters &&
+            this.stepCount % stepsPerSplatter == 0) {
           let rx;
           let ry;
           let size;
           if (this.splatterCount < this.xs.length) {
             rx = this.xs[this.splatterCount];
             ry = this.ys[this.splatterCount];
-            size = this.maxSize;
+            size = maxSize;
           } else {
-            rx = this.xMin + Math.random()*(this.xMax-this.xMin);
-            ry = this.yMin + Math.random()*(this.yMax-this.yMin);
-            size = this.minSize + Math.random()*(this.maxSize-this.minSize);
+            rx = xMin + Math.random()*(xMax-xMin);
+            ry = yMin + Math.random()*(yMax-yMin);
+            size = minSize + Math.random()*(maxSize-minSize);
           }
           const randOffset = new Vector3(rx, ry, 0);
           const pos = this.screen.position.clone().add(randOffset);
@@ -97,6 +91,7 @@ class StartScene extends Scene {
           this.splatterCount++;
           this.lastSplatter = timeStamp;
         }
+        this.stepCount++;
     }
 }
 
