@@ -99,10 +99,11 @@ class SeedScene extends Scene {
 
     // TODO: scale by impact velocity
     addSplatterBarrier(position, barrier, plane, color) {
-        position = plane.projectPoint(position);
+        const projPos = new Vector3(0, 0, 0);
+        plane.projectPoint(position, projPos);
         const rot = new Euler(0, Math.atan2(plane.normal.x, plane.normal.z), 0);
         const splat = new Splatter(
-          barrier.children[0], position, rot, 1, color
+          barrier.children[0], projPos, rot, 1, color
         );
         barrier.attach(splat.mesh);
         barrier.children[0].visible = false;
