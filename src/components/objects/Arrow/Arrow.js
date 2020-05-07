@@ -5,10 +5,9 @@ import TrailRenderer from './TrailRenderer.js';
 
 function hexToRGB(hex) {
     const rgb = {};
-    const bigint = parseInt(hex, 16);
-    rgb.r = ((bigint >> 16) & 255) / 255.0;
-    rgb.g = ((bigint >> 8) & 255) / 255.0;
-    rgb.b = (bigint & 255) / 255.0;
+    rgb.r = ((hex >> 16) & 255) / 255.0;
+    rgb.g = ((hex >> 8) & 255) / 255.0;
+    rgb.b = (hex & 255) / 255.0;
     return rgb;
 }
 
@@ -40,11 +39,11 @@ class Arrow extends Group {
         const mesh = new Mesh(cylinder, mat);
         this.add(mesh);
 
-        // create arrow tip
+        // create arrow tip - now invisible from bottom
         const tipLen = height / 10.0;
-        const cone = new ConeGeometry(radius * 2, tipLen, radiusSegments);
+        const cone = new ConeGeometry(radius * 2, tipLen, radiusSegments, 1, true);
         const tipMat = new MeshBasicMaterial({ color: tipColor });
-        tipMat.side = DoubleSide;
+        // tipMat.side = DoubleSide; 
         const coneMesh = new Mesh(cone, tipMat);
         coneMesh.position.set(0, this.halfLen, 0);
         this.arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
@@ -82,9 +81,9 @@ class Arrow extends Group {
         this.trail = new TrailRenderer( this, false );
         // create material for the trail renderer
         const trailMaterial = TrailRenderer.createBaseMaterial();	
-        // const rgb = hexToRGB(this.color);
-        // trailMaterial.uniforms.headColor.value.set( rgb.r, rgb.g, rgb.b, 0.8 );
-        // trailMaterial.uniforms.tailColor.value.set( rgb.r, rgb.g, rgb.b, 0.35 );
+        const rgb = hexToRGB(this.color);
+        trailMaterial.uniforms.headColor.value.set( rgb.r, rgb.g, rgb.b, 0.8 );
+        trailMaterial.uniforms.tailColor.value.set( rgb.r, rgb.g, rgb.b, 0.35 );
         // specify length of trail
         const trailLength = height * 15.0;
         // initialize and activate the trail

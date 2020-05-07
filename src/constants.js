@@ -6,7 +6,7 @@ const CONSTS = {
     msTimeLimit: 60 * 1000,
     // keep these top level objects in alphabetical order
     arrow: {
-        position: new Vector3(0, 4, 0),
+        position: new Vector3(0, 1.9, 0),
         radius: 0.02,
         height: 1.0,
         radiusSegments: 8,
