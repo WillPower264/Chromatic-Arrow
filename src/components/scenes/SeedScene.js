@@ -10,9 +10,8 @@ class SeedScene extends Scene {
         super();
 
         // Get constants
-        const {
-          backgroundColor, msBetweenTargets, msBetweenWind
-        } = CONSTS.scene;
+        const { backgroundColor, msBetweenTargets } = CONSTS.scene;
+        const { msBetweenSpawn, msBetweenChange }  = CONSTS.scene.wind;
 
         // Init state
         this.state = {
@@ -36,18 +35,17 @@ class SeedScene extends Scene {
         this.add(this.currentArrow);
         this.addToUpdateList(this.currentArrow);
 
-        // Set up targets
+        // Set up targets, barriers, and wind
         this.initializeTargets();
-
-        // Set up barriers
         this.initializeBarriers();
+        this.changeWind();
 
         // Add meshes to scene
         this.ground = this.initializeGround();
         const lights = new BasicLights();
         this.add(lights);
 
-        // Throttled function
+        // Throttled functions
         this.throttledCreateTarget = _.throttle(
             this.createTarget,
             msBetweenTargets
@@ -55,7 +53,12 @@ class SeedScene extends Scene {
 
         this.throttledCreateWind = _.throttle(
             this.createWind,
-            msBetweenWind
+            msBetweenSpawn
+        );
+
+        this.throttledChangeWind = _.throttle(
+            this.changeWind,
+            msBetweenChange
         );
 
         // Add event listeners
@@ -64,13 +67,6 @@ class SeedScene extends Scene {
 
     addToUpdateList(object) {
         this.state.updateList.push(object);
-    }
-
-    removeFromUpdateList(object) {
-        const { updateList } = this.state;
-        const ind = updateList.indexOf(object);
-        if (ind === -1) { return; }
-        updateList.splice(ind, 1);
     }
 
     createTarget() {
@@ -91,16 +87,21 @@ class SeedScene extends Scene {
         }
     }
 
-    // TODO: Change wind direction/speed
+    changeWind() {
+        const direction = 2*Math.PI*Math.random();
+        const { minSpeed, maxSpeed } = CONSTS.scene.wind;
+        const speed = minSpeed + (maxSpeed-minSpeed)*Math.random();
+        this.windVec = new Vector3(
+          speed*Math.cos(direction), 0, speed*Math.sin(direction)
+        ).normalize();
+        this.windSpeed = Math.round(speed);
+    }
+
     // TODO: Dispose when done
     createWind() {
-        const wind = new Wind(2, new Vector3(0.1, 0, 1));
+        const wind = new Wind(this.windSpeed, this.windVec);
         this.add(wind);
         this.state.updateList.push(wind);
-        _.delay(() => {
-            this.remove(wind);
-            this.removeFromUpdateList(wind);
-        }, CONSTS.wind.msApproxDuration);
     }
 
     initializeTargets() {
@@ -156,14 +157,13 @@ class SeedScene extends Scene {
             this.beginFireStep = this.currentStep;
         }
 
-        // Create targets if needed
+        // Update targets and wind if needed
         this.throttledCreateTarget();
-
         this.throttledCreateWind();
+        this.throttledChangeWind();
 
         // Call update for each object in the updateList
         const len = updateList.length;
-        console.log(updateList)
         for (let i = len-1; i >= 0; i--) {
             const obj = updateList[i];
             if (obj.isDone()) {
@@ -172,7 +172,6 @@ class SeedScene extends Scene {
                 obj.update(timeStamp);
             }
         }
-        console.log(updateList.length)
     }
 
     addEventListeners() {

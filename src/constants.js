@@ -54,7 +54,12 @@ const CONSTS = {
         groundColor: 0x091200,
         maxTargets: 10,
         msBetweenTargets: 5 * 1000,
-        msBetweenWind: 100,
+        wind: {
+          msBetweenSpawn: 100,
+          msBetweenChange: 8 * 1000,
+          minSpeed: 2,
+          maxSpeed: 5,
+        },
         numBarriers: 15,
         groundPos: 0,
     },
@@ -87,7 +92,6 @@ const CONSTS = {
         thickness: 0.02,
         loopRad: 0.005,
         pathStep: 0.05,
-        msApproxDuration: 3 * 1000,
     },
 };
 
