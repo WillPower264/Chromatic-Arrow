@@ -1,6 +1,16 @@
 import { Group, Vector3, CylinderGeometry, ConeGeometry, MeshBasicMaterial, Mesh, Plane, Shape, ShapeGeometry, DoubleSide } from 'three';
 import CONSTS from '../../../constants';
 import _ from 'lodash';
+import TrailRenderer from './TrailRenderer.js';
+
+function hexToRGB(hex) {
+    const rgb = {};
+    const bigint = parseInt(hex, 16);
+    rgb.r = ((bigint >> 16) & 255) / 255.0;
+    rgb.g = ((bigint >> 8) & 255) / 255.0;
+    rgb.b = (bigint & 255) / 255.0;
+    return rgb;
+}
 
 class Arrow extends Group {
     constructor(scene) {
@@ -52,12 +62,34 @@ class Arrow extends Group {
         const featherMat = new MeshBasicMaterial({ color: featherColor });
         featherMat.side = DoubleSide;
 
+        let featherMesh; // need to attach trail to feather later
         _.times(numFeathers, (n) => {
-            const featherMesh = new Mesh(feather, featherMat);
+            featherMesh = new Mesh(feather, featherMat);
             featherMesh.position.set(0, -this.halfLen, 0);
             featherMesh.rotateOnAxis(this.direction, n * CONSTS.fullRotation / numFeathers);
             this.add(featherMesh);
         });
+
+        // create arrow trail
+        // specify points to create planar trail-head geometry
+        var trailHeadGeometry = [];
+        trailHeadGeometry.push( 
+            new Vector3( 2.0*radius, 0.0, 0.0 ), 
+            new Vector3( 0.0, 0.0, 0.0 ), 
+            new Vector3( 0.0, 0.0, 2.0*radius ) 
+        );
+        // create the trail renderer object
+        this.trail = new TrailRenderer( this, false );
+        // create material for the trail renderer
+        const trailMaterial = TrailRenderer.createBaseMaterial();	
+        // const rgb = hexToRGB(this.color);
+        // trailMaterial.uniforms.headColor.value.set( rgb.r, rgb.g, rgb.b, 0.8 );
+        // trailMaterial.uniforms.tailColor.value.set( rgb.r, rgb.g, rgb.b, 0.35 );
+        // specify length of trail
+        const trailLength = height * 15.0;
+        // initialize and activate the trail
+        this.trail.initialize( trailMaterial, trailLength, false, 0, trailHeadGeometry, featherMesh );
+        this.trail.activate();
     }
 
     addForce(force) {
@@ -215,6 +247,9 @@ class Arrow extends Group {
             this.pointToward(this.position.clone().sub(this.previous));
         }
         this.arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
+
+        this.trail.advance();
+
         this.handleCollisions(); // call this in the simulation file?
     }
 }
