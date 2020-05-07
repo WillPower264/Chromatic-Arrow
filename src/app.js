@@ -96,8 +96,7 @@ const startGameHandler = () => {
   scene = new SeedScene();
   // Set up controls
   scene.add(controls.getObject());
-  const { innerHeight, innerWidth } = window;
-  sceneOrtho = new InterfaceScene(innerWidth / 2, innerHeight / 2);
+  sceneOrtho = new InterfaceScene();
   isStarted = true;
   window.removeEventListener('click', startGameHandler, false);
 };

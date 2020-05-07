@@ -1,8 +1,10 @@
 import { Scene } from 'three';
 import { Crosshairs, Powerbar, Timer } from 'objects';
+import CONSTS from '../../constants';
+import _ from 'lodash';
 
 class InterfaceScene extends Scene {
-    constructor(width, height) {
+    constructor() {
         // Call parent Scene() constructor
         super();
 
@@ -13,18 +15,21 @@ class InterfaceScene extends Scene {
 
         // Interface objects
         const pbar = new Powerbar(250, 50);
-        pbar.update(width, height, 0);
         this.add(pbar);
         this.addToUpdateList(pbar);
-        this.pbar = pbar;
+        this.powerbar = pbar;
 
         const cross = new Crosshairs();
         this.add(cross);
 
         const timer = new Timer(60);
-        timer.update(width, height, 0);
+        timer.update(0);
         this.add(timer);
         this.addToUpdateList(timer);
+
+        // Add text
+        const { text, style } = CONSTS.scoreBox;
+        this.scoreBox = this.createText(`${text}${this.state.score}`, style);
 
         // Listeners
         this.addEventListeners();
@@ -34,22 +39,34 @@ class InterfaceScene extends Scene {
         this.state.updateList.push(object);
     }
 
-    update(width, height, timeStamp) {
+    createText(text, style) {
+        const scoreBox = document.createElement('div');
+        scoreBox.innerHTML = text;
+        _.extend(scoreBox.style, style);
+        document.body.appendChild(scoreBox);
+        return scoreBox;
+    }
+
+    updateScore(change) {
+        this.state.score += change;
+        this.scoreBox.innerHTML = `${CONSTS.scoreBox.text}${this.state.score}`;
+    }
+
+    update(timeStamp) {
         for (const obj of this.state.updateList) {
-            obj.update(width, height, timeStamp);
+            obj.update(timeStamp);
         }
     }
 
     addEventListeners() {
         window.addEventListener("mousedown", () => {
-          this.pbar.beginFill();
+          this.powerbar.beginFill();
         }, false);
         window.addEventListener("mouseup", () => {
-          this.pbar.stopFill();
+          this.powerbar.stopFill();
         }, false);
         window.addEventListener('addScore', (e) => {
-            this.state.score += e.detail.score;
-            console.log(`score: ${this.state.score}`);
+            this.updateScore(e.detail.score);
         }, false);
     }
 }

@@ -68,6 +68,17 @@ const CONSTS = {
         numBarriers: 15,
         groundPos: 0,
     },
+    scoreBox: {
+        text: 'Score: ',
+        style: {
+            position: 'absolute',
+            fontSize: '40px',
+            color: 'white',
+            textAlign: 'left',
+            paddingLeft: '10px',
+            top: '10px',
+        }
+    },
     target: {
         radius: 2.5,
         ringSize: 0.5,              // total diameter is 5
