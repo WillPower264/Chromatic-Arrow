@@ -3,12 +3,12 @@ import _ from 'lodash';
 import CONSTS from '../../../constants';
 
 class Target extends Group {
-    constructor(parent) {
+    constructor(scene) {
         // Call parent Group() constructor
         super();
 
         // stores reference to scene
-        this.parent = parent;
+        this.scene = scene;
 
         this.name = 'target';
         const { colors, ringSize, thickness, radiusSegments } = CONSTS.target;
@@ -40,7 +40,7 @@ class Target extends Group {
     }
 
     checkPosition(pos) {
-        const { targets, numTargetsInUse } = this.parent.state;
+        const { targets, numTargetsInUse } = this.scene.state;
         const minDistSquared = Math.pow(CONSTS.target.minDistApart, 2);
         for (let i = 0; i < numTargetsInUse; i++) {
             const targetPos = targets[i].position;
@@ -72,16 +72,18 @@ class Target extends Group {
     }
 
     remove() {
-        const ind = this.parent.state.targets.indexOf(this);
+        const { targets } = this.scene.state;
+        const ind = targets.indexOf(this);
 
         // This target isn't even in use
-        if (ind >= this.parent.state.numTargetsInUse) { return; }
+        if (ind >= this.scene.state.numTargetsInUse) { return; }
 
         // Remove this target from the scene
-        this.parent.state.numTargetsInUse--;
-        this.parent.state.targets[ind] = this.parent.state.targets[this.parent.state.numTargetsInUse];
-        this.parent.state.targets[this.parent.state.numTargetsInUse] = new Target(this.parent);
-        this.parent.remove(this);
+        this.scene.state.numTargetsInUse--;
+        const { numTargetsInUse } = this.scene.state;
+        targets[ind] = targets[numTargetsInUse];
+        targets[numTargetsInUse] = new Target(this.scene);
+        this.scene.remove(this);
     }
 }
 

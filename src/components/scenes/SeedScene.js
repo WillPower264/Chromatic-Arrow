@@ -66,6 +66,13 @@ class SeedScene extends Scene {
         this.state.updateList.push(object);
     }
 
+    removeFromUpdateList(object) {
+        const { updateList } = this.state;
+        const ind = updateList.indexOf(object);
+        if (ind === -1) { return; }
+        updateList.splice(ind, 1);
+    }
+
     createTarget() {
         // Check how many targets are in use
         if (this.state.numTargetsInUse >= CONSTS.scene.maxTargets) { return; }
@@ -75,6 +82,13 @@ class SeedScene extends Scene {
         target.faceCenter();
         this.state.numTargetsInUse++;
         this.add(target);
+        if (CONSTS.target.disappearing) {
+            _.delay(() => {
+                if (target.parent !== null) {
+                    target.remove();
+                }
+            }, CONSTS.target.msDuration);
+        }
     }
 
     // TODO: Change wind direction/speed
@@ -83,6 +97,10 @@ class SeedScene extends Scene {
         const wind = new Wind(2, new Vector3(0.1, 0, 1));
         this.add(wind);
         this.state.updateList.push(wind);
+        _.delay(() => {
+            this.remove(wind);
+            this.removeFromUpdateList(wind);
+        }, CONSTS.wind.msApproxDuration);
     }
 
     initializeTargets() {
@@ -134,8 +152,9 @@ class SeedScene extends Scene {
 
         // Firing arrow
         this.currentStep++;
-        this.beginFireStep = !this.isFiring ?
-            this.currentStep : this.beginFireStep;
+        if (!this.isFiring) {
+            this.beginFireStep = this.currentStep;
+        }
 
         // Create targets if needed
         this.throttledCreateTarget();
