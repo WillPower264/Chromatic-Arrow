@@ -12,7 +12,7 @@ class Powerbar extends Group {
         this.buffer = 25;
         this.isFilling = false;
         this.bar = undefined;
-        this.step = width*CONSTS.arrow.chargeRate;
+        this.step = width*CONSTS.arrow.movement.chargeRate;
         const edgeThickness = 5;
 
         // Bar

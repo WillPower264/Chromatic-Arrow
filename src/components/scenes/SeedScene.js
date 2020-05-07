@@ -150,10 +150,10 @@ class SeedScene extends Scene {
         window.addEventListener("mouseup", () => {
             // Shoot this arrow
             const totalTime = this.currentStep - this.beginFireStep;
-            const factor = Math.min(totalTime*CONSTS.arrow.chargeRate, 1);
+            const factor = Math.min(totalTime*CONSTS.arrow.movement.chargeRate, 1);
             this.currentArrow.addForce(
               this.direction.normalize().clone().multiplyScalar(
-                factor*CONSTS.arrow.maxForce
+                factor*CONSTS.arrow.movement.maxForce
               )
             );
             // Create new arrow
