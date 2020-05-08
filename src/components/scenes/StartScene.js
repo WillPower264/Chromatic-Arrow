@@ -5,7 +5,7 @@ import CONSTS from '../../constants';
 import '../../style.css';
 
 class StartScene extends Scene {
-    constructor() {
+    constructor(startGameCallback) {
         // Call parent Scene() constructor
         super();
         // Timing
@@ -28,12 +28,12 @@ class StartScene extends Scene {
         this.screen = mesh;
         this.add(mesh);
 
-        // Text
+        // Text and buttons
         this.eltIds = [];
         this.currWidth = window.innerWidth;
         this.createText("Chromatic Arrow", '30%');
-        this.createButton("Tutorial", '42%');
-        this.createButton("Begin", '54%');
+        this.createButton("Tutorial", '42%', startGameCallback);
+        this.createButton("Begin", '54%', startGameCallback);
     }
 
     createText(str, top) {
@@ -51,15 +51,11 @@ class StartScene extends Scene {
         this.eltIds.push(str);
     }
 
-    testHandler() {
-        console.log('in handler')
-    }
-
-    createButton(str, top) {
+    createButton(str, top, callback) {
         const button = document.createElement('button');
         button.id = str;
         button.innerHTML = str;
-        button.onclick = this.testHandler;
+        button.onclick = callback;
         document.body.appendChild(button);
         // Center button
         const { innerHeight, innerWidth } = window;

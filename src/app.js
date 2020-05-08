@@ -21,14 +21,43 @@ const clock = new Clock();
 let isStarted = false;
 let isEnded = false;
 
+// Scene change functions
+function changeToGame(lastScene) {
+  lastScene.clearText();
+  lastScene.dispose();
+  if (gameScene !== undefined) {
+    gameScene.dispose();
+  }
+  gameScene = new SeedScene();
+  // Set up controls
+  controls.enable();
+  gameScene.add(controls.getObject());
+  camera.lookAt(CONSTS.camera.initialDirection);
+  interfaceScene = new InterfaceScene();
+  isStarted = true;
+  isEnded = false;
+};
+
+// Start game handler
+const startToGameHandler = () => {
+  if (isStarted || isEnded) { return; }
+  changeToGame(startScene);
+};
+
+// Start game handler
+const endToGameHandler = () => {
+  changeToGame(endScene);
+  window.removeEventListener('click', endToGameHandler, false);
+};
+
 // Scenes
-let startScene = new StartScene();
+let startScene = new StartScene(startToGameHandler);
 let gameScene;
 let interfaceScene;
 let endScene;
 
 // Controls
-const controls = new PlayerControls(camera, document.body);
+let controls = new PlayerControls(camera, document.body);
 startScene.add(controls.getObject());
 
 // Set up camera
@@ -123,32 +152,3 @@ const windowResizeHandler = () => {
 };
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
-
-function changeToGame(lastScene) {
-  lastScene.clearText();
-  lastScene.dispose();
-  if (gameScene !== undefined) {
-    gameScene.dispose();
-  }
-  gameScene = new SeedScene();
-  // Set up controls
-  gameScene.add(controls.getObject());
-  camera.lookAt(CONSTS.camera.initialDirection);
-  interfaceScene = new InterfaceScene();
-  isStarted = true;
-  isEnded = false;
-};
-
-// Start game handler
-const startToGameHandler = () => {
-  if (isStarted || isEnded) { return; }
-  changeToGame(startScene);
-};
-
-// Start game handler
-const endToGameHandler = () => {
-  changeToGame(endScene);
-  window.removeEventListener('click', endToGameHandler, false);
-};
-
-window.addEventListener('click', startToGameHandler, false);
