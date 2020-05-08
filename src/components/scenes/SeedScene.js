@@ -186,11 +186,13 @@ class SeedScene extends Scene {
         window.addEventListener("mouseup", () => {
             // Shoot this arrow
             if (this.disableControls) return;
+
+            const { chargeRate, baseForce, maxForce} = CONSTS.arrow.movement;
             const totalTime = this.currentStep - this.beginFireStep;
-            const factor = Math.min(totalTime*CONSTS.arrow.movement.chargeRate, 1);
+            const factor = Math.min(totalTime * chargeRate, 1);
             this.currentArrow.addForce(
               this.direction.normalize().clone().multiplyScalar(
-                factor*CONSTS.arrow.movement.maxForce
+                baseForce + factor * maxForce
               )
             );
             // Create new arrow
@@ -200,6 +202,7 @@ class SeedScene extends Scene {
             this.isFiring = false;
         }, false);
 
+        // TODO: remove
         window.addEventListener('keydown', () => {
             if (this.disableControls) return;
             const randIdx = _.random(CONSTS.scene.numBarriers - 1);
