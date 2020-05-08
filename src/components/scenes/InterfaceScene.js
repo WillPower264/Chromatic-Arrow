@@ -11,6 +11,7 @@ class InterfaceScene extends Scene {
         this.state = {
             updateList: [],
             score: 0,
+            timeLeft: CONSTS.msTimeLimit / 1000,
         };
 
         // Interface objects
@@ -28,8 +29,13 @@ class InterfaceScene extends Scene {
         this.addToUpdateList(timer);
 
         // Add text
-        const { text, style } = CONSTS.scoreBox;
-        this.scoreBox = this.createText(`${text}${this.state.score}`, style);
+        const { text: scoreText, style: scoreStyle } = CONSTS.scoreBox;
+        this.scoreBox = this.createText(`${scoreText}${this.state.score}`, scoreStyle);
+        const { text: timerText, style: timerStyle } = CONSTS.timer;
+        this.timer = this.createText(`${timerText}${this.state.score}`, timerStyle);
+
+        // Countdown on clock
+        this.countDown();
 
         // Listeners
         this.addEventListeners();
@@ -39,12 +45,25 @@ class InterfaceScene extends Scene {
         this.state.updateList.push(object);
     }
 
+    countDown() {
+        const { timeLeft } = this.state;
+        if (timeLeft === 0) {
+            this.scoreBox.remove();
+            this.timer.remove();
+            return;
+        }
+        this.timer.innerHTML = `${CONSTS.timer.text}${timeLeft}`;
+        this.state.timeLeft--;
+        _.delay(() => this.countDown(), 1000);
+    }
+
     createText(text, style) {
-        const scoreBox = document.createElement('div');
-        scoreBox.innerHTML = text;
-        _.extend(scoreBox.style, style);
-        document.body.appendChild(scoreBox);
-        return scoreBox;
+        const textBox = document.createElement('div');
+        textBox.innerHTML = text;
+        _.extend(textBox.style, style);
+        textBox.style.textAlign = 'right';
+        document.body.appendChild(textBox);
+        return textBox;
     }
 
     updateScore(change) {

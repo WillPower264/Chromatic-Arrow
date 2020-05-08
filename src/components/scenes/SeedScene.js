@@ -10,8 +10,7 @@ class SeedScene extends Scene {
         super();
 
         // Get constants
-        const { backgroundColor, msBetweenTargets } = CONSTS.scene;
-        const { msBetweenSpawn, msBetweenChange }  = CONSTS.scene.wind;
+        const { backgroundColor } = CONSTS.scene;
 
         // Init state
         this.state = {
@@ -45,21 +44,10 @@ class SeedScene extends Scene {
         const lights = new BasicLights();
         this.add(lights);
 
-        // Throttled functions
-        this.throttledCreateTarget = _.throttle(
-            this.createTarget,
-            msBetweenTargets
-        );
-
-        this.throttledCreateWind = _.throttle(
-            this.createWind,
-            msBetweenSpawn
-        );
-
-        this.throttledChangeWind = _.throttle(
-            this.changeWind,
-            msBetweenChange
-        );
+        // Create targets and wind
+        this.createTarget();
+        this.createWind();
+        this.changeWind();
 
         // Add event listeners
         this.addEventListeners();
@@ -71,20 +59,26 @@ class SeedScene extends Scene {
 
     createTarget() {
         // Check how many targets are in use
-        if (this.state.numTargetsInUse >= CONSTS.scene.maxTargets) { return; }
+        if (this.state.numTargetsInUse < CONSTS.scene.maxTargets) {
+            // Create new target
+            const { disappearing, msDuration } = CONSTS.target;
+            const target = this.state.targets[this.state.numTargetsInUse];
+            target.setRandomPosition();
+            target.faceCenter();
+            this.state.numTargetsInUse++;
+            this.add(target);
 
-        const target = this.state.targets[this.state.numTargetsInUse];
-        target.setRandomPosition();
-        target.faceCenter();
-        this.state.numTargetsInUse++;
-        this.add(target);
-        if (CONSTS.target.disappearing) {
-            _.delay(() => {
-                if (target.parent !== null) {
-                    target.remove();
-                }
-            }, CONSTS.target.msDuration);
+            // Set timer to disappear
+            if (disappearing) {
+                _.delay(() => {
+                    if (target.parent !== null) {
+                        target.remove();
+                    }
+                }, msDuration);
+            }
         }
+        // Call function again, but later
+        _.delay(() => this.createTarget(), CONSTS.scene.msBetweenTargets);
     }
 
     changeWind() {
@@ -95,6 +89,7 @@ class SeedScene extends Scene {
           speed*Math.cos(direction), 0, speed*Math.sin(direction)
         ).normalize();
         this.windSpeed = Math.round(speed);
+        _.delay(() => this.changeWind(), CONSTS.scene.wind.msBetweenChange);
     }
 
     // TODO: Dispose when done
@@ -102,6 +97,7 @@ class SeedScene extends Scene {
         const wind = new Wind(this.windSpeed, this.windVec);
         this.add(wind);
         this.state.updateList.push(wind);
+        _.delay(() => this.createWind(), CONSTS.scene.wind.msBetweenSpawn);
     }
 
     initializeTargets() {
@@ -111,11 +107,11 @@ class SeedScene extends Scene {
     }
 
     removeObj(obj) {
-        // Swap the places so there is no hole
-        const len = this.state.updateList.length;
+        // Remove from updateList
         const ind = this.state.updateList.indexOf(obj);
-        this.state.updateList[ind] = this.state.updateList[len-1];
-        this.state.updateList.pop();
+        this.state.updateList[ind] = this.state.updateList.pop();
+
+        // Remove from scene
         this.remove(obj);
     }
 
@@ -156,11 +152,6 @@ class SeedScene extends Scene {
         if (!this.isFiring) {
             this.beginFireStep = this.currentStep;
         }
-
-        // Update targets and wind if needed
-        this.throttledCreateTarget();
-        this.throttledCreateWind();
-        this.throttledChangeWind();
 
         // Call update for each object in the updateList
         const len = updateList.length;
