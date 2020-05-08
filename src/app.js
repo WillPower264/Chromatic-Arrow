@@ -10,6 +10,7 @@ import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Clock } from 'thr
 import { InterfaceScene, StartScene, SeedScene, EndScene } from 'scenes';
 import PlayerControls from './PlayerControls';
 import CONSTS from './constants';
+import _ from 'lodash';
 
 // Initialize core ThreeJS components
 const camera = new PerspectiveCamera();
@@ -116,8 +117,7 @@ windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
 // Start game handler
-const startGameHandler = (timeStamp) => {
-  console.log("start handler", scene)
+const startGameHandler = () => {
   if (isStarted) { return; }
   initScene.clearText();
   initScene.dispose();
@@ -127,7 +127,7 @@ const startGameHandler = (timeStamp) => {
   scene = new SeedScene();
   // Set up controls
   scene.add(controls.getObject());
-  sceneOrtho = new InterfaceScene(startTimeStamp);
+  sceneOrtho = new InterfaceScene();
   isStarted = true;
   isEnded = false;
   window.removeEventListener('click', startGameHandler, false);

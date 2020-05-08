@@ -1,10 +1,10 @@
 import { Scene } from 'three';
-import { Crosshairs, Powerbar, Timer } from 'objects';
+import { Crosshairs, Powerbar } from 'objects';
 import CONSTS from '../../constants';
 import _ from 'lodash';
 
 class InterfaceScene extends Scene {
-    constructor(creationTime) {
+    constructor() {
         // Call parent Scene() constructor
         super();
 
@@ -14,19 +14,15 @@ class InterfaceScene extends Scene {
             timeLeft: CONSTS.msTimeLimit / 1000,
         };
 
-        // Interface objects
+        // Add powerbar
         const pbar = new Powerbar(250, 50);
         this.add(pbar);
         this.addToUpdateList(pbar);
         this.powerbar = pbar;
 
+        // Add crosshairs
         const cross = new Crosshairs();
         this.add(cross);
-
-        const timer = new Timer(creationTime);
-        timer.update(0);
-        this.add(timer);
-        this.addToUpdateList(timer);
 
         // Add text
         const { text: scoreText, style: scoreStyle } = CONSTS.scoreBox;
@@ -48,7 +44,10 @@ class InterfaceScene extends Scene {
     countDown() {
         const { timeLeft } = this.state;
         if (timeLeft === 0) { return; }
-        this.timer.innerHTML = `${CONSTS.timer.text}${timeLeft}`;
+        const min = Math.floor(timeLeft / 60);
+        const sec = timeLeft % 60;
+        const time = `${min}:${sec < 10 ? `0${sec}` : sec}`;
+        this.timer.innerHTML = `${CONSTS.timer.text}${time}`;
         this.state.timeLeft--;
         _.delay(() => this.countDown(), 1000);
     }
