@@ -45,13 +45,17 @@ class InterfaceScene extends Scene {
 
     countDown() {
         const { timeLeft } = this.state;
-        if (timeLeft === 0) { return; }
+        if (timeLeft < 0) { return; }
         const min = Math.floor(timeLeft / 60);
         const sec = timeLeft % 60;
         const time = `${min}:${sec < 10 ? `0${sec}` : sec}`;
         this.timer.innerHTML = `${CONSTS.timer.text}${time}`;
         this.state.timeLeft--;
         _.delay(() => this.countDown(), 1000);
+    }
+
+    isEnded() {
+        return this.state.timeLeft < 0;
     }
 
     createText(text, style) {

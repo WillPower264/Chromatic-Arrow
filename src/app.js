@@ -17,17 +17,20 @@ const camera = new PerspectiveCamera();
 const renderer = new WebGLRenderer({ antialias: true });
 const clock = new Clock();
 
-// Game objects
+// Control scene transitions
 let isStarted = false;
 let isEnded = false;
-let scene;
-let sceneOrtho;
 let startTimeStamp;
-const controls = new PlayerControls(camera, document.body);
 
-// Title screen objects
-let initScene = new StartScene();
-initScene.add(controls.getObject());
+// Scenes
+let startScene = new StartScene();
+let gameScene;
+let interfaceScene;
+let endScene;
+
+// Controls
+const controls = new PlayerControls(camera, document.body);
+startScene.add(controls.getObject());
 
 // Set up camera
 camera.position.copy(CONSTS.camera.position);
@@ -55,45 +58,51 @@ document.body.style.margin = 0; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
+function endGame() {
+  // Handle transition between scenes
+  const finalScore = interfaceScene.state.score;
+  interfaceScene.clearText();
+  interfaceScene.dispose();
+  gameScene.end();
+  endScene = new EndScene(finalScore);
+  isEnded = true;
+  // Re-enable listener after short delay
+  _.delay(() => {
+    window.addEventListener('click', endToGameHandler, false);
+  }, CONSTS.msEndDelay);
+}
+
+function renderOne(projScene, timeStamp) {
+  renderer.render(projScene, camera);
+  projScene.update && projScene.update(timeStamp);
+}
+
+function renderTwo(projScene, orthoScene, timeStamp) {
+  controls.update(clock.getDelta());
+  renderer.clear();
+  renderer.render(projScene, camera);
+  renderer.clearDepth();
+  renderer.render(orthoScene, cameraOrtho);
+  projScene.update && projScene.update(timeStamp);
+  camera.getWorldDirection(projScene.direction);
+  orthoScene.update && orthoScene.update(timeStamp);
+}
+
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
-  // Game scene
-  if (isStarted) {
-    // End game
-    if (timeStamp > startTimeStamp + CONSTS.msTimeLimit) {
-      const finalScore = sceneOrtho.state.score;
-      sceneOrtho.clearText();
-      sceneOrtho.dispose();
-      scene.end();
-      initScene = new EndScene(finalScore);
-      isEnded = true;
-      isStarted = false;
-      // Re-enable listener after short delay
-      _.delay(() => {
-        window.addEventListener('click', startGameHandler, false);
-      }, CONSTS.msEndDelay);
-    }
-    controls.update(clock.getDelta());
-    renderer.clear();
-    renderer.render(scene, camera);
-    renderer.clearDepth();
-    renderer.render(sceneOrtho, cameraOrtho);
-    scene.update && scene.update(timeStamp);
-    camera.getWorldDirection(scene.direction);
-    sceneOrtho.update && sceneOrtho.update(timeStamp);
-  // Start and end
-  } else {
-    if (isEnded) {
-      controls.update(clock.getDelta());
-      renderer.clear();
-      renderer.render(scene, camera);
-      renderer.clearDepth();
-      scene.update && scene.update(timeStamp);
-    }
-    const cam = isEnded ? cameraOrtho : camera;
-    renderer.render(initScene, cam);
-    initScene.update && initScene.update(timeStamp);
+  // Show start scene
+  if (!isStarted) {
     startTimeStamp = timeStamp;
+    renderOne(startScene, timeStamp);
+  // End the game
+  } else if (isEnded) {
+    renderTwo(gameScene, endScene, timeStamp);
+  // End the game
+  } else if (interfaceScene.isEnded()) {
+    endGame();
+    renderTwo(gameScene, endScene, timeStamp);
+  } else {
+    renderTwo(gameScene, interfaceScene, timeStamp);
   }
   window.requestAnimationFrame(onAnimationFrameHandler);
 };
@@ -116,20 +125,30 @@ const windowResizeHandler = () => {
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
-// Start game handler
-const startGameHandler = () => {
-  if (isStarted) { return; }
-  initScene.clearText();
-  initScene.dispose();
-  if (scene !== undefined) {
-    scene.dispose();
+function changeScenes(lastScene) {
+  lastScene.clearText();
+  lastScene.dispose();
+  if (gameScene !== undefined) {
+    gameScene.dispose();
   }
-  scene = new SeedScene();
+  gameScene = new SeedScene();
   // Set up controls
-  scene.add(controls.getObject());
-  sceneOrtho = new InterfaceScene();
+  gameScene.add(controls.getObject());
+  interfaceScene = new InterfaceScene();
   isStarted = true;
   isEnded = false;
-  window.removeEventListener('click', startGameHandler, false);
 };
-window.addEventListener('click', startGameHandler, false);
+
+// Start game handler
+const startToGameHandler = () => {
+  if (isStarted || isEnded) { return; }
+  changeScenes(startScene);
+};
+
+// Start game handler
+const endToGameHandler = () => {
+  changeScenes(endScene);
+  window.removeEventListener('click', endToGameHandler, false);
+};
+
+window.addEventListener('click', startToGameHandler, false);
