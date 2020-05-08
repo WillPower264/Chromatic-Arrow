@@ -92,13 +92,14 @@ const onAnimationFrameHandler = (timeStamp) => {
   // Show start scene
   if (!isStarted) {
     renderOne(startScene, timeStamp);
-  // End the game
+  // Show end scene
   } else if (isEnded) {
     renderTwo(gameScene, endScene, timeStamp);
   // End the game
   } else if (interfaceScene.isEnded()) {
     endGame();
     renderTwo(gameScene, endScene, timeStamp);
+  // Show game scene
   } else {
     renderTwo(gameScene, interfaceScene, timeStamp);
   }

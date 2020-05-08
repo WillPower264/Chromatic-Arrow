@@ -2,6 +2,7 @@ import { Scene, BoxGeometry, DoubleSide, Euler, Mesh, MeshBasicMaterial, MeshSta
 import { BasicLights } from 'lights';
 import { Splatter } from 'objects';
 import CONSTS from '../../constants';
+import '../../style.css';
 
 class StartScene extends Scene {
     constructor() {
@@ -28,10 +29,11 @@ class StartScene extends Scene {
         this.add(mesh);
 
         // Text
-        this.textIds = [];
+        this.eltIds = [];
         this.currWidth = window.innerWidth;
         this.createText("Chromatic Arrow", '30%');
-        this.createText("Click Anywhere to Begin", '60%');
+        this.createButton("Tutorial", '42%');
+        this.createButton("Begin", '54%');
     }
 
     createText(str, top) {
@@ -46,21 +48,38 @@ class StartScene extends Scene {
         const { innerHeight, innerWidth } = window;
         text.style.left = (innerWidth - text.clientWidth)/2 + 'px';
         text.style.top = top;
-        this.textIds.push(str);
+        this.eltIds.push(str);
+    }
+
+    testHandler() {
+        console.log('in handler')
+    }
+
+    createButton(str, top) {
+        const button = document.createElement('button');
+        button.id = str;
+        button.innerHTML = str;
+        button.onclick = this.testHandler;
+        document.body.appendChild(button);
+        // Center button
+        const { innerHeight, innerWidth } = window;
+        button.style.left = (innerWidth - button.clientWidth)/2 + 'px';
+        button.style.top = top;
+        this.eltIds.push(str);
     }
 
     clearText() {
-        for (let i = 0; i < this.textIds.length; i++) {
-          document.getElementById(this.textIds[i]).remove();
+        for (let i = 0; i < this.eltIds.length; i++) {
+          document.getElementById(this.eltIds[i]).remove();
         }
-        this.textIds.length = [];
+        this.eltIds.length = [];
     }
 
     update(timeStamp) {
         // Re-center text
         if (window.innerWidth !== this.currentWidth) {
-          for (let i = 0; i < this.textIds.length; i++) {
-            const elt = document.getElementById(this.textIds[i]);
+          for (let i = 0; i < this.eltIds.length; i++) {
+            const elt = document.getElementById(this.eltIds[i]);
             elt.style.left = (window.innerWidth - elt.clientWidth)/2 + 'px';
           }
           this.currentWidth = window.innerWidth;
