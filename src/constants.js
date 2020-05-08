@@ -78,8 +78,7 @@ const CONSTS = {
             position: 'absolute',
             fontSize: '40px',
             color: 'white',
-            textAlign: 'left',
-            paddingLeft: '10px',
+            padding: '10px',
             top: '10px',
         },
     },
@@ -114,6 +113,17 @@ const CONSTS = {
         },
         disappearing: false,
         msDuration: 5 * 1000,
+    },
+    timer: {
+        text: 'Time Left: ',
+        id: 'timer',
+        style: {
+            position: 'absolute',
+            fontSize: '40px',
+            color: 'white',
+            padding: '10px',
+            top: '50px',
+        },
     },
     wind: {
         nPoints: 300,

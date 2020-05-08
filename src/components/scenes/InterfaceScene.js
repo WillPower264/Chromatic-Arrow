@@ -11,6 +11,7 @@ class InterfaceScene extends Scene {
         this.state = {
             updateList: [],
             score: 0,
+            timeLeft: CONSTS.msTimeLimit / 1000,
         };
 
         // Interface objects
@@ -28,10 +29,21 @@ class InterfaceScene extends Scene {
         this.addToUpdateList(timer);
 
         // Add text
-        const { text, id, style } = CONSTS.scoreBox;
+        const {
+          text: scoreText, id: scoreId, style: scoreStyle
+        } = CONSTS.scoreBox;
         this.scoreBox = this.createText(
-          `${text}${this.state.score}`, id, style
+          `${scoreText}${this.state.score}`, scoreId, scoreStyle
         );
+        const {
+          text: timerText, id: timerId, style: timerStyle
+        } = CONSTS.timer;
+        this.timer = this.createText(
+          `${timerText}${this.state.score}`, timerId, timerStyle
+        );
+
+        // Countdown on clock
+        this.countDown();
 
         // Listeners
         this.addEventListeners();
@@ -41,18 +53,30 @@ class InterfaceScene extends Scene {
         this.state.updateList.push(object);
     }
 
+    countDown() {
+        const { timeLeft } = this.state;
+        if (timeLeft === 0) {
+            this.scoreBox.remove();
+            this.timer.remove();
+            return;
+        }
+        this.timer.innerHTML = `${CONSTS.timer.text}${timeLeft}`;
+        this.state.timeLeft--;
+        _.delay(() => this.countDown(), 1000);
+    }
+
     createText(text, id, style) {
-        const scoreBox = document.createElement('div');
-        scoreBox.id = id;
-        scoreBox.innerHTML = text;
-        _.extend(scoreBox.style, style);
-        document.body.appendChild(scoreBox);
-        return scoreBox;
+        const textBox = document.createElement('div');
+        textBox.id = id;
+        textBox.innerHTML = text;
+        _.extend(textBox.style, style);
+        document.body.appendChild(textBox);
+        return textBox;
     }
 
     clearText() {
-        const { id } = CONSTS.scoreBox;
-        document.getElementById(id).remove();
+        document.getElementById(CONSTS.scoreBox.id).remove();
+        document.getElementById(CONSTS.timer.id).remove();
     }
 
     updateScore(change) {
