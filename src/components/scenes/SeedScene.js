@@ -5,7 +5,7 @@ import _ from 'lodash';
 import CONSTS from '../../constants';
 
 class SeedScene extends Scene {
-    constructor() {
+    constructor(isTutorial) {
         // Call parent Scene() constructor
         super();
 
@@ -26,29 +26,31 @@ class SeedScene extends Scene {
         this.direction = new Vector3();
         this.beginFireStep = 0;
         this.currentStep = 0;
+        this.barriersHit = 0;
 
-        // Set background to a nice color
+        // Set background, ground, and lights
         this.background = new Color(backgroundColor);
+        this.ground = this.initializeGround();
+        const lights = new BasicLights();
+        this.add(lights);
 
         // Set arrow and add, add to update list
         this.currentArrow = new Arrow(this);
         this.add(this.currentArrow);
         this.addToUpdateList(this.currentArrow);
 
-        // Set up targets, barriers, and wind
+        // Set up for targets and wind
         this.initializeTargets();
-        this.initializeBarriers();
-        this.changeWind();
+        this.windVec = new Vector3(0, 0, 0);
+        this.windSpeed = 0;
 
-        // Add meshes to scene
-        this.ground = this.initializeGround();
-        const lights = new BasicLights();
-        this.add(lights);
-
-        // Create targets and wind
-        this.createTarget();
-        this.createWind();
-        this.changeWind();
+        // Create barriers, targets, and wind
+        if (!isTutorial) {
+            this.createBarriers();
+            this.createTargetLoop();
+            this.changeWind();
+            this.createWind();
+        }
 
         // Add event listeners
         this.addEventListeners();
@@ -68,13 +70,17 @@ class SeedScene extends Scene {
         this.disableControls = true;
     }
 
-    createTarget() {
+    spawnTarget(position) {
         // Check how many targets are in use
         if (this.state.numTargetsInUse < CONSTS.scene.maxTargets) {
             // Create new target
             const { disappearing, msDuration } = CONSTS.target;
             const target = this.state.targets[this.state.numTargetsInUse];
-            target.setRandomPosition();
+            if (position === undefined) {
+                target.setRandomPosition();
+            } else {
+                target.position.copy(position)
+            }
             target.faceCenter();
             this.state.numTargetsInUse++;
             this.add(target);
@@ -88,8 +94,12 @@ class SeedScene extends Scene {
                 }, msDuration);
             }
         }
+    }
+
+    createTargetLoop() {
+        this.spawnTarget();
         // Call function again, but later
-        _.delay(() => this.createTarget(), CONSTS.scene.msBetweenTargets);
+        _.delay(() => this.createTargetLoop(), CONSTS.scene.msBetweenTargets);
     }
 
     changeWind() {
@@ -145,7 +155,7 @@ class SeedScene extends Scene {
         barrier.attach(splat.mesh);
     }
 
-    initializeBarriers() {
+    createBarriers() {
         _.times(CONSTS.scene.numBarriers, (n) => {
             const barrier = new Barrier(n);
             this.add(barrier);
@@ -186,7 +196,6 @@ class SeedScene extends Scene {
         window.addEventListener("mouseup", () => {
             // Shoot this arrow
             if (this.disableControls) return;
-
             const { chargeRate, baseForce, maxForce} = CONSTS.arrow.movement;
             const totalTime = this.currentStep - this.beginFireStep;
             const factor = Math.min(totalTime * chargeRate, 1);
@@ -211,12 +220,6 @@ class SeedScene extends Scene {
         });
     }
 
-    removeEventListeners() {
-        window.removeEventListener("mousedown", this.setFiring.bind(this), false);
-        window.removeEventListener("mouseup", this.fireArrow.bind(this), false);
-        window.removeEventListener('keydown', this.revealRandBarrier.bind(this));
-    }
-
     initializeGround() {
         const ground = {};
         ground.textures = {};
@@ -224,8 +227,6 @@ class SeedScene extends Scene {
         // ground material
         ground.material = new MeshStandardMaterial({
             color: CONSTS.scene.groundColor, //0x3c3c3c,
-            //   specular: 0x404761, //0x3c3c3c//,
-            //   metalness: 0.3,
         });
 
         // ground mesh
@@ -233,15 +234,7 @@ class SeedScene extends Scene {
         ground.mesh = new Mesh(ground.geometry, ground.material);
         ground.mesh.position.y = CONSTS.scene.groundPos;
         ground.mesh.receiveShadow = true;
-
-        // handled in Scene.updateGroundTexture()
-        // needed for ground texture
-        // ground.texture = Scene.loader.load( "textures/terrain/grasslight-big.jpg" );
-        // ground.texture.wrapS = ground.texture.wrapT = THREE.RepeatWrapping;
-        // ground.texture.repeat.set( 25, 25 );
-        // ground.texture.anisotropy = 16;
-        // ground.material.map = ground.texture;
-        this.add(ground.mesh); // add ground to scene
+        this.add(ground.mesh);
         return ground;
     }
 }

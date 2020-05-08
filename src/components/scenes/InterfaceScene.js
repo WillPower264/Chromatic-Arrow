@@ -4,7 +4,7 @@ import CONSTS from '../../constants';
 import _ from 'lodash';
 
 class InterfaceScene extends Scene {
-    constructor() {
+    constructor(isTutorial) {
         // Call parent Scene() constructor
         super();
 
@@ -13,6 +13,8 @@ class InterfaceScene extends Scene {
             score: 0,
             timeLeft: CONSTS.msTimeLimit / 1000,
         };
+        // Tutorial mode
+        this.isTutorial = isTutorial;
 
         // Add powerbar
         const pbar = new Powerbar(250, 50);
@@ -27,13 +29,15 @@ class InterfaceScene extends Scene {
         // Add text
         const { text: scoreText, style: scoreStyle } = CONSTS.scoreBox;
         this.scoreBox = this.createText(`${scoreText}${this.state.score}`, scoreStyle);
-        const { text: timerText, style: timerStyle } = CONSTS.timer;
-        this.timer = this.createText(`${timerText}${this.state.score}`, timerStyle);
         const {text: powerText, style: powerStyle} = CONSTS.powerBar;
         this.powerBarText = this.createText(powerText, powerStyle);
 
-        // Countdown on clock
-        this.countDown();
+        // Add timer and countdown
+        if (!isTutorial) {
+            const { text: timerText, style: timerStyle } = CONSTS.timer;
+            this.timer = this.createText(`${timerText}${this.state.score}`, timerStyle);
+            this.countDown();
+        }
 
         // Listeners
         this.addEventListeners();
@@ -55,7 +59,7 @@ class InterfaceScene extends Scene {
     }
 
     isEnded() {
-        return this.state.timeLeft < 0;
+        return this.isTutorial ? false : this.state.timeLeft < 0;
     }
 
     createText(text, style) {
@@ -68,8 +72,8 @@ class InterfaceScene extends Scene {
 
     clearText() {
         this.scoreBox.remove();
-        this.timer.remove();
         this.powerBarText.remove();
+        if (!this.isTutorial) { this.timer.remove(); }
     }
 
     updateScore(change) {

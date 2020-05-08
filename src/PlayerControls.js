@@ -1,6 +1,13 @@
 // Adapted from https://github.com/jpan17/constellations/blob/d253faeded2bf84009a3d47eb1fd33e0050cdcd0/js/PlayerControls.js
 
 import { Euler, MOUSE, Vector3, Object3D } from 'three';
+
+function getPointerLock() {
+    const element = document.body;
+    element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
+    element.requestPointerLock();
+}
+
 // initializes the player
 class PlayerControls {
     constructor(camera, domElement) {
@@ -141,12 +148,17 @@ class PlayerControls {
 
     enable() {
         if (this.enabled) { return; }
-        document.body.addEventListener("click", function() {
-            const element = document.body;
-            element.requestPointerLock = element.requestPointerLock || element.mozRequestPointerLock || element.webkitRequestPointerLock;
-            element.requestPointerLock();
-        });
+        document.body.addEventListener("click", getPointerLock);
         this.enabled = true;
+    }
+
+    disable() {
+        if (!this.enabled) { return; }
+        const element = document;
+        element.exitPointerLock = element.exitPointerLock || element.mozExitPointerLock || element.webkitExitPointerLock;
+        element.exitPointerLock();
+        document.body.removeEventListener("click", getPointerLock);
+        this.enabled = false;
     }
 };
 export default PlayerControls;

@@ -5,7 +5,7 @@ import CONSTS from '../../constants';
 import '../../style.css';
 
 class StartScene extends Scene {
-    constructor(startGameCallback) {
+    constructor(startGameCallback, tutorialCallback) {
         // Call parent Scene() constructor
         super();
         // Timing
@@ -32,7 +32,7 @@ class StartScene extends Scene {
         this.eltIds = [];
         this.currWidth = window.innerWidth;
         this.createText("Chromatic Arrow", '30%');
-        this.createButton("Tutorial", '42%', startGameCallback);
+        this.createButton("Tutorial", '42%', tutorialCallback);
         this.createButton("Begin", '54%', startGameCallback);
     }
 

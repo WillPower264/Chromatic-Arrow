@@ -21,6 +21,7 @@ class Arrow extends Group {
         this.name = 'arrow';
         this.netForce = new Vector3(0, 0, 0);
         this.hasCollided = false;
+        this.hasCollided = false;
         this.color = Math.random() * 0xffffff;
 
         this.fired = false; // behavior is different after arrow is fired
@@ -201,7 +202,9 @@ class Arrow extends Group {
                 this.scene.addSplatterBarrier(
                     arrowTipPos.clone(), barriers[i], barrierPlane, this.color
                 );
+
                 this.hasCollided = true;
+                this.scene.barriersHit++;
                 return true;
             }
         }

@@ -9,60 +9,95 @@
 import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Clock } from 'three';
 import { InterfaceScene, StartScene, SeedScene, EndScene } from 'scenes';
 import PlayerControls from './PlayerControls';
+import runTutorial from './Tutorial';
 import CONSTS from './constants';
 import _ from 'lodash';
 
 // Initialize core ThreeJS components
-const camera = new PerspectiveCamera();
+let camera;
+let controls;
 const renderer = new WebGLRenderer({ antialias: true });
 const clock = new Clock();
+
+// Scene set up
+let startScene;
+let gameScene;
+let interfaceScene;
+let endScene;
+
+function initStartScene() {
+  startScene = new StartScene(startToGameHandler, startToTutorialHander);
+  camera = new PerspectiveCamera();
+  controls = new PlayerControls(camera, document.body);
+  startScene.add(controls.getObject());
+  isStarted = false;
+  // Camera and controls
+  startScene.add(controls.getObject());
+  camera.position.copy(CONSTS.camera.position);
+  camera.lookAt(CONSTS.camera.initialDirection); // camera starts looking down the +z axis
+}
 
 // Control scene transitions
 let isStarted = false;
 let isEnded = false;
+let isTutorial = false;
 
 // Scene change functions
-function changeToGame(lastScene) {
+function changeToGame(lastScene, isTut) {
   lastScene.clearText();
   lastScene.dispose();
   if (gameScene !== undefined) {
     gameScene.dispose();
   }
-  gameScene = new SeedScene();
+  gameScene = new SeedScene(isTut);
   // Set up controls
   controls.enable();
   gameScene.add(controls.getObject());
-  camera.lookAt(CONSTS.camera.initialDirection);
-  interfaceScene = new InterfaceScene();
+  interfaceScene = new InterfaceScene(isTut);
   isStarted = true;
+  isTutorial = isTut;
   isEnded = false;
 };
 
 // Start game handler
 const startToGameHandler = () => {
-  if (isStarted || isEnded) { return; }
-  changeToGame(startScene);
+  changeToGame(startScene, false);
 };
 
-// Start game handler
+// Start tutorial handler
+const startToTutorialHander = () => {
+  changeToGame(startScene, true);
+};
+
+// Restart tutorial handler
 const endToGameHandler = () => {
   changeToGame(endScene);
   window.removeEventListener('click', endToGameHandler, false);
 };
 
-// Scenes
-let startScene = new StartScene(startToGameHandler);
-let gameScene;
-let interfaceScene;
-let endScene;
+function endGame() {
+  // Handle transition between scenes
+  const finalScore = interfaceScene.state.score;
+  interfaceScene.clearText();
+  interfaceScene.dispose();
+  gameScene.end();
+  endScene = new EndScene(finalScore);
+  isEnded = true;
+  // Re-enable listener after short delay
+  _.delay(() => {
+    window.addEventListener('click', endToGameHandler, false);
+  }, CONSTS.msEndDelay);
+}
 
-// Controls
-let controls = new PlayerControls(camera, document.body);
-startScene.add(controls.getObject());
-
-// Set up camera
-camera.position.copy(CONSTS.camera.position);
-camera.lookAt(CONSTS.camera.initialDirection); // camera starts looking down the +z axis
+function endTutorial() {
+  interfaceScene.clearText();
+  interfaceScene.dispose();
+  interfaceScene = undefined;
+  gameScene.dispose();
+  gameScene = undefined;
+  controls.disable();
+  initStartScene();
+}
 
 // Set up interface overlay camera
 // From example: https://threejs.org/examples/#webgl_sprites
@@ -86,20 +121,6 @@ document.body.style.margin = 0; // Removes margin around page
 document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
-function endGame() {
-  // Handle transition between scenes
-  const finalScore = interfaceScene.state.score;
-  interfaceScene.clearText();
-  interfaceScene.dispose();
-  gameScene.end();
-  endScene = new EndScene(finalScore);
-  isEnded = true;
-  // Re-enable listener after short delay
-  _.delay(() => {
-    window.addEventListener('click', endToGameHandler, false);
-  }, CONSTS.msEndDelay);
-}
-
 function renderOne(projScene, timeStamp) {
   renderer.render(projScene, camera);
   projScene.update && projScene.update(timeStamp);
@@ -117,10 +138,19 @@ function renderTwo(projScene, orthoScene, timeStamp) {
 }
 
 // Render loop
+initStartScene();
 const onAnimationFrameHandler = (timeStamp) => {
   // Show start scene
   if (!isStarted) {
     renderOne(startScene, timeStamp);
+  // Show tutorial
+  } else if (isTutorial) {
+    isTutorial = runTutorial(gameScene, timeStamp);
+    renderTwo(gameScene, interfaceScene, timeStamp);
+    // Just ended
+    if (!isTutorial) {
+      endTutorial();
+    }
   // Show end scene
   } else if (isEnded) {
     renderTwo(gameScene, endScene, timeStamp);
