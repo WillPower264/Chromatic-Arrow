@@ -21,6 +21,7 @@ class SeedScene extends Scene {
         };
 
         // Firing arrow
+        this.disableControls = false;
         this.isFiring = false;
         this.direction = new Vector3();
         this.beginFireStep = 0;
@@ -64,7 +65,7 @@ class SeedScene extends Scene {
             barriers[i].reveal();
         }
         // Disable user input
-        this.removeEventListeners();
+        this.disableControls = true;
     }
 
     createTarget() {
@@ -178,42 +179,40 @@ class SeedScene extends Scene {
         }
     }
 
-    setFiring() {
-        this.isFiring = true;
-    }
-
-    fireArrow() {
-        // Shoot this arrow
-        const totalTime = this.currentStep - this.beginFireStep;
-        const factor = Math.min(totalTime*CONSTS.arrow.movement.chargeRate, 1);
-        this.currentArrow.addForce(
-          this.direction.normalize().clone().multiplyScalar(
-            factor*CONSTS.arrow.movement.maxForce
-          )
-        );
-        // Create new arrow
-        this.currentArrow = new Arrow(this);
-        this.add(this.currentArrow);
-        this.addToUpdateList(this.currentArrow);
-        this.isFiring = false;
-    }
-
-    revealRandBarrier() {
-        const randIdx = _.random(CONSTS.scene.numBarriers - 1);
-        const randCol = Math.random() * 0xffffff;
-        this.state.barriers[randIdx].reveal(randCol);
-    }
-
     addEventListeners() {
-        window.addEventListener("mousedown", this.setFiring, false);
-        window.addEventListener("mouseup", this.fireArrow, false);
-        window.addEventListener('keydown', this.revealRandBarrier);
+        window.addEventListener("mousedown", () => {
+            this.isFiring = true;
+        }, false);
+
+        window.addEventListener("mouseup", () => {
+            // Shoot this arrow
+            if (this.disableControls) return;
+            const totalTime = this.currentStep - this.beginFireStep;
+            const factor = Math.min(totalTime*CONSTS.arrow.movement.chargeRate, 1);
+            this.currentArrow.addForce(
+              this.direction.normalize().clone().multiplyScalar(
+                factor*CONSTS.arrow.movement.maxForce
+              )
+            );
+            // Create new arrow
+            this.currentArrow = new Arrow(this);
+            this.add(this.currentArrow);
+            this.addToUpdateList(this.currentArrow);
+            this.isFiring = false;
+        }, false);
+
+        window.addEventListener('keydown', () => {
+            if (this.disableControls) return;
+            const randIdx = _.random(CONSTS.scene.numBarriers - 1);
+            const randCol = Math.random() * 0xffffff;
+            this.state.barriers[randIdx].reveal(randCol);
+        });
     }
 
     removeEventListeners() {
-        window.removeEventListener("mousedown", this.setFiring, false);
-        window.removeEventListener("mouseup", this.fireArrow, false);
-        window.removeEventListener('keydown', this.revealRandBarrier);
+        window.removeEventListener("mousedown", this.setFiring.bind(this), false);
+        window.removeEventListener("mouseup", this.fireArrow.bind(this), false);
+        window.removeEventListener('keydown', this.revealRandBarrier.bind(this));
     }
 
     initializeGround() {
