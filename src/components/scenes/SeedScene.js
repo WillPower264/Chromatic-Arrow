@@ -130,7 +130,7 @@ class SeedScene extends Scene {
     // TODO: scale by impact velocity
     addSplatterGround(position, color) {
         const splat = new Splatter(
-          this.ground.mesh, position, new Euler(-Math.PI/2, 0, 0), 1, color
+          this.ground.mesh, position, new Euler(-Math.PI/2, 0, 0), CONSTS.splatter.splatSize, color
         );
         this.add(splat.mesh);
     }
@@ -141,7 +141,7 @@ class SeedScene extends Scene {
         plane.projectPoint(position, projPos);
         const rot = new Euler(0, Math.atan2(plane.normal.x, plane.normal.z), 0);
         const splat = new Splatter(
-          barrier.children[0], projPos, rot, 1, color
+          barrier.children[0], projPos, rot, CONSTS.splatter.splatSize, color
         );
         barrier.attach(splat.mesh);
     }

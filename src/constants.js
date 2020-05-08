@@ -97,6 +97,9 @@ const CONSTS = {
             top: '10px',
         },
     },
+    splatter: {
+        splatSize: 4,
+    },
     start: {
       stepsPerSplatter: 6,
       maxSplatters: 30,
