@@ -95,7 +95,6 @@ class SeedScene extends Scene {
     changeWind() {
         const direction = 2*Math.PI*Math.random();
         const { minSpeed, maxSpeed } = CONSTS.scene.wind;
-        // const speed = minSpeed + (maxSpeed-minSpeed)*Math.random();
         const speed = _.random(minSpeed, maxSpeed, true);
         this.windVec = new Vector3(
           speed*Math.cos(direction), 0, speed*Math.sin(direction)

@@ -22,7 +22,7 @@ class Barrier extends Group {
         const geometry = new BoxGeometry(width, height, depth);
         const material = new MeshBasicMaterial();
         this.add(new Mesh(geometry, material));
-        this.visible = false;
+        this.children[0].visible = false;
         this.setRandomPosition(n);
     }
 
@@ -45,7 +45,7 @@ class Barrier extends Group {
     reveal(color) {
         // Give the mesh a color and reveal it
         this.children[0].material.color = new Color(color || 'white');
-        this.visible = true;
+        this.children[0].visible = true;
     }
 
     // Barriers always exist

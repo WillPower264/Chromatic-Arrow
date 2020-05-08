@@ -26,9 +26,9 @@ class Splatter extends Group {
             color: color || Math.random() * 0xffffff,
             transparent: true,
             depthTest: true,
-                depthWrite: false,
-                polygonOffset: true,
-                polygonOffsetFactor: -4
+            depthWrite: false,
+            polygonOffset: true,
+            polygonOffsetFactor: -4
         });
         const decalMesh = new Mesh(decalGeom, decalMat);
         this.mesh = decalMesh;

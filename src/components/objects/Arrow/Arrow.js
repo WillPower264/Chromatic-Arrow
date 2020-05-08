@@ -175,8 +175,8 @@ class Arrow extends Group {
             const eps = CONSTS.target.thickness + CONSTS.EPS;
             if (barrierPlane.distanceToPoint(arrowTipPos) <= eps) {
                 // Check y
-                if (arrowTipPos.y > barrierPos.y + halfH + eps ||
-                    arrowTipPos.y < barrierPos.y - halfH - eps) {
+                if (arrowTipPos.y > barrierPos.y + halfH + CONSTS.EPS ||
+                    arrowTipPos.y < barrierPos.y - halfH - CONSTS.EPS) {
                     continue;
                 }
                 // Check x/z
@@ -189,10 +189,13 @@ class Arrow extends Group {
                 const maxX = right.x < left.x ? left.x : right.x;
                 const minZ = right.z < left.z ? right.z : left.z;
                 const maxZ = right.z < left.z ? left.z : right.z;
-                if (arrowTipPos.x > maxX + halfH + eps ||
-                    arrowTipPos.x < minX - halfH - eps ||
-                    arrowTipPos.z > maxZ + halfH + eps ||
-                    arrowTipPos.z < minZ - halfH - eps) {
+                // Project back onto plane since time steps are discrete
+                const projPos = new Vector3(0, 0, 0);
+                barrierPlane.projectPoint(arrowTipPos, projPos);
+                if (projPos.x > maxX + CONSTS.EPS ||
+                    projPos.x < minX - CONSTS.EPS ||
+                    projPos.z > maxZ + CONSTS.EPS ||
+                    projPos.z < minZ - CONSTS.EPS) {
                     continue;
                 }
                 this.scene.addSplatterBarrier(
