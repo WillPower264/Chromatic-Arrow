@@ -52,7 +52,6 @@ class SeedScene extends Scene {
 
         // Add event listeners
         this.addEventListeners();
-        console.log(window);
     }
 
     addToUpdateList(object) {
