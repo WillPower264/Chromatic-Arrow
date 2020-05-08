@@ -28,8 +28,10 @@ class InterfaceScene extends Scene {
         this.addToUpdateList(timer);
 
         // Add text
-        const { text, style } = CONSTS.scoreBox;
-        this.scoreBox = this.createText(`${text}${this.state.score}`, style);
+        const { text, id, style } = CONSTS.scoreBox;
+        this.scoreBox = this.createText(
+          `${text}${this.state.score}`, id, style
+        );
 
         // Listeners
         this.addEventListeners();
@@ -39,12 +41,18 @@ class InterfaceScene extends Scene {
         this.state.updateList.push(object);
     }
 
-    createText(text, style) {
+    createText(text, id, style) {
         const scoreBox = document.createElement('div');
+        scoreBox.id = id;
         scoreBox.innerHTML = text;
         _.extend(scoreBox.style, style);
         document.body.appendChild(scoreBox);
         return scoreBox;
+    }
+
+    clearText() {
+        const { id } = CONSTS.scoreBox;
+        document.getElementById(id).remove();
     }
 
     updateScore(change) {

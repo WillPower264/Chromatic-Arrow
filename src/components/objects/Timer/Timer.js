@@ -35,7 +35,7 @@ class Timer extends Group {
 
     update(timeStamp) {
       const time = timeStamp - this.creationTime;
-      const angle = (time*2*Math.PI) / CONSTS.msTimeLimit;
+      const angle = Math.min((time*2*Math.PI) / CONSTS.msTimeLimit, 2*Math.PI);
       this.rotation.z = -angle;
     }
 

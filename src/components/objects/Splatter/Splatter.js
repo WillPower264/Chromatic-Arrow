@@ -14,21 +14,25 @@ class Splatter extends Group {
         }
         const textureLoader = new TextureLoader();
         const splatter = textureLoader.load(SPLATTER);
-        const decalMat = new MeshBasicMaterial({
-          map: splatter,
-          color: color,
-          transparent: true,
-          depthTest: true,
-  				depthWrite: false,
-  				polygonOffset: true,
-  				polygonOffsetFactor: -4
-        });
-        rotation.z = Math.random()*2*Math.PI;
-        const decalGeom = new DecalGeometry(
-          mesh, position, rotation, new Vector3(scale,scale,scale)
-        );
-        const decalMesh = new Mesh(decalGeom, decalMat);
-        this.mesh = decalMesh;
+        this.texture = splatter;
+
+        if (mesh !== undefined) {
+            const decalMat = new MeshBasicMaterial({
+              map: splatter,
+              color: color,
+              transparent: true,
+              depthTest: true,
+      				depthWrite: false,
+      				polygonOffset: true,
+      				polygonOffsetFactor: -4
+            });
+            rotation.z = Math.random()*2*Math.PI;
+            const decalGeom = new DecalGeometry(
+              mesh, position, rotation, new Vector3(scale,scale,scale)
+            );
+            const decalMesh = new Mesh(decalGeom, decalMat);
+            this.mesh = decalMesh;
+        }
     }
 }
 

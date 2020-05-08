@@ -4,6 +4,7 @@ const CONSTS = {
     EPS: 0.0001,
     fullRotation: 2 * Math.PI,
     msTimeLimit: 60 * 1000,
+    msEndDelay: 1 * 1000,
     // keep these top level objects in alphabetical order
     arrow: {
         position: new Vector3(0, 1.9, 0),
@@ -72,6 +73,7 @@ const CONSTS = {
     },
     scoreBox: {
         text: 'Score: ',
+        id: 'score',
         style: {
             position: 'absolute',
             fontSize: '40px',

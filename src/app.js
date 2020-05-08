@@ -7,7 +7,7 @@
  *
  */
 import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Clock } from 'three';
-import { InterfaceScene, StartScene, SeedScene } from 'scenes';
+import { InterfaceScene, StartScene, SeedScene, EndScene } from 'scenes';
 import PlayerControls from './PlayerControls';
 import CONSTS from './constants';
 
@@ -18,14 +18,15 @@ const clock = new Clock();
 
 // Game objects
 let isStarted = false;
+let isEnded = false;
 let scene;
 let sceneOrtho;
 let startTimeStamp;
 const controls = new PlayerControls(camera, document.body);
 
 // Title screen objects
-let startScene = new StartScene();
-startScene.add(controls.getObject());
+let initScene = new StartScene();
+initScene.add(controls.getObject());
 
 // Set up camera
 camera.position.copy(CONSTS.camera.position);
@@ -55,14 +56,21 @@ document.body.appendChild(canvas);
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
+  // Game scene
   if (isStarted) {
+    // End game
     if (timeStamp > startTimeStamp + CONSTS.msTimeLimit) {
-      scene.dispose();
+      const finalScore = sceneOrtho.state.score;
+      sceneOrtho.clearText();
       sceneOrtho.dispose();
-      startScene = new StartScene();
+      scene.end();
+      initScene = new EndScene(finalScore);
+      isEnded = true;
       isStarted = false;
-      // Re-enable listener
-      window.addEventListener('click', startGameHandler, false);
+      // Re-enable listener after short delay
+      _.delay(() => {
+        window.addEventListener('click', startGameHandler, false);
+      }, CONSTS.msEndDelay);
     }
     controls.update(clock.getDelta());
     renderer.clear();
@@ -72,9 +80,18 @@ const onAnimationFrameHandler = (timeStamp) => {
     scene.update && scene.update(timeStamp);
     camera.getWorldDirection(scene.direction);
     sceneOrtho.update && sceneOrtho.update(timeStamp);
+  // Start and end
   } else {
-    renderer.render(startScene, camera);
-    startScene.update && startScene.update(timeStamp);
+    if (isEnded) {
+      controls.update(clock.getDelta());
+      renderer.clear();
+      renderer.render(scene, camera);
+      renderer.clearDepth();
+      scene.update && scene.update(timeStamp);
+    }
+    const cam = isEnded ? cameraOrtho : camera;
+    renderer.render(initScene, cam);
+    initScene.update && initScene.update(timeStamp);
     startTimeStamp = timeStamp;
   }
   window.requestAnimationFrame(onAnimationFrameHandler);
@@ -100,14 +117,19 @@ window.addEventListener('resize', windowResizeHandler, false);
 
 // Start game handler
 const startGameHandler = (timeStamp) => {
+  console.log("start handler", scene)
   if (isStarted) { return; }
-  startScene.clearText();
-  startScene.dispose();
+  initScene.clearText();
+  initScene.dispose();
+  if (scene !== undefined) {
+    scene.dispose();
+  }
   scene = new SeedScene();
   // Set up controls
   scene.add(controls.getObject());
   sceneOrtho = new InterfaceScene(startTimeStamp);
   isStarted = true;
+  isEnded = false;
   window.removeEventListener('click', startGameHandler, false);
 };
 window.addEventListener('click', startGameHandler, false);
