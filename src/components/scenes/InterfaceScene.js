@@ -65,7 +65,7 @@ class InterfaceScene extends Scene {
     clearText() {
         this.scoreBox.remove();
         this.timer.remove();
-        this.powerText.remove();
+        this.powerBarText.remove();
     }
 
     updateScore(change) {
