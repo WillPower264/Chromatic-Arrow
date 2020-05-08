@@ -73,12 +73,11 @@ const CONSTS = {
     },
     scoreBox: {
         text: 'Score: ',
-        id: 'score',
         style: {
             position: 'absolute',
             fontSize: '40px',
             color: 'white',
-            padding: '10px',
+            left: '10px',
             top: '10px',
         },
     },
@@ -116,13 +115,12 @@ const CONSTS = {
     },
     timer: {
         text: 'Time Left: ',
-        id: 'timer',
         style: {
             position: 'absolute',
             fontSize: '40px',
             color: 'white',
-            padding: '10px',
-            top: '50px',
+            right: '10px',
+            top: '10px',
         },
     },
     wind: {

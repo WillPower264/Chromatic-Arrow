@@ -29,18 +29,10 @@ class InterfaceScene extends Scene {
         this.addToUpdateList(timer);
 
         // Add text
-        const {
-          text: scoreText, id: scoreId, style: scoreStyle
-        } = CONSTS.scoreBox;
-        this.scoreBox = this.createText(
-          `${scoreText}${this.state.score}`, scoreId, scoreStyle
-        );
-        const {
-          text: timerText, id: timerId, style: timerStyle
-        } = CONSTS.timer;
-        this.timer = this.createText(
-          `${timerText}${this.state.score}`, timerId, timerStyle
-        );
+        const { text: scoreText, style: scoreStyle } = CONSTS.scoreBox;
+        this.scoreBox = this.createText(`${scoreText}${this.state.score}`, scoreStyle);
+        const { text: timerText, style: timerStyle } = CONSTS.timer;
+        this.timer = this.createText(`${timerText}${this.state.score}`, timerStyle);
 
         // Countdown on clock
         this.countDown();
@@ -55,19 +47,14 @@ class InterfaceScene extends Scene {
 
     countDown() {
         const { timeLeft } = this.state;
-        if (timeLeft === 0) {
-            this.scoreBox.remove();
-            this.timer.remove();
-            return;
-        }
+        if (timeLeft === 0) { return; }
         this.timer.innerHTML = `${CONSTS.timer.text}${timeLeft}`;
         this.state.timeLeft--;
         _.delay(() => this.countDown(), 1000);
     }
 
-    createText(text, id, style) {
+    createText(text, style) {
         const textBox = document.createElement('div');
-        textBox.id = id;
         textBox.innerHTML = text;
         _.extend(textBox.style, style);
         document.body.appendChild(textBox);
@@ -75,8 +62,8 @@ class InterfaceScene extends Scene {
     }
 
     clearText() {
-        document.getElementById(CONSTS.scoreBox.id).remove();
-        document.getElementById(CONSTS.timer.id).remove();
+        this.scoreBox.remove();
+        this.timer.remove();
     }
 
     updateScore(change) {
