@@ -57,6 +57,22 @@ const CONSTS = {
         yAxis: new Vector3(0, 1, 0),
         zAxis: new Vector3(0, 0, 1),
     },
+    powerBar: {
+        width: 250,
+        height: 50,
+        buffer: 25,
+        edgeThickness: 5,
+        edgeColor: 'black',
+        fillColor: 'green',
+        text: 'Power Bar',
+        style: {
+            position: 'absolute',
+            fontSize: '40px',
+            color: 'white',
+            right: '65px',
+            bottom: '28px',
+        },
+    },
     scene: {
         backgroundColor: 0x7ec0ee,
         groundColor: 0x091200,

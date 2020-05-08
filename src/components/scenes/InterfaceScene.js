@@ -29,6 +29,8 @@ class InterfaceScene extends Scene {
         this.scoreBox = this.createText(`${scoreText}${this.state.score}`, scoreStyle);
         const { text: timerText, style: timerStyle } = CONSTS.timer;
         this.timer = this.createText(`${timerText}${this.state.score}`, timerStyle);
+        const {text: powerText, style: powerStyle} = CONSTS.powerBar;
+        this.powerBarText = this.createText(powerText, powerStyle);
 
         // Countdown on clock
         this.countDown();
@@ -63,6 +65,7 @@ class InterfaceScene extends Scene {
     clearText() {
         this.scoreBox.remove();
         this.timer.remove();
+        this.powerText.remove();
     }
 
     updateScore(change) {

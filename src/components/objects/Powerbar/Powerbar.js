@@ -2,81 +2,76 @@ import { Group, PlaneGeometry, Mesh, MeshBasicMaterial } from 'three';
 import CONSTS from '../../../constants';
 
 class Powerbar extends Group {
-    constructor(width, height) {
+    constructor() {
         // Call parent Group() constructor
         super();
 
         this.name = 'powerbar';
-        this.initWidth = width;
-        this.initHeight = height;
-        this.buffer = 25;
+
+        const { width, height, edgeThickness, edgeColor, fillColor } = CONSTS.powerBar;
         this.isFilling = false;
-        this.bar = undefined;
-        this.step = width*CONSTS.arrow.movement.chargeRate;
-        const edgeThickness = 5;
+        this.step = width * CONSTS.arrow.movement.chargeRate;
 
         // Bar
-        const geometry = new PlaneGeometry(0, this.initHeight);
-        const material = new MeshBasicMaterial({color: 0x00ff00});
+        const geometry = new PlaneGeometry(0, height);
+        const material = new MeshBasicMaterial({ color: fillColor });
         const mesh = new Mesh(geometry, material);
-        mesh.position.x += this.initWidth/2;
+        mesh.position.x += width / 2;
         mesh.position.z -= 0.01;
         this.bar = mesh;
         this.add(this.bar);
 
         // Outline -- setting line thickness doesn't work, so we use 4 planes
-        const e1 = new PlaneGeometry(width+edgeThickness, edgeThickness);
-        const mat1 = new MeshBasicMaterial({color: 0x000000});
-        const mesh1 = new Mesh(e1, mat1);
-        mesh1.position.y += height/2;
+        const outlineMat = new MeshBasicMaterial({ color: edgeColor });
+        const e1 = new PlaneGeometry(width + edgeThickness, edgeThickness);
+        const mesh1 = new Mesh(e1, outlineMat);
+        mesh1.position.y += height / 2;
         this.add(mesh1);
 
-        const e2 = new PlaneGeometry(width+edgeThickness, edgeThickness);
-        const mat2 = new MeshBasicMaterial({color: 0x000000});
-        const mesh2 = new Mesh(e2, mat2);
-        mesh2.position.y -= height/2;
+        const e2 = new PlaneGeometry(width + edgeThickness, edgeThickness);
+        const mesh2 = new Mesh(e2, outlineMat);
+        mesh2.position.y -= height / 2;
         this.add(mesh2);
 
-        const e3 = new PlaneGeometry(edgeThickness, height+edgeThickness);
-        const mat3 = new MeshBasicMaterial({color: 0x000000});
-        const mesh3 = new Mesh(e3, mat3);
-        mesh3.position.x += width/2;
+        const e3 = new PlaneGeometry(edgeThickness, height + edgeThickness);
+        const mesh3 = new Mesh(e3, outlineMat);
+        mesh3.position.x += width / 2;
         this.add(mesh3);
 
-        const e4 = new PlaneGeometry(edgeThickness, height+edgeThickness);
-        const mat4 = new MeshBasicMaterial({color: 0x000000});
-        const mesh4 = new Mesh(e4, mat4);
-        mesh4.position.x -= width/2;
+        const e4 = new PlaneGeometry(edgeThickness, height + edgeThickness);
+        const mesh4 = new Mesh(e4, outlineMat);
+        mesh4.position.x -= width / 2;
         this.add(mesh4);
 
         this.addEventListeners();
     }
 
     beginFill() {
-      this.isFilling = true;
+        this.isFilling = true;
     }
 
     stopFill() {
-      this.isFilling = false;
-      this.bar.scale.setX(0);
-      this.bar.position.setX(this.initWidth/2);
+        this.isFilling = false;
+        this.bar.scale.setX(0);
+        this.bar.position.setX(CONSTS.powerBar.width / 2);
     }
 
     update() {
-      if (this.isFilling && this.bar.scale.x < this.initWidth) {
-        this.bar.scale.x += this.step;
-        this.bar.position.x -= this.step/2;
-      }
+        if (this.isFilling && this.bar.scale.x < CONSTS.powerBar.width) {
+            this.bar.scale.x += this.step;
+            this.bar.position.x -= this.step / 2;
+        }
     }
 
     windowResizeHandler() {
-      this.position.x = window.innerWidth / 2 - this.initWidth/2 - this.buffer;
-      this.position.y = -window.innerHeight / 2 + this.initHeight/2 + this.buffer;
+        const { width, height, buffer } = CONSTS.powerBar;
+        this.position.x = window.innerWidth / 2 - width / 2 - buffer;
+        this.position.y = -window.innerHeight / 2 + height / 2 + buffer;
     }
 
     addEventListeners() {
-      this.windowResizeHandler();
-      window.addEventListener('resize', () => this.windowResizeHandler(), false);
+        this.windowResizeHandler();
+        window.addEventListener('resize', () => this.windowResizeHandler(), false);
     }
 
 }
