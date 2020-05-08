@@ -20,7 +20,6 @@ const clock = new Clock();
 // Control scene transitions
 let isStarted = false;
 let isEnded = false;
-let startTimeStamp;
 
 // Scenes
 let startScene = new StartScene();
@@ -92,7 +91,6 @@ function renderTwo(projScene, orthoScene, timeStamp) {
 const onAnimationFrameHandler = (timeStamp) => {
   // Show start scene
   if (!isStarted) {
-    startTimeStamp = timeStamp;
     renderOne(startScene, timeStamp);
   // End the game
   } else if (isEnded) {
@@ -125,7 +123,7 @@ const windowResizeHandler = () => {
 windowResizeHandler();
 window.addEventListener('resize', windowResizeHandler, false);
 
-function changeScenes(lastScene) {
+function changeToGame(lastScene) {
   lastScene.clearText();
   lastScene.dispose();
   if (gameScene !== undefined) {
@@ -134,6 +132,7 @@ function changeScenes(lastScene) {
   gameScene = new SeedScene();
   // Set up controls
   gameScene.add(controls.getObject());
+  camera.lookAt(CONSTS.camera.initialDirection);
   interfaceScene = new InterfaceScene();
   isStarted = true;
   isEnded = false;
@@ -142,12 +141,12 @@ function changeScenes(lastScene) {
 // Start game handler
 const startToGameHandler = () => {
   if (isStarted || isEnded) { return; }
-  changeScenes(startScene);
+  changeToGame(startScene);
 };
 
 // Start game handler
 const endToGameHandler = () => {
-  changeScenes(endScene);
+  changeToGame(endScene);
   window.removeEventListener('click', endToGameHandler, false);
 };
 
