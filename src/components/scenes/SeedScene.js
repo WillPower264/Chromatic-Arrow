@@ -52,6 +52,7 @@ class SeedScene extends Scene {
 
         // Add event listeners
         this.addEventListeners();
+        console.log(window);
     }
 
     addToUpdateList(object) {
@@ -143,7 +144,6 @@ class SeedScene extends Scene {
           barrier.children[0], projPos, rot, 1, color
         );
         barrier.attach(splat.mesh);
-        barrier.children[0].visible = false;
     }
 
     initializeBarriers() {

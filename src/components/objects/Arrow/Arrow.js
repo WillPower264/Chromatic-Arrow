@@ -43,7 +43,7 @@ class Arrow extends Group {
         const tipLen = height / 10.0;
         const cone = new ConeGeometry(radius * 2, tipLen, radiusSegments, 1, true);
         const tipMat = new MeshBasicMaterial({ color: tipColor });
-        // tipMat.side = DoubleSide; 
+        // tipMat.side = DoubleSide;
         const coneMesh = new Mesh(cone, tipMat);
         coneMesh.position.set(0, this.halfLen, 0);
         this.arrowTipPos = this.position.clone().addScaledVector(this.direction, this.halfLen);
@@ -72,15 +72,15 @@ class Arrow extends Group {
         // create arrow trail
         // specify points to create planar trail-head geometry
         var trailHeadGeometry = [];
-        trailHeadGeometry.push( 
-            new Vector3( 2.0*radius, 0.0, 0.0 ), 
-            new Vector3( 0.0, 0.0, 0.0 ), 
-            new Vector3( 0.0, 0.0, 2.0*radius ) 
+        trailHeadGeometry.push(
+            new Vector3( 2.0*radius, 0.0, 0.0 ),
+            new Vector3( 0.0, 0.0, 0.0 ),
+            new Vector3( 0.0, 0.0, 2.0*radius )
         );
         // create the trail renderer object
         this.trail = new TrailRenderer( this, false );
         // create material for the trail renderer
-        const trailMaterial = TrailRenderer.createBaseMaterial();	
+        const trailMaterial = TrailRenderer.createBaseMaterial();
         const rgb = hexToRGB(this.color);
         trailMaterial.uniforms.headColor.value.set( rgb.r, rgb.g, rgb.b, 0.8 );
         trailMaterial.uniforms.tailColor.value.set( rgb.r, rgb.g, rgb.b, 0.35 );
@@ -195,7 +195,6 @@ class Arrow extends Group {
                     arrowTipPos.z < minZ - halfH - eps) {
                     continue;
                 }
-                barriers[i].reveal();
                 this.scene.addSplatterBarrier(
                     arrowTipPos.clone(), barriers[i], barrierPlane, this.color
                 );
