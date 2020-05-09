@@ -4,7 +4,7 @@ import { BasicLights } from 'lights';
 import _ from 'lodash';
 import CONSTS from '../../constants';
 
-class SeedScene extends Scene {
+class GameScene extends Scene {
     constructor(isTutorial) {
         // Call parent Scene() constructor
         super();
@@ -231,4 +231,4 @@ class SeedScene extends Scene {
     }
 }
 
-export default SeedScene;
+export default GameScene;
