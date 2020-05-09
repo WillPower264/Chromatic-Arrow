@@ -6,12 +6,15 @@
  * handles window resizes.
  *
  */
-import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Clock } from 'three';
+import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Clock, Vector2 } from 'three';
 import { InterfaceScene, StartScene, GameScene, EndScene } from 'scenes';
 import PlayerControls from './PlayerControls';
 import runTutorial from './Tutorial';
 import CONSTS from './constants';
 import _ from 'lodash';
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
 
 // Initialize core ThreeJS components
 let camera;
@@ -139,7 +142,9 @@ document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
 function renderOne(projScene, timeStamp) {
-  renderer.render(projScene, camera);
+  const deltaT = clock.getDelta(); 
+//   renderer.render(projScene, camera);
+  composer.render(deltaT);
   projScene.update && projScene.update(timeStamp);
 }
 
@@ -156,6 +161,18 @@ function renderTwo(projScene, orthoScene, timeStamp) {
 
 // Render loop
 initStartScene();
+
+// Postprocessing set-up
+const composer = new EffectComposer(renderer);
+composer.setSize( window.innerWidth, window.innerHeight );
+composer.addPass(new RenderPass(startScene, camera));
+const {exposure, strength, threshold, radius} = CONSTS.bloom;
+renderer.toneMappingExposure = Math.pow( exposure, 4.0 );
+let vec = new Vector2( window.innerWidth, window.innerHeight )
+const bloomPass = new UnrealBloomPass(vec, strength, radius, threshold);
+bloomPass.renderToScreen = true;
+composer.addPass(bloomPass);
+
 const onAnimationFrameHandler = (timeStamp) => {
   // Show start scene
   if (!isStarted) {

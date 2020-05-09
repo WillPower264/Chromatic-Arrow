@@ -41,6 +41,12 @@ const CONSTS = {
             basePhiScale: 0.001,
         },
     },
+    bloom: {
+        exposure: 1,
+        strength: 0.5,
+        threshold: 0,
+        radius: 0,
+    },
     camera: {
         position: new Vector3(0, 2, 0),
         initialDirection: new Vector3(0, 2, 1), // +z axis
@@ -107,7 +113,7 @@ const CONSTS = {
     },
     start: {
       stepsPerSplatter: 6,
-      maxSplatters: 30,
+      maxSplatters: 15,
       xMin: -7,
       xMax: 7,
       yMin: -3,
