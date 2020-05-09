@@ -165,18 +165,13 @@ initStartScene();
 // Postprocessing set-up
 const composer = new EffectComposer(renderer);
 composer.setSize( window.innerWidth, window.innerHeight );
-
 composer.addPass(new RenderPass(startScene, camera));
-const bloomParams = {
-    exposure: 0.4,
-    bloomStrength: 0.5,
-    bloomThreshold: 0,
-    bloomRadius: 0
-};
+const {exposure, strength, threshold, radius} = CONSTS.bloom;
+renderer.toneMappingExposure = Math.pow( exposure, 4.0 );
 let vec = new Vector2( window.innerWidth, window.innerHeight )
-const bloomPass = new UnrealBloomPass(vec, bloomParams.bloomStrength, bloomParams.bloomRadius, bloomParams.bloomThreshold);
+const bloomPass = new UnrealBloomPass(vec, strength, radius, threshold);
 bloomPass.renderToScreen = true;
-composer.addPass(bloomPass)
+composer.addPass(bloomPass);
 
 const onAnimationFrameHandler = (timeStamp) => {
   // Show start scene
