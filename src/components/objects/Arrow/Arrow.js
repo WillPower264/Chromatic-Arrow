@@ -104,10 +104,10 @@ class Arrow extends Group {
     }
 
     handleFloorCollision() {
-        // can do something more sophisticated, maybe
-        if (this.position.y < CONSTS.scene.groundPos + CONSTS.EPS) {
+        const { yPos } = CONSTS.ground;
+        if (this.position.y < yPos + CONSTS.EPS) {
             this.hasCollided = true;
-            this.position.y = CONSTS.scene.groundPos + CONSTS.EPS;
+            this.position.y = yPos + CONSTS.EPS;
             this.scene.addSplatterGround(this.position, this.color);
             return true;
         }

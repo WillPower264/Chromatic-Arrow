@@ -58,6 +58,12 @@ const CONSTS = {
         yAxis: new Vector3(0, 1, 0),
         zAxis: new Vector3(0, 0, 1),
     },
+    ground: {
+        color: 0x091200,
+        size: 500,
+        thickness: 1,
+        yPos: 0,
+    },
     powerBar: {
         width: 250,
         height: 50,
@@ -76,7 +82,6 @@ const CONSTS = {
     },
     scene: {
         backgroundColor: 0x7ec0ee,
-        groundColor: 0x091200,
         maxTargets: 10,
         msBetweenTargets: 5 * 1000,
         wind: {
@@ -86,7 +91,6 @@ const CONSTS = {
           maxSpeed: 5,
         },
         numBarriers: 15,
-        groundPos: 0,
     },
     scoreBox: {
         text: 'Score: ',
