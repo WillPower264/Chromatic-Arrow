@@ -19,6 +19,22 @@ let controls;
 const renderer = new WebGLRenderer({ antialias: true });
 const clock = new Clock();
 
+// Resize Handler
+const windowResizeHandler = () => {
+  const { innerHeight, innerWidth } = window;
+  renderer.setSize(innerWidth, innerHeight);
+  camera.aspect = innerWidth / innerHeight;
+  camera.updateProjectionMatrix();
+
+  // Update ortho camera
+  cameraOrtho.left = -innerWidth / 2;
+  cameraOrtho.right = innerWidth / 2;
+  cameraOrtho.top = innerHeight / 2;
+  cameraOrtho.bottom = -innerHeight / 2;
+  cameraOrtho.updateProjectionMatrix();
+};
+window.addEventListener('resize', windowResizeHandler, false);
+
 // Scene set up
 let startScene;
 let gameScene;
@@ -35,6 +51,7 @@ function initStartScene() {
   startScene.add(controls.getObject());
   camera.position.copy(CONSTS.camera.position);
   camera.lookAt(CONSTS.camera.initialDirection); // camera starts looking down the +z axis
+  windowResizeHandler();
 }
 
 // Control scene transitions
@@ -165,20 +182,3 @@ const onAnimationFrameHandler = (timeStamp) => {
   window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
-
-// Resize Handler
-const windowResizeHandler = () => {
-  const { innerHeight, innerWidth } = window;
-  renderer.setSize(innerWidth, innerHeight);
-  camera.aspect = innerWidth / innerHeight;
-  camera.updateProjectionMatrix();
-
-  // Update ortho camera
-  cameraOrtho.left = -innerWidth / 2;
-  cameraOrtho.right = innerWidth / 2;
-  cameraOrtho.top = innerHeight / 2;
-  cameraOrtho.bottom = -innerHeight / 2;
-  cameraOrtho.updateProjectionMatrix();
-};
-windowResizeHandler();
-window.addEventListener('resize', windowResizeHandler, false);
