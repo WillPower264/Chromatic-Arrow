@@ -79,7 +79,7 @@ class SeedScene extends Scene {
             if (position === undefined) {
                 target.setRandomPosition();
             } else {
-                target.position.copy(position)
+                target.position.copy(position);
             }
             target.faceCenter();
             this.state.numTargetsInUse++;
@@ -195,7 +195,7 @@ class SeedScene extends Scene {
 
         window.addEventListener("mouseup", () => {
             // Shoot this arrow
-            if (this.disableControls) return;
+            if (this.disableControls) { return; }
             const { chargeRate, baseForce, maxForce} = CONSTS.arrow.movement;
             const totalTime = this.currentStep - this.beginFireStep;
             const factor = Math.min(totalTime * chargeRate, 1);
@@ -210,14 +210,6 @@ class SeedScene extends Scene {
             this.addToUpdateList(this.currentArrow);
             this.isFiring = false;
         }, false);
-
-        // TODO: remove
-        window.addEventListener('keydown', () => {
-            if (this.disableControls) return;
-            const randIdx = _.random(CONSTS.scene.numBarriers - 1);
-            const randCol = Math.random() * 0xffffff;
-            this.state.barriers[randIdx].reveal(randCol);
-        });
     }
 
     initializeGround() {

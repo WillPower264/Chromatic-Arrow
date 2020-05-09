@@ -1,4 +1,4 @@
-import { Scene, BoxGeometry, DoubleSide, Euler, Mesh, MeshBasicMaterial, MeshStandardMaterial, PlaneGeometry, Texture, Vector3 } from 'three';
+import { Scene, BoxGeometry, Euler, Mesh, MeshBasicMaterial, Vector3 } from 'three';
 import { BasicLights } from 'lights';
 import { Splatter } from 'objects';
 import CONSTS from '../../constants';
@@ -45,7 +45,7 @@ class StartScene extends Scene {
         text.style.color = 'white';
         document.body.appendChild(text);
         // Center text
-        const { innerHeight, innerWidth } = window;
+        const { innerWidth } = window;
         text.style.left = (innerWidth - text.clientWidth)/2 + 'px';
         text.style.top = top;
         this.eltIds.push(str);
@@ -58,7 +58,7 @@ class StartScene extends Scene {
         button.onclick = callback;
         document.body.appendChild(button);
         // Center button
-        const { innerHeight, innerWidth } = window;
+        const { innerWidth } = window;
         button.style.left = (innerWidth - button.clientWidth)/2 + 'px';
         button.style.top = top;
         this.eltIds.push(str);
@@ -85,7 +85,7 @@ class StartScene extends Scene {
           stepsPerSplatter, maxSplatters, xMin, xMax, yMin, yMax, minSize, maxSize
         } = CONSTS.start;
         if (this.splatterCount < maxSplatters &&
-            this.stepCount % stepsPerSplatter == 0) {
+            this.stepCount % stepsPerSplatter === 0) {
           let rx;
           let ry;
           let size;

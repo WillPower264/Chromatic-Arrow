@@ -3,7 +3,7 @@ import { Vector3 } from 'three';
 const CONSTS = {
     EPS: 0.0001,
     fullRotation: 2 * Math.PI,
-    msTimeLimit: 60 * 1000,
+    timeLimit: 60,          // in seconds
     msEndDelay: 1 * 1000,
     // keep these top level objects in alphabetical order
     arrow: {
