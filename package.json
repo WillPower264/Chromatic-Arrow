@@ -3,17 +3,17 @@
   "repository": "Chromatic-Arrow",
   "version": "0.1.0",
   "title": "Chromatic Arrow",
-  "description": "SHORT DESCRIPTION OF PROJECT HERE. ONE TO TWO SENTENCES MAX",
+  "description": "Shoot paint-filled arrows at targets, but beware of invisble barriers!",
   "keywords": [
     "Princeton",
     "graphics",
     "three.js",
     "COS 426",
-    "ivy league",
     "chromatic",
     "arrow",
-    "...",
-    "this last entry CANNOT have a comma after it ->"
+    "targets",
+    "invisible",
+    "barriers"
   ],
   "scripts": {
     "start": "webpack-dev-server --mode development --output-public-path \"\"",
