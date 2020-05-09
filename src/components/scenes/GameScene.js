@@ -139,7 +139,7 @@ class GameScene extends Scene {
     // TODO: scale by impact velocity
     addSplatterGround(position, color) {
         const splat = new Splatter(
-          this.ground.mesh, position, new Euler(-Math.PI/2, 0, 0), CONSTS.splatter.splatSize, color
+          this.ground, position, new Euler(-Math.PI/2, 0, 0), CONSTS.splatter.splatSize, color
         );
         this.add(splat.mesh);
     }
@@ -213,21 +213,14 @@ class GameScene extends Scene {
     }
 
     initializeGround() {
-        const ground = {};
-        ground.textures = {};
-
-        // ground material
-        ground.material = new MeshStandardMaterial({
-            color: CONSTS.scene.groundColor, //0x3c3c3c,
-        });
-
-        // ground mesh
-        ground.geometry = new BoxGeometry(500, 1, 500);
-        ground.mesh = new Mesh(ground.geometry, ground.material);
-        ground.mesh.position.y = CONSTS.scene.groundPos;
-        ground.mesh.receiveShadow = true;
-        this.add(ground.mesh);
-        return ground;
+        const { size, thickness, color, yPos } = CONSTS.ground;
+        const geometry = new BoxGeometry(size, thickness, size);
+        const material = new MeshStandardMaterial({ color });
+        const mesh = new Mesh(geometry, material);
+        mesh.receiveShadow = true;
+        mesh.position.setY(yPos);
+        this.add(mesh);
+        return mesh;
     }
 }
 
