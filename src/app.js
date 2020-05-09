@@ -7,7 +7,7 @@
  *
  */
 import { WebGLRenderer, PerspectiveCamera, OrthographicCamera, Clock, Vector2 } from 'three';
-import { InterfaceScene, StartScene, SeedScene, EndScene } from 'scenes';
+import { InterfaceScene, StartScene, GameScene, EndScene } from 'scenes';
 import PlayerControls from './PlayerControls';
 import runTutorial from './Tutorial';
 import CONSTS from './constants';
@@ -69,7 +69,7 @@ function changeToGame(lastScene, isTut) {
   if (gameScene !== undefined) {
     gameScene.dispose();
   }
-  gameScene = new SeedScene(isTut);
+  gameScene = new GameScene(isTut);
   // Set up controls
   controls.enable();
   gameScene.add(controls.getObject());
@@ -189,6 +189,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     // Just ended
     if (!isTutorial) {
       endTutorial();
+      isTutorial = true;
     }
   // Show end scene
   } else if (isEnded) {
