@@ -103,7 +103,7 @@ const CONSTS = {
     },
     start: {
       stepsPerSplatter: 6,
-      maxSplatters: 30,
+      maxSplatters: 15,
       xMin: -7,
       xMax: 7,
       yMin: -3,

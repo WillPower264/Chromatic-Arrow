@@ -21,7 +21,7 @@ class StartScene extends Scene {
 
         // Canvas
         const geometry = new BoxGeometry(100, 100, 1);
-        const material = new MeshBasicMaterial({color: 0xffffff});
+        const material = new MeshBasicMaterial({color: 0x000});
         const mesh = new Mesh(geometry, material);
         mesh.position.set(0, 0, 10);
         mesh.updateMatrix();
