@@ -1,5 +1,5 @@
 import { Vector3 } from 'three';
-import CONSTS from './constants';
+
 // Steps in tutorial
 let hasSpawnedFirstTarget = false;
 let hasShotFirstTarget = false;
@@ -20,6 +20,7 @@ function runTutorial(scene) {
     // Target behind barrier
     if (hasShotFourthTarget) {
       clearText();
+      resetSteps();
       return false;
     } else if (hasSpawnedForthTarget) {
       hasShotFourthTarget = (scene.state.numTargetsInUse === 0);
@@ -79,6 +80,19 @@ function createText(str) {
 
 function clearText() {
     currentTextBox.remove();
+}
+
+function resetSteps() {
+  hasSpawnedFirstTarget = false;
+  hasShotFirstTarget = false;
+  hasSpawnedSecondTarget = false;
+  hasShotSecondTarget = false;
+  hasActivatedWind = false;
+  hasShotThirdTarget = false;
+  hasSpawnedBarrier = false;
+  hasShotBarrier = false;
+  hasSpawnedForthTarget = false;
+  hasShotFourthTarget = false;
 }
 
 export default runTutorial;
