@@ -15,6 +15,7 @@ class InterfaceScene extends Scene {
         };
         // Tutorial mode
         this.isTutorial = isTutorial;
+        this.disableControls = false;
 
         // Add powerbar
         const pbar = new Powerbar(250, 50);
@@ -82,8 +83,10 @@ class InterfaceScene extends Scene {
     }
 
     update(timeStamp) {
-        for (const obj of this.state.updateList) {
-            obj.update(timeStamp);
+        if (!this.disableControls) {
+            for (const obj of this.state.updateList) {
+                obj.update(timeStamp);
+            }
         }
     }
 
