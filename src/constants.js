@@ -124,7 +124,7 @@ const CONSTS = {
           maxSpeed: 3,
         },
         numBarriers: 15,
-        timeLimit: 6,          // in seconds
+        timeLimit: 60,          // in seconds
         msEndDelay: 1 * 1000,
     },
     scoreBox: {
