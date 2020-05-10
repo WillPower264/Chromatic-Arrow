@@ -38,6 +38,7 @@ const CONSTS = {
             basePhiPeriod: 0.001,
             basePhiScale: 0.001,
         },
+        defaultColor: 0xAAAAAA,
         score: 1,
     },
     bloom: {
