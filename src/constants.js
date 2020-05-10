@@ -86,9 +86,10 @@ const CONSTS = {
         text: 'Power Bar',
         style: {
             position: 'absolute',
+            fontFamily: 'Verdana',
             fontSize: '40px',
             color: 'white',
-            right: '65px',
+            right: '45px',
             bottom: '28px',
         },
     },
@@ -114,6 +115,7 @@ const CONSTS = {
         text: 'Score: ',
         style: {
             position: 'absolute',
+            fontFamily: 'Verdana',
             fontSize: '40px',
             color: 'white',
             left: '10px',
@@ -159,10 +161,28 @@ const CONSTS = {
         text: 'Time Left: ',
         style: {
             position: 'absolute',
+            fontFamily: 'Verdana',
             fontSize: '40px',
             color: 'white',
             right: '10px',
             top: '10px',
+        },
+    },
+    tutorial: {
+        style: {
+            position: 'absolute',
+            fontFamily: 'Verdana',
+            fontSize: '20px',
+            color: 'white',
+            top: '80%',
+        },
+        initialTargetPosition: new Vector3(0, 3, 31),
+        texts: {
+            initial: 'Hold click to charge up a shot and hit the target. Score points by hitting each target near the center within the time limit.',
+            lookAround: 'Targets spawn all around you. Use the mouse to look around.',
+            wind: 'Arrows are also affected by wind. Aim carefully.',
+            barriers: 'Invisible barriers can block your shots. Shoot one to reveal it.',
+            finish: 'You\'re ready to go! Hit the last target to complete the tutorial.',
         },
     },
     wind: {

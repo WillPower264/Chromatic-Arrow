@@ -1,4 +1,8 @@
-import { Vector3 } from 'three';
+import CONSTS from './constants';
+import _ from 'lodash';
+
+// Constants
+const { style, initialTargetPosition, texts } = CONSTS.tutorial;
 
 // Steps in tutorial
 let hasSpawnedFirstTarget = false;
@@ -19,80 +23,86 @@ let currentTextBox;
 function runTutorial(scene) {
     // Target behind barrier
     if (hasShotFourthTarget) {
-      clearText();
-      resetSteps();
-      return false;
+        removeText();
+        resetSteps();
+        return false;
     } else if (hasSpawnedForthTarget) {
-      hasShotFourthTarget = (scene.state.numTargetsInUse === 0);
+        hasShotFourthTarget = checkTargetHit(scene);
     } else if (hasShotBarrier) {
-      scene.spawnTarget();
-      hasSpawnedForthTarget = true;
-      createText("You're ready to go! Hit the last target to complete the tutorial.");
+        scene.spawnTarget();
+        hasSpawnedForthTarget = true;
+        setText(texts.finish);
     } else if (hasSpawnedBarrier) {
-      hasShotBarrier = scene.barriersHit > 0;
+        hasShotBarrier = checkBarrierHit(scene);
     } else if (hasShotThirdTarget) {
-      scene.createBarriers();
-      hasSpawnedBarrier = true;
-      createText("Invisible barriers can block your shots. Shoot one to reveal it.");
-    // Target with wind
+        scene.createBarriers();
+        hasSpawnedBarrier = true;
+        setText(texts.barriers);
+        // Target with wind
     } else if (hasActivatedWind) {
-      hasShotThirdTarget = (scene.state.numTargetsInUse === 0);
+        hasShotThirdTarget = checkTargetHit(scene);
     } else if (hasShotSecondTarget) {
-      scene.changeWind();
-      scene.createWind();
-      scene.spawnTarget();
-      hasActivatedWind = true;
-      createText("Arrows are also affected by wind. Aim carefully.");
-    // Target at random position
+        scene.changeWind();
+        scene.createWind();
+        scene.spawnTarget();
+        hasActivatedWind = true;
+        setText(texts.wind);
+        // Target at random position
     } else if (hasSpawnedSecondTarget) {
-      hasShotSecondTarget = (scene.state.numTargetsInUse === 0);
+        hasShotSecondTarget = checkTargetHit(scene);
     } else if (hasShotFirstTarget) {
-      scene.spawnTarget();
-      hasSpawnedSecondTarget = true;
-      createText("Targets spawn all around you. Use the mouse to look around.");
-    // Target straight ahead
+        scene.spawnTarget();
+        hasSpawnedSecondTarget = true;
+        setText(texts.lookAround);
+        // Target straight ahead
     } else if (hasSpawnedFirstTarget) {
-      hasShotFirstTarget = (scene.state.numTargetsInUse === 0);
+        hasShotFirstTarget = checkTargetHit(scene);
     } else {
-      scene.spawnTarget(new Vector3(0, 3, 31));
-      hasSpawnedFirstTarget = true;
-      createText("Hold click to charge up a shot and hit the target. \
-                  Score points by hitting each target near the center within \
-                  the time limit.");
+        scene.spawnTarget(initialTargetPosition);
+        hasSpawnedFirstTarget = true;
+        createText();
+        setText(texts.initial);
     }
     return true;
 }
 
-function createText(str) {
-    if (currentTextBox) { clearText(); }
+function checkTargetHit(scene) {
+    return scene.state.numTargetsInUse === 0;
+}
+
+function checkBarrierHit(scene) {
+    return scene.barriersHit > 0;
+}
+
+function createText() {
     const text = document.createElement('div');
-    text.innerHTML = str;
-    text.style.position = 'absolute';
-    text.style.fontSize = '20px';
-    text.style.color = 'white';
+    _.extend(text.style, style);
     document.body.appendChild(text);
-    // Center text
-    const { innerWidth } = window;
-    text.style.left = (innerWidth - text.clientWidth)/2 + 'px';
-    text.style.top = '80%';
     currentTextBox = text;
 }
 
-function clearText() {
+function setText(str) {
+    currentTextBox.innerHTML = str;
+    // center text box
+    currentTextBox.style.left = (window.innerWidth - currentTextBox.clientWidth) / 2 + 'px';
+}
+
+function removeText() {
     currentTextBox.remove();
+    currentTextBox = undefined;
 }
 
 function resetSteps() {
-  hasSpawnedFirstTarget = false;
-  hasShotFirstTarget = false;
-  hasSpawnedSecondTarget = false;
-  hasShotSecondTarget = false;
-  hasActivatedWind = false;
-  hasShotThirdTarget = false;
-  hasSpawnedBarrier = false;
-  hasShotBarrier = false;
-  hasSpawnedForthTarget = false;
-  hasShotFourthTarget = false;
+    hasSpawnedFirstTarget = false;
+    hasShotFirstTarget = false;
+    hasSpawnedSecondTarget = false;
+    hasShotSecondTarget = false;
+    hasActivatedWind = false;
+    hasShotThirdTarget = false;
+    hasSpawnedBarrier = false;
+    hasShotBarrier = false;
+    hasSpawnedForthTarget = false;
+    hasShotFourthTarget = false;
 }
 
 export default runTutorial;
