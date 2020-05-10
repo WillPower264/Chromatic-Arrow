@@ -66,7 +66,6 @@ const CONSTS = {
     },
     dome: {
         radius: 45,
-        color: 0xff0000,
         numSegments: 32,
     },
     endScene: {
@@ -248,7 +247,5 @@ const CONSTS = {
         pathStep: 0.05,
     },
 };
-
-CONSTS.dome.color = CONSTS.scene.backgroundColor;
 
 export default CONSTS;
