@@ -13,7 +13,7 @@ class EndScene extends Scene {
         this.height = innerHeight;
 
         // Splatter
-        this.color = CONSTS.randomColor(); 
+        this.color = CONSTS.randomColor();
         this.createSplatter(innerWidth, innerHeight);
 
         // Text
@@ -50,7 +50,7 @@ class EndScene extends Scene {
         text.innerHTML = str;
         text.style.position = 'absolute';
         text.style.fontSize = '55px';
-        text.style.color = 'white';
+        text.style.color = 'black';
         document.body.appendChild(text);
         // Center text
         const { innerHeight, innerWidth } = window;
