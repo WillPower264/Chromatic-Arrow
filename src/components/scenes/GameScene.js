@@ -204,6 +204,7 @@ class GameScene extends Scene {
     addEventListeners() {
         window.addEventListener("mousedown", () => {
             this.isFiring = true;
+            window.dispatchEvent(new CustomEvent('newArrowColor', {detail: { color: this.currentArrow.color}}));
         }, false);
 
         window.addEventListener("mouseup", () => {

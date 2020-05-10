@@ -1,4 +1,4 @@
-import { Group, PlaneGeometry, Mesh, MeshBasicMaterial } from 'three';
+import { Group, PlaneGeometry, Mesh, MeshBasicMaterial, Color } from 'three';
 import CONSTS from '../../../constants';
 
 class Powerbar extends Group {
@@ -46,6 +46,10 @@ class Powerbar extends Group {
         this.addEventListeners();
     }
 
+    setFillColor(color) {
+        this.bar.material.color = new Color(color);
+    }
+
     beginFill() {
         this.isFilling = true;
     }
@@ -72,6 +76,7 @@ class Powerbar extends Group {
     addEventListeners() {
         this.windowResizeHandler();
         window.addEventListener('resize', () => this.windowResizeHandler(), false);
+        window.addEventListener('newArrowColor', (e) => this.setFillColor(e.detail.color), false);
     }
 
 }
