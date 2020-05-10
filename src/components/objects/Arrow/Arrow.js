@@ -22,7 +22,7 @@ class Arrow extends Group {
         this.netForce = new Vector3(0, 0, 0);
         this.hasCollided = false;
         this.hasCollided = false;
-        this.color = Math.random() * 0xffffff;
+        this.color = CONSTS.randomColor();
 
         this.fired = false; // behavior is different after arrow is fired
 

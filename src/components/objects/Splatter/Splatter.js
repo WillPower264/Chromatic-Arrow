@@ -23,7 +23,7 @@ class Splatter extends Group {
         );
         const decalMat = new MeshBasicMaterial({
             map: this.texture,
-            color: color || Math.random() * 0xffffff,
+            color: color || CONSTS.randomColor(),
             transparent: true,
             depthTest: true,
             depthWrite: false,
