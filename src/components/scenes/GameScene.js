@@ -136,22 +136,25 @@ class GameScene extends Scene {
         this.remove(obj);
     }
 
-    // TODO: scale by impact velocity
     addSplatterGround(position, color) {
         const splat = new Splatter(
-          this.ground, position, new Euler(-Math.PI/2, 0, 0), CONSTS.splatter.splatSize, color
+          this.ground,
+          position,
+          new Euler(-Math.PI/2, 0, 0),
+          CONSTS.splatter.splatSize,
+          color
         );
         this.add(splat.mesh);
     }
 
-    // TODO: scale by impact velocity
     addSplatterBarrier(position, barrier, plane, color) {
         const projPos = new Vector3(0, 0, 0);
         plane.projectPoint(position, projPos);
-        const rot = new Euler(0, Math.atan2(plane.normal.x, plane.normal.z), 0);
+        const rot = barrier.rotation.clone();
         const splat = new Splatter(
           barrier.children[0], projPos, rot, CONSTS.splatter.splatSize, color
         );
+        splat.mesh.renderOrder = barrier.children.length;
         barrier.attach(splat.mesh);
     }
 
