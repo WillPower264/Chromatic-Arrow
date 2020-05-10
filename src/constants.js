@@ -1,4 +1,4 @@
-import { Vector3 } from 'three';
+import { Vector3, Color } from 'three';
 
 const CONSTS = {
     EPS: 0.0001,
@@ -93,23 +93,10 @@ const CONSTS = {
         },
     },
     randomColor: () => {
-        const l = 0.5;
-        const s = 1;
         const h = Math.random();
-        // From the Image class in A1
-        const m2 = l <= 0.5 ? l * (s + 1.0) : l + s - l * s;
-        const m1 = l * 2 - m2;
-        const hueToRGB = function(m1, m2, h) {
-            h = h < 0 ? h + 1 : h > 1 ? h - 1 : h;
-            if (h * 6 < 1) return m1 + (m2 - m1) * h * 6;
-            if (h * 2 < 1) return m2;
-            if (h * 3 < 2) return m1 + (m2 - m1) * (0.66666 - h) * 6;
-            return m1;
-        };
-        const r = Math.round(255*hueToRGB(m1, m2, h + 1/3));
-        const g = Math.round(255*hueToRGB(m1, m2, h));
-        const b = Math.round(255*hueToRGB(m1, m2, h - 1/3));
-        return (r << 16) + (g << 8) + b;
+        const s = 1;
+        const l = 0.5;
+        return new Color().setHSL(h, s, l).getHex();
     },
     scene: {
         backgroundColor: 0x000, // 0x7ec0ee,
