@@ -71,7 +71,7 @@ const CONSTS = {
     },
     ground: {
         // color: 0x136d15,
-        color: 0x020204,
+        color: 0x040406,
         size: 500,
         thickness: 1,
         yPos: 0,
@@ -99,7 +99,7 @@ const CONSTS = {
         return new Color().setHSL(h, s, l).getHex();
     },
     scene: {
-        backgroundColor: 0x000, // 0x7ec0ee,
+        backgroundColor: 0x040030, // 0x7ec0ee,
         maxTargets: 10,
         msBetweenTargets: 5 * 1000,
         wind: {
@@ -139,11 +139,11 @@ const CONSTS = {
         thickness: 0.5,             // yellow is 0.5 thick, white is 0.1
         minDistApart: 15,
         colors: [
-            0xFFFF3D, // yellow
-            0xED242C, // red
-            0x62BDEC, // blue
-            0x221E20, // black
-            0xFFFFFF, // white
+            0xccb800, // yellow
+            0xB800AB, // pink
+            0x0077B8, // blue
+            0x0f00b3, // purple
+            0xAAAAAA, // white
         ],
         radiusSegments: 32,             // more segments = rounder target
         spawn: {

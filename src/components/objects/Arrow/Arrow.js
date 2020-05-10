@@ -215,12 +215,11 @@ class Arrow extends Group {
     handleDomeCollision() {
         const dist = this.arrowTipPos.length();
         if (dist > CONSTS.dome.radius - CONSTS.EPS) {
-            console.log('hit the dome');
             this.hasCollided = true;
             this.scene.addSplatterDome(this.arrowTipPos.clone(), this.color);
         }
     }
-    
+
     // rotate arrow to point in the direction of v
     pointToward(v) {
         const currDir = this.direction;

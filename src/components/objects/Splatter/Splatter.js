@@ -1,10 +1,10 @@
-import { Group, Mesh, MeshBasicMaterial, TextureLoader, Vector3 } from 'three';
+import { Group, DoubleSide, Mesh, MeshBasicMaterial, TextureLoader, Vector3 } from 'three';
 import { DecalGeometry } from 'three/examples/jsm/geometries/DecalGeometry.js';
 import SPLATTER from './splatter.png';
 import CONSTS from '../../../constants';
 
 class Splatter extends Group {
-    constructor(mesh, position, rotation, scale, color) {
+    constructor(mesh, position, rotation, scale, color, isDouble) {
         // Call parent Group() constructor
         super();
 
@@ -28,8 +28,11 @@ class Splatter extends Group {
             depthTest: true,
             depthWrite: false,
             polygonOffset: true,
-            polygonOffsetFactor: -4
+            polygonOffsetFactor: -4,
         });
+        if (isDouble) {
+            decalMat.side = DoubleSide;
+        }
         const decalMesh = new Mesh(decalGeom, decalMat);
         this.mesh = decalMesh;
     }
