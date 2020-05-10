@@ -316,23 +316,23 @@ TrailRenderer.prototype.initializeGeometry = function() {
 
 	var nodeIDAttribute = new BufferAttribute( nodeIDs, 1 );
 	nodeIDAttribute.setDynamic( true );
-	geometry.addAttribute( 'nodeID', nodeIDAttribute );
+	geometry.setAttribute( 'nodeID', nodeIDAttribute );
 
 	var nodeVertexIDAttribute = new BufferAttribute( nodeVertexIDs, 1 );
 	nodeVertexIDAttribute.setDynamic( true );
-	geometry.addAttribute( 'nodeVertexID', nodeVertexIDAttribute );
+	geometry.setAttribute( 'nodeVertexID', nodeVertexIDAttribute );
 
 	var nodeCenterAttribute = new BufferAttribute( nodeCenters, TrailRenderer.PositionComponentCount );
 	nodeCenterAttribute.setDynamic( true );
-	geometry.addAttribute( 'nodeCenter', nodeCenterAttribute );
+	geometry.setAttribute( 'nodeCenter', nodeCenterAttribute );
 
 	var positionAttribute = new BufferAttribute( positions, TrailRenderer.PositionComponentCount );
 	positionAttribute.setDynamic( true );
-	geometry.addAttribute( 'position', positionAttribute );
+	geometry.setAttribute( 'position', positionAttribute );
 
 	var uvAttribute = new BufferAttribute( uvs, TrailRenderer.UVComponentCount );
 	uvAttribute.setDynamic( true );
-	geometry.addAttribute( 'uv', uvAttribute );
+	geometry.setAttribute( 'uv', uvAttribute );
 
 	var indexAttribute = new BufferAttribute( indices, 1 );
 	indexAttribute.setDynamic( true );

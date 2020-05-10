@@ -70,7 +70,8 @@ const CONSTS = {
         numSegments: 32,
     },
     ground: {
-        color: 0x136d15,
+        // color: 0x136d15,
+        color: 0x020204,
         size: 500,
         thickness: 1,
         yPos: 0,
@@ -92,7 +93,7 @@ const CONSTS = {
         },
     },
     scene: {
-        backgroundColor: 0x7ec0ee,
+        backgroundColor: 0x000, // 0x7ec0ee,
         maxTargets: 10,
         msBetweenTargets: 5 * 1000,
         wind: {
