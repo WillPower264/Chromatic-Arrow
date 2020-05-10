@@ -40,6 +40,7 @@ const CONSTS = {
             basePhiPeriod: 0.001,
             basePhiScale: 0.001,
         },
+        score: 1,
     },
     bloom: {
         exposure: 1,

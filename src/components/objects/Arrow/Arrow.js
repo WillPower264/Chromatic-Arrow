@@ -205,6 +205,7 @@ class Arrow extends Group {
                 );
 
                 this.hasCollided = true;
+                barriers[i].hit();
                 this.scene.barriersHit++;
                 return true;
             }

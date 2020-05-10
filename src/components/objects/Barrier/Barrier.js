@@ -15,6 +15,7 @@ class Barrier extends Group {
             thetaDelta: _.random(baseTheta * 0.5, baseTheta * 1.5) * (_.random(0, 1) * 2 - 1),
             phiPeriod: _.random(basePhiPeriod * 0.5, basePhiPeriod * 1.5),
             phiScale: _.random(basePhiScale * 0.5, basePhiScale * 1.5) * (_.random(0, 1) * 2 - 1),
+            numHits: 0,
         };
 
         // Create invisible barrier with random position
@@ -40,6 +41,14 @@ class Barrier extends Group {
 
         // Rotate to face camera
         this.rotateOnAxis(CONSTS.directions.yAxis.clone(), theta);
+    }
+
+    hit() {
+        if (this.state.numHits === 0) {
+            const { score } = CONSTS.barrier;
+            window.dispatchEvent(new CustomEvent('addScore', { detail: { score } }));
+        }
+        this.state.numHits++;
     }
 
     conceal() {
