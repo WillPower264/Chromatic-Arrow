@@ -42,7 +42,7 @@ class StartScene extends Scene {
         text.innerHTML = str;
         text.style.position = 'absolute';
         text.style.fontSize = '55px';
-        text.style.color = 'white';
+        text.style.color = 'black';
         document.body.appendChild(text);
         // Center text
         const { innerWidth } = window;

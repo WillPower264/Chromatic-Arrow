@@ -106,10 +106,10 @@ const CONSTS = {
             if (h * 3 < 2) return m1 + (m2 - m1) * (0.66666 - h) * 6;
             return m1;
         };
-        const r = 256*hueToRGB(m1, m2, h + 1/3);
-        const g = 256*hueToRGB(m1, m2, h);
-        const b = 256*hueToRGB(m1, m2, h - 1/3);
-        return r*256*256 + g*256 + b;
+        const r = Math.round(255*hueToRGB(m1, m2, h + 1/3));
+        const g = Math.round(255*hueToRGB(m1, m2, h));
+        const b = Math.round(255*hueToRGB(m1, m2, h - 1/3));
+        return (r << 16) + (g << 8) + b;
     },
     scene: {
         backgroundColor: 0x000, // 0x7ec0ee,
