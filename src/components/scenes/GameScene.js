@@ -20,6 +20,12 @@ class GameScene extends Scene {
             barriers: [],
         };
 
+        // Collision helper
+        this.helper = new Mesh(
+            new BoxGeometry(1, 1, 10), new MeshStandardMaterial({color: 0xffffff})
+        );
+        this.helper.visible = false;
+
         // Firing arrow
         this.disableControls = false;
         this.isFiring = false;
@@ -161,11 +167,12 @@ class GameScene extends Scene {
 
     addSplatterDome(position, color) {
         const domeHit = position.clone().normalize().multiplyScalar(CONSTS.dome.radius);
-        const rot = new Euler(0, Math.PI / 2, 0);   // IDK what to put here
+        const norm = domeHit.clone().multiplyScalar(-1).normalize();
+				this.helper.lookAt(norm);
         const splat = new Splatter(
-            this.dome, domeHit, rot, CONSTS.splatter.splatSize * 5, color
+            this.dome, domeHit, this.helper.rotation, CONSTS.splatter.splatSize, color, true
         );
-        this.dome.attach(splat.mesh);
+        this.add(splat.mesh);
     }
 
     createBarriers() {
