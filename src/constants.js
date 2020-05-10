@@ -93,8 +93,8 @@ const CONSTS = {
         },
     },
     randomColor: () => {
-        const l = 0.2;
-        const s = 0.7;
+        const l = 0.5;
+        const s = 1;
         const h = Math.random();
         // From the Image class in A1
         const m2 = l <= 0.5 ? l * (s + 1.0) : l + s - l * s;

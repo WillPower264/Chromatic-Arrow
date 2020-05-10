@@ -13,7 +13,7 @@ class EndScene extends Scene {
         this.height = innerHeight;
 
         // Splatter
-        this.color = Math.random()*0xffffff;
+        this.color = CONSTS.randomColor(); 
         this.createSplatter(innerWidth, innerHeight);
 
         // Text
