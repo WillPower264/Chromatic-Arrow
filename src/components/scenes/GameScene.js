@@ -1,4 +1,5 @@
-import { Scene, BoxGeometry, Color, Euler, MeshStandardMaterial, Mesh, Vector3, SphereGeometry, DoubleSide } from 'three';
+import { Scene, BoxGeometry, Color, Euler, MeshStandardMaterial, Mesh, Vector3, SphereGeometry, DoubleSide, ShaderMaterial} from 'three';
+   
 import { Arrow, Target, Barrier, Splatter, Wind } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
@@ -247,9 +248,32 @@ class GameScene extends Scene {
     initializeDome() {
         const { radius, numSegments, color } = CONSTS.dome;
         const geometry = new SphereGeometry(radius, numSegments, numSegments);
-        const material = new MeshStandardMaterial({ side: DoubleSide, color });
-        const mesh = new Mesh(geometry, material);
+        geometry.computeFlatVertexNormals();
+
+        const vShader = `
+        varying vec3 vNormal;
+        void main() {
+            vNormal = normal;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        }`;
+        const fShader = `
+        precision highp float;
+        varying vec3 vNormal;
+        void main() {
+            // feed into our frag colour
+            vec3 colors = normalize(vNormal)/3.5 + 0.1;
+            gl_FragColor = vec4(colors, 1.0);
+        }`
+        const uniforms = {}
+        const shadeMat =  new ShaderMaterial({
+            uniforms: uniforms,
+            fragmentShader: fShader,
+            vertexShader: vShader,
+            side: DoubleSide,
+        })
+        const mesh = new Mesh(geometry, shadeMat);
         this.add(mesh);
+        
         return mesh;
     }
 }
