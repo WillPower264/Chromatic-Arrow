@@ -42,6 +42,10 @@ class Barrier extends Group {
         this.rotateOnAxis(CONSTS.directions.yAxis.clone(), theta);
     }
 
+    conceal() {
+        this.children[0].visible = false;
+    }
+
     reveal(color) {
         // Give the mesh a color and reveal it
         this.children[0].material.color = new Color(color || 'white');
