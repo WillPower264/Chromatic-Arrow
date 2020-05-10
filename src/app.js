@@ -44,6 +44,26 @@ let gameScene;
 let interfaceScene;
 let endScene;
 
+// Bloom post-processing set up 
+const {exposure, strength, threshold, radius} = CONSTS.bloom;
+renderer.toneMappingExposure = Math.pow( exposure, 4.0 );
+let vec = new Vector2( window.innerWidth, window.innerHeight )
+const bloomPass = new UnrealBloomPass(vec, strength, radius, threshold);
+bloomPass.renderToScreen = true;
+
+// Create bloom postprocessing composer for a specific scene
+let composerStart;
+let composerGame;
+// let composerEnd;
+
+function composeBloom(scene, camera) {
+    const composer = new EffectComposer(renderer);
+    composer.setSize( window.innerWidth, window.innerHeight );
+    composer.addPass(new RenderPass(scene, camera));
+    composer.addPass(bloomPass);
+    return composer;
+}
+
 function initStartScene() {
   startScene = new StartScene(startToGameHandler, startToTutorialHander);
   camera = new PerspectiveCamera();
@@ -54,8 +74,22 @@ function initStartScene() {
   startScene.add(controls.getObject());
   camera.position.copy(CONSTS.camera.position);
   camera.lookAt(CONSTS.camera.initialDirection); // camera starts looking down the +z axis
+  composerStart = composeBloom(startScene, camera); 
   windowResizeHandler();
 }
+
+// Set up interface overlay camera
+// From example: https://threejs.org/examples/#webgl_sprites
+const { innerHeight, innerWidth } = window;
+const cameraOrtho = new OrthographicCamera(
+  -innerWidth / 2,
+  innerWidth / 2,
+  innerHeight / 2,
+  -innerHeight / 2,
+  CONSTS.camera.near,
+  CONSTS.camera.far
+);
+cameraOrtho.position.z = 1;
 
 // Control scene transitions
 let isStarted = false;
@@ -70,6 +104,7 @@ function changeToGame(lastScene, isTut) {
     gameScene.dispose();
   }
   gameScene = new GameScene(isTut);
+  composerGame = composeBloom(gameScene, camera);
   // Set up controls
   controls.enable();
   gameScene.add(controls.getObject());
@@ -102,6 +137,7 @@ function endGame() {
   interfaceScene.dispose();
   gameScene.end();
   endScene = new EndScene(finalScore);
+//   composerEnd = composeBloom(endScene, cameraOrtho);
   isEnded = true;
   // Re-enable listener after short delay
   _.delay(() => {
@@ -119,19 +155,6 @@ function endTutorial() {
   initStartScene();
 }
 
-// Set up interface overlay camera
-// From example: https://threejs.org/examples/#webgl_sprites
-const { innerHeight, innerWidth } = window;
-const cameraOrtho = new OrthographicCamera(
-  -innerWidth / 2,
-  innerWidth / 2,
-  innerHeight / 2,
-  -innerHeight / 2,
-  CONSTS.camera.near,
-  CONSTS.camera.far
-);
-cameraOrtho.position.z = 1;
-
 // Set up renderer, canvas, and minor CSS adjustments
 renderer.autoClear = false;
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -143,15 +166,15 @@ document.body.appendChild(canvas);
 
 function renderOne(projScene, timeStamp) {
   const deltaT = clock.getDelta(); 
-//   renderer.render(projScene, camera);
-  composer.render(deltaT);
+  composerStart.render(deltaT);
   projScene.update && projScene.update(timeStamp);
 }
 
 function renderTwo(projScene, orthoScene, timeStamp) {
-  controls.update(clock.getDelta());
+  const deltaT = clock.getDelta();
+  controls.update(deltaT);
   renderer.clear();
-  renderer.render(projScene, camera);
+  composerGame.render(deltaT)
   renderer.clearDepth();
   renderer.render(orthoScene, cameraOrtho);
   projScene.update && projScene.update(timeStamp);
@@ -159,20 +182,10 @@ function renderTwo(projScene, orthoScene, timeStamp) {
   orthoScene.update && orthoScene.update(timeStamp);
 }
 
-// Render loop
+// Initialize start scene for first time
 initStartScene();
 
-// Postprocessing set-up
-const composer = new EffectComposer(renderer);
-composer.setSize( window.innerWidth, window.innerHeight );
-composer.addPass(new RenderPass(startScene, camera));
-const {exposure, strength, threshold, radius} = CONSTS.bloom;
-renderer.toneMappingExposure = Math.pow( exposure, 4.0 );
-let vec = new Vector2( window.innerWidth, window.innerHeight )
-const bloomPass = new UnrealBloomPass(vec, strength, radius, threshold);
-bloomPass.renderToScreen = true;
-composer.addPass(bloomPass);
-
+// Render loop
 const onAnimationFrameHandler = (timeStamp) => {
   // Show start scene
   if (!isStarted) {

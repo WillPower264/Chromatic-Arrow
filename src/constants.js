@@ -65,7 +65,8 @@ const CONSTS = {
         zAxis: new Vector3(0, 0, 1),
     },
     ground: {
-        color: 0x091200,
+        color: 0x020204, 
+        // color: 0x091200,
         size: 500,
         thickness: 1,
         yPos: 0,
@@ -76,7 +77,7 @@ const CONSTS = {
         buffer: 25,
         edgeThickness: 5,
         edgeColor: 'black',
-        fillColor: 'green',
+        fillColor: 0x00FF00,
         text: 'Power Bar',
         style: {
             position: 'absolute',
@@ -87,7 +88,7 @@ const CONSTS = {
         },
     },
     scene: {
-        backgroundColor: 0x7ec0ee,
+        backgroundColor: 0x000, // 0x7ec0ee,
         maxTargets: 10,
         msBetweenTargets: 5 * 1000,
         wind: {
