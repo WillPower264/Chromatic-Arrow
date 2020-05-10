@@ -167,8 +167,8 @@ class GameScene extends Scene {
 
     addSplatterDome(position, color) {
         const domeHit = position.clone().normalize().multiplyScalar(CONSTS.dome.radius);
-        const norm = domeHit.clone().multiplyScalar(-1).normalize();
-				this.helper.lookAt(norm);
+        const norm = position.clone().negate().normalize();
+        this.helper.lookAt(norm);
         const splat = new Splatter(
             this.dome, domeHit, this.helper.rotation, CONSTS.splatter.splatSize, color, true
         );

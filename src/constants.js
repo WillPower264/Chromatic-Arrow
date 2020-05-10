@@ -21,8 +21,8 @@ const CONSTS = {
             forceFactor: 10,
             mass: 10,
             chargeRate: 0.01,
-            baseForce: 30000,
-            maxForce: 50000,
+            baseForce: 40000,
+            maxForce: 40000,
         },
     },
     barrier: {
@@ -71,7 +71,7 @@ const CONSTS = {
     },
     ground: {
         // color: 0x136d15,
-        color: 0x040406,
+        color: 0x0a0a0f,
         size: 500,
         thickness: 1,
         yPos: 0,
@@ -99,14 +99,14 @@ const CONSTS = {
         return new Color().setHSL(h, s, l).getHex();
     },
     scene: {
-        backgroundColor: 0x040030, // 0x7ec0ee,
+        backgroundColor: 0x050040, // 0x7ec0ee,
         maxTargets: 10,
         msBetweenTargets: 5 * 1000,
         wind: {
           msBetweenSpawn: 100,
-          msBetweenChange: 8 * 1000,
-          minSpeed: 2,
-          maxSpeed: 5,
+          msBetweenChange: 12 * 1000,
+          minSpeed: 1,
+          maxSpeed: 3,
         },
         numBarriers: 15,
     },
