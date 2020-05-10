@@ -43,6 +43,7 @@ class EndScene extends Scene {
         const { style } = CONSTS.endScene;
         const text = document.createElement('div');
         document.body.appendChild(text);
+        // Set content and style
         text.innerHTML = str;
         _.extend(text.style, style);
         text.style.left = (window.innerWidth - text.clientWidth)/2 + 'px';
