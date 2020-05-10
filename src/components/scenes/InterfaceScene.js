@@ -11,7 +11,7 @@ class InterfaceScene extends Scene {
         this.state = {
             updateList: [],
             score: 0,
-            timeLeft: CONSTS.timeLimit,
+            timeLeft: CONSTS.scene.timeLimit,
         };
         // Tutorial mode
         this.isTutorial = isTutorial;

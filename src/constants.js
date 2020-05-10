@@ -3,8 +3,6 @@ import { Vector3, Color } from 'three';
 const CONSTS = {
     EPS: 0.0001,
     fullRotation: 2 * Math.PI,
-    timeLimit: 60,          // in seconds
-    msEndDelay: 1 * 1000,
     // keep these top level objects in alphabetical order
     arrow: {
         position: new Vector3(0, 1.9, 0),
@@ -70,6 +68,21 @@ const CONSTS = {
         color: 0xff0000,
         numSegments: 32,
     },
+    endScene: {
+        splatterMaterialProperties: {
+            transparent: true,
+            depthTest: true,
+            depthWrite: true,
+            polygonOffset: true,
+            polygonOffsetFactor: -4,
+        },
+        style: {
+            position: 'absolute',
+            fontFamily: 'Verdana',
+            fontSize: '55px',
+            color: 'black',
+        },
+    },
     ground: {
         // color: 0x136d15,
         color: 0x0a0a0f,
@@ -111,6 +124,8 @@ const CONSTS = {
           maxSpeed: 3,
         },
         numBarriers: 15,
+        timeLimit: 6,          // in seconds
+        msEndDelay: 1 * 1000,
     },
     scoreBox: {
         text: 'Score: ',

@@ -47,7 +47,7 @@ let endScene;
 // Bloom post-processing set up
 const {exposure, strength, threshold, radius} = CONSTS.bloom;
 renderer.toneMappingExposure = Math.pow(exposure, 4.0);
-let vec = new Vector2(window.innerWidth, window.innerHeight)
+const vec = new Vector2(window.innerWidth, window.innerHeight);
 const bloomPass = new UnrealBloomPass(vec, strength, radius, threshold);
 bloomPass.renderToScreen = true;
 
@@ -103,7 +103,7 @@ function changeToGame(lastScene, isTut) {
   isStarted = true;
   isTutorial = isTut;
   isEnded = false;
-};
+}
 
 // Start game handler
 const startToGameHandler = () => {
@@ -133,7 +133,7 @@ function endGame() {
   // Re-enable listener after short delay
   _.delay(() => {
     window.addEventListener('click', endToGameHandler, false);
-  }, CONSTS.msEndDelay);
+  }, CONSTS.scene.msEndDelay);
 }
 
 function endTutorial() {

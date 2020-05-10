@@ -1,86 +1,78 @@
 import { Scene, Mesh, MeshBasicMaterial, PlaneGeometry } from 'three';
-import { BasicLights } from 'lights';
 import { Splatter } from 'objects';
 import CONSTS from '../../constants';
+import _ from 'lodash';
 
 class EndScene extends Scene {
     constructor(score) {
         // Call parent Scene() constructor
         super();
 
-        const { innerHeight, innerWidth } = window;
-        this.width = innerWidth;
-        this.height = innerHeight;
-
         // Splatter
-        this.color = CONSTS.randomColor();
-        this.createSplatter(innerWidth, innerHeight);
+        this.splatter = this.createSplatter();
 
         // Text
-        this.textIds = [];
-        this.currWidth = window.innerWidth;
-        this.createText(`Final Score: ${score}`, '35%');
+        this.textBoxes = [];
+        this.textBoxes.push(this.createText(`Final Score: ${score}`, '35%'));
         _.delay(() => {
-          this.createText("Click Anywhere to Retry", '50%');
-        }, CONSTS.msEndDelay);
+            this.textBoxes.push(this.createText('Click Anywhere to Retry', '50%'));
+        }, CONSTS.scene.msEndDelay);
+
+        // Add event listeners
+        this.addEventListeners();
     }
 
-    createSplatter(width, height) {
-        const s = Math.max(width, height)
+    createSplatter() {
+        const { innerHeight, innerWidth } = window;
+        const { splatterMaterialProperties: properties } = CONSTS.endScene;
+        const s = Math.max(innerWidth, innerHeight);
         const geometry = new PlaneGeometry(s, s);
         const splat = new Splatter();
-        const material1 = new MeshBasicMaterial({
+        const material = new MeshBasicMaterial(_.extend(properties, {
           map: splat.texture,
-          color: this.color,
-          transparent: true,
-          depthTest: true,
-          depthWrite: false,
-          polygonOffset: true,
-          polygonOffsetFactor: -4
-        });
-        const mesh = new Mesh(geometry, material1);
-        mesh.rotation.z = 2*Math.PI/6;
-        mesh.position.x -= width/16;
+          color: CONSTS.randomColor(),
+        }));
+        const mesh = new Mesh(geometry, material);
+        mesh.rotation.z = CONSTS.fullRotation / 6;
+        mesh.position.x -= innerWidth / 16;
         this.add(mesh);
+        return mesh;
     }
 
     createText(str, top) {
+        const { style } = CONSTS.endScene;
         const text = document.createElement('div');
-        text.id = str;
-        text.innerHTML = str;
-        text.style.position = 'absolute';
-        text.style.fontSize = '55px';
-        text.style.color = 'black';
         document.body.appendChild(text);
-        // Center text
-        const { innerHeight, innerWidth } = window;
-        text.style.left = (innerWidth - text.clientWidth)/2 + 'px';
+        text.innerHTML = str;
+        _.extend(text.style, style);
+        text.style.left = (window.innerWidth - text.clientWidth)/2 + 'px';
         text.style.top = top;
-        this.textIds.push(str);
+        return text;
     }
 
     clearText() {
-        for (let i = 0; i < this.textIds.length; i++) {
-          document.getElementById(this.textIds[i]).remove();
-        }
-        this.textIds.length = [];
+        this.textBoxes.forEach((textBox) => textBox.remove());
+        this.textBoxes = [];
+    }
+
+    resizeHandler() {
+        // reset splatter
+        this.remove(this.splatter);
+        this.splatter = this.createSplatter();
+
+        // realign textboxes
+        this.textBoxes.forEach((textBox) => {
+            textBox.style.left = (window.innerWidth - textBox.clientWidth)/2 + 'px';
+        });
+    }
+
+    addEventListeners() {
+        this.resizeHandler();
+        window.addEventListener('resize', () => this.resizeHandler(), false);
     }
 
     update() {
-        // Re-center
-        const { innerHeight, innerWidth } = window;
-        if (innerWidth !== this.width || innerHeight !== this.height) {
-          // Splatter
-          this.remove(this.children[0]);
-          this.createSplatter(innerWidth, innerHeight);
-          // Text
-          for (let i = 0; i < this.textIds.length; i++) {
-            const elt = document.getElementById(this.textIds[i]);
-            elt.style.left = (window.innerWidth - elt.clientWidth)/2 + 'px';
-          }
-          this.width = innerWidth;
-          this.height = innerHeight;
-        }
+        // Nothing to update
     }
 }
 
