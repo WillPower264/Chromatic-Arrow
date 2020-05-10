@@ -77,7 +77,7 @@ const CONSTS = {
         buffer: 25,
         edgeThickness: 5,
         edgeColor: 'black',
-        fillColor: 'green',
+        fillColor: 0x00FF00,
         text: 'Power Bar',
         style: {
             position: 'absolute',

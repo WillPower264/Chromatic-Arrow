@@ -52,8 +52,9 @@ const bloomPass = new UnrealBloomPass(vec, strength, radius, threshold);
 bloomPass.renderToScreen = true;
 
 // Create bloom postprocessing composer for a specific scene
+let composerStart;
 let composerGame;
-let composerInterface;
+// let composerEnd;
 
 function composeBloom(scene, camera) {
     const composer = new EffectComposer(renderer);
@@ -73,6 +74,7 @@ function initStartScene() {
   startScene.add(controls.getObject());
   camera.position.copy(CONSTS.camera.position);
   camera.lookAt(CONSTS.camera.initialDirection); // camera starts looking down the +z axis
+  composerStart = composeBloom(startScene, camera); 
   windowResizeHandler();
 }
 
@@ -107,7 +109,6 @@ function changeToGame(lastScene, isTut) {
   controls.enable();
   gameScene.add(controls.getObject());
   interfaceScene = new InterfaceScene(isTut);
-  composerInterface = composeBloom(interfaceScene, cameraOrtho);
   isStarted = true;
   isTutorial = isTut;
   isEnded = false;
@@ -136,6 +137,7 @@ function endGame() {
   interfaceScene.dispose();
   gameScene.end();
   endScene = new EndScene(finalScore);
+//   composerEnd = composeBloom(endScene, cameraOrtho);
   isEnded = true;
   // Re-enable listener after short delay
   _.delay(() => {
@@ -182,9 +184,6 @@ function renderTwo(projScene, orthoScene, timeStamp) {
 
 // Initialize start scene for first time
 initStartScene();
-// these scenes are never disposed so we never recreate their composers
-const composerStart = composeBloom(startScene, camera); 
-const composerEnd = composeBloom(endScene, cameraOrtho);
 
 // Render loop
 const onAnimationFrameHandler = (timeStamp) => {
