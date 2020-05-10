@@ -2,7 +2,10 @@ import CONSTS from './constants';
 import _ from 'lodash';
 
 // Constants
-const { style, initialTargetPosition, texts } = CONSTS.tutorial;
+const {
+  style, initialTargetPosition, texts, msBarriersRevealed, maxTextBoxes,
+  baseHeight, spacePerLine
+} = CONSTS.tutorial;
 
 // Steps in tutorial
 let hasSpawnedFirstTarget = false;
@@ -11,85 +14,117 @@ let hasSpawnedSecondTarget = false;
 let hasShotSecondTarget = false;
 let hasActivatedWind = false;
 let hasShotThirdTarget = false;
-let hasSpawnedBarrier = false;
+let hasSpawnedBarriers = false;
+let spawnBarrierTime;
+let hasConcealedBarriers = false;
+let revealedBarriersHit;
 let hasShotBarrier = false;
 let hasSpawnedForthTarget = false;
 let hasShotFourthTarget = false;
 
 // Text
-let currentTextBox;
+let currentTextBoxes = [];
 
 // Returns true if still in tutorial
-function runTutorial(scene) {
+function runTutorial(gameScene, interfaceScene, timeStamp) {
     // Target behind barrier
     if (hasShotFourthTarget) {
         removeText();
         resetSteps();
         return false;
     } else if (hasSpawnedForthTarget) {
-        hasShotFourthTarget = checkTargetHit(scene);
+        hasShotFourthTarget = checkTargetHit(gameScene);
     } else if (hasShotBarrier) {
-        scene.spawnTarget();
+        gameScene.spawnTarget();
         hasSpawnedForthTarget = true;
-        setText(texts.finish);
-    } else if (hasSpawnedBarrier) {
-        hasShotBarrier = checkBarrierHit(scene);
+        setText([texts.finish, '']);
+    } else if (hasConcealedBarriers) {
+        hasShotBarrier = checkBarrierHit(gameScene);
+        setText([texts.barrierFirst, texts.barrierSecond]);
+    } else if (hasSpawnedBarriers) {
+        if (timeStamp-spawnBarrierTime > msBarriersRevealed) {
+            const { barriers } = gameScene.state;
+            for (let i = 0; i < barriers.length; i++) {
+                barriers[i].conceal();
+            }
+            hasConcealedBarriers = true;
+            toggleScenesEnabled(gameScene, interfaceScene);
+        }
     } else if (hasShotThirdTarget) {
-        scene.createBarriers();
-        hasSpawnedBarrier = true;
-        setText(texts.barriers);
+        setText(['', '']);
+        gameScene.createBarriers();
+        const { barriers } = gameScene.state;
+        for (let i = 0; i < barriers.length; i++) {
+            barriers[i].reveal();
+        }
+        spawnBarrierTime = timeStamp;
+        hasSpawnedBarriers = true;
+        toggleScenesEnabled(gameScene, interfaceScene);
         // Target with wind
     } else if (hasActivatedWind) {
-        hasShotThirdTarget = checkTargetHit(scene);
+        hasShotThirdTarget = checkTargetHit(gameScene);
     } else if (hasShotSecondTarget) {
-        scene.changeWind();
-        scene.createWind();
-        scene.spawnTarget();
+        gameScene.changeWind();
+        gameScene.createWind();
+        gameScene.spawnTarget();
         hasActivatedWind = true;
-        setText(texts.wind);
+        setText([texts.wind, '']);
         // Target at random position
     } else if (hasSpawnedSecondTarget) {
-        hasShotSecondTarget = checkTargetHit(scene);
+        hasShotSecondTarget = checkTargetHit(gameScene);
     } else if (hasShotFirstTarget) {
-        scene.spawnTarget();
+        gameScene.spawnTarget();
         hasSpawnedSecondTarget = true;
-        setText(texts.lookAround);
+        setText([texts.lookAround, '']);
         // Target straight ahead
     } else if (hasSpawnedFirstTarget) {
-        hasShotFirstTarget = checkTargetHit(scene);
+        hasShotFirstTarget = checkTargetHit(gameScene);
     } else {
-        scene.spawnTarget(initialTargetPosition);
+        gameScene.spawnTarget(initialTargetPosition);
         hasSpawnedFirstTarget = true;
         createText();
-        setText(texts.initial);
+        setText([texts.initialFirst, texts.initialSecond]);
     }
     return true;
 }
 
-function checkTargetHit(scene) {
-    return scene.state.numTargetsInUse === 0;
+function checkTargetHit(gameScene) {
+    return gameScene.state.numTargetsInUse === 0;
 }
 
-function checkBarrierHit(scene) {
-    return scene.barriersHit > 0;
+function checkBarrierHit(gameScene) {
+    return gameScene.barriersHit > 0;
 }
 
 function createText() {
-    const text = document.createElement('div');
-    _.extend(text.style, style);
-    document.body.appendChild(text);
-    currentTextBox = text;
+    for (let i = 0; i < maxTextBoxes; i++) {
+        const text = document.createElement('div');
+        _.extend(text.style, style);
+        document.body.appendChild(text);
+        currentTextBoxes.push(text);
+    }
 }
 
-function setText(str) {
-    currentTextBox.innerHTML = str;
-    // center text box
-    currentTextBox.style.left = (window.innerWidth - currentTextBox.clientWidth) / 2 + 'px';
+function setText(strs) {
+    for (let i = 0; i < strs.length; i++) {
+        currentTextBoxes[i].innerHTML = strs[i];
+        // center text box
+        currentTextBoxes[i].style.left =
+            (window.innerWidth - currentTextBoxes[i].clientWidth) / 2 + 'px';
+        currentTextBoxes[i].style.top = (baseHeight + i*spacePerLine) + '%';
+    }
 }
 
 function removeText() {
-    currentTextBox.remove();
-    currentTextBox = undefined;
+    for (let i = 0; i < maxTextBoxes; i++) {
+        currentTextBoxes[i].remove();
+    }
+    currentTextBoxes = [];
+}
+
+function toggleScenesEnabled(gameScene, interfaceScene) {
+    gameScene.disableControls = !gameScene.disableControls;
+    interfaceScene.disableControls = !interfaceScene.disableControls;
 }
 
 function resetSteps() {
@@ -99,8 +134,9 @@ function resetSteps() {
     hasShotSecondTarget = false;
     hasActivatedWind = false;
     hasShotThirdTarget = false;
-    hasSpawnedBarrier = false;
+    hasSpawnedBarriers = false;
     hasShotBarrier = false;
+    hasConcealedBarriers = false;
     hasSpawnedForthTarget = false;
     hasShotFourthTarget = false;
 }

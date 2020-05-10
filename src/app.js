@@ -199,7 +199,7 @@ const onAnimationFrameHandler = (timeStamp) => {
     renderOne(startScene, timeStamp);
   // Show tutorial
   } else if (isTutorial) {
-    isTutorial = runTutorial(gameScene, timeStamp);
+    isTutorial = runTutorial(gameScene, interfaceScene, timeStamp);
     renderTwo(gameScene, interfaceScene, timeStamp);
     // Just ended
     if (!isTutorial) {
