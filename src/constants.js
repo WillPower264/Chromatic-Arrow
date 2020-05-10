@@ -15,8 +15,8 @@ const CONSTS = {
         movement: {
             deltaT: 18 / 1000,
             damping: 0.03,
-            gravity: new Vector3(0, -6.9, 0),
-            forceFactor: 10,
+            gravity: new Vector3(0, -69, 0),
+            windForceFactor: 7,
             mass: 10,
             chargeRate: 0.01,
             baseForce: 40000,
@@ -38,6 +38,7 @@ const CONSTS = {
             basePhiPeriod: 0.001,
             basePhiScale: 0.001,
         },
+        defaultColor: 0xAAAAAA,
         score: 1,
     },
     bloom: {
@@ -120,8 +121,8 @@ const CONSTS = {
         wind: {
           msBetweenSpawn: 100,
           msBetweenChange: 12 * 1000,
-          minSpeed: 1,
-          maxSpeed: 3,
+          minSpeed: 2,
+          maxSpeed: 4,
         },
         numBarriers: 15,
         timeLimit: 60,          // in seconds

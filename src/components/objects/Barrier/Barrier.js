@@ -56,8 +56,9 @@ class Barrier extends Group {
     }
 
     reveal(color) {
+        const { defaultColor } = CONSTS.barrier;
         // Give the mesh a color and reveal it
-        this.children[0].material.color = new Color(color || 'white');
+        this.children[0].material.color = new Color(color || defaultColor);
         this.children[0].visible = true;
     }
 
