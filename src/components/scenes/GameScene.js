@@ -159,6 +159,15 @@ class GameScene extends Scene {
         barrier.attach(splat.mesh);
     }
 
+    addSplatterDome(position, color) {
+        const domeHit = position.clone().normalize().multiplyScalar(CONSTS.dome.radius);
+        const rot = new Euler(0, Math.PI / 2, 0);   // IDK what to put here
+        const splat = new Splatter(
+            this.dome, domeHit, rot, CONSTS.splatter.splatSize * 5, color
+        );
+        this.dome.attach(splat.mesh);
+    }
+
     createBarriers() {
         _.times(CONSTS.scene.numBarriers, (n) => {
             const barrier = new Barrier(n);
