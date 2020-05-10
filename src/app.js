@@ -44,25 +44,16 @@ let gameScene;
 let interfaceScene;
 let endScene;
 
-// Bloom post-processing set up 
+// Bloom post-processing set up
 const {exposure, strength, threshold, radius} = CONSTS.bloom;
-renderer.toneMappingExposure = Math.pow( exposure, 4.0 );
-let vec = new Vector2( window.innerWidth, window.innerHeight )
+renderer.toneMappingExposure = Math.pow(exposure, 4.0);
+let vec = new Vector2(window.innerWidth, window.innerHeight)
 const bloomPass = new UnrealBloomPass(vec, strength, radius, threshold);
 bloomPass.renderToScreen = true;
 
 // Create bloom postprocessing composer for a specific scene
 let composerStart;
 let composerGame;
-// let composerEnd;
-
-function composeBloom(scene, camera) {
-    const composer = new EffectComposer(renderer);
-    composer.setSize( window.innerWidth, window.innerHeight );
-    composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(bloomPass);
-    return composer;
-}
 
 function initStartScene() {
   startScene = new StartScene(startToGameHandler, startToTutorialHander);
@@ -74,7 +65,7 @@ function initStartScene() {
   startScene.add(controls.getObject());
   camera.position.copy(CONSTS.camera.position);
   camera.lookAt(CONSTS.camera.initialDirection); // camera starts looking down the +z axis
-  composerStart = composeBloom(startScene, camera); 
+  composerStart = composeBloom(startScene, camera);
   windowResizeHandler();
 }
 
@@ -104,11 +95,11 @@ function changeToGame(lastScene, isTut) {
     gameScene.dispose();
   }
   gameScene = new GameScene(isTut);
-  composerGame = composeBloom(gameScene, camera);
   // Set up controls
   controls.enable();
   gameScene.add(controls.getObject());
   interfaceScene = new InterfaceScene(isTut);
+  composerGame = composeBloom(gameScene, camera, interfaceScene, cameraOrtho);
   isStarted = true;
   isTutorial = isTut;
   isEnded = false;
@@ -137,7 +128,7 @@ function endGame() {
   interfaceScene.dispose();
   gameScene.end();
   endScene = new EndScene(finalScore);
-//   composerEnd = composeBloom(endScene, cameraOrtho);
+  composerGame = composeBloom(gameScene, camera, endScene, cameraOrtho);
   isEnded = true;
   // Re-enable listener after short delay
   _.delay(() => {
@@ -165,7 +156,7 @@ document.body.style.overflow = 'hidden'; // Fix scrolling
 document.body.appendChild(canvas);
 
 function renderOne(projScene, timeStamp) {
-  const deltaT = clock.getDelta(); 
+  const deltaT = clock.getDelta();
   composerStart.render(deltaT);
   projScene.update && projScene.update(timeStamp);
 }
@@ -174,12 +165,28 @@ function renderTwo(projScene, orthoScene, timeStamp) {
   const deltaT = clock.getDelta();
   controls.update(deltaT);
   renderer.clear();
-  composerGame.render(deltaT)
-  renderer.clearDepth();
-  renderer.render(orthoScene, cameraOrtho);
+  composerGame.render(deltaT);
   projScene.update && projScene.update(timeStamp);
   camera.getWorldDirection(projScene.direction);
   orthoScene.update && orthoScene.update(timeStamp);
+}
+
+// Apply post-processing
+function composeBloom(projScene, projCamera, orthoScene, orthoCamera) {
+    const composer = new EffectComposer(renderer);
+    composer.setSize(window.innerWidth, window.innerHeight);
+    const gamePass = new RenderPass(projScene, projCamera);
+    gamePass.clearDepth = true;
+    gamePass.clear = false;
+    composer.addPass(gamePass);
+    if (orthoScene) {
+      const overlayPass = new RenderPass(orthoScene, orthoCamera);
+      overlayPass.clearDepth = true;
+      overlayPass.clear = false;
+      composer.addPass(overlayPass);
+    }
+    composer.addPass(bloomPass);
+    return composer;
 }
 
 // Initialize start scene for first time

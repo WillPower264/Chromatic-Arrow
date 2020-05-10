@@ -65,7 +65,7 @@ const CONSTS = {
         zAxis: new Vector3(0, 0, 1),
     },
     ground: {
-        color: 0x020204, 
+        color: 0x020204,
         // color: 0x091200,
         size: 500,
         thickness: 1,
