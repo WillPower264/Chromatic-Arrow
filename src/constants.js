@@ -64,8 +64,13 @@ const CONSTS = {
         yAxis: new Vector3(0, 1, 0),
         zAxis: new Vector3(0, 0, 1),
     },
+    dome: {
+        radius: 45,
+        color: 0xff0000,
+        numSegments: 32,
+    },
     ground: {
-        color: 0x091200,
+        color: 0x136d15,
         size: 500,
         thickness: 1,
         yPos: 0,
@@ -76,7 +81,7 @@ const CONSTS = {
         buffer: 25,
         edgeThickness: 5,
         edgeColor: 'black',
-        fillColor: 'green',
+        fillColor: 'red',
         text: 'Power Bar',
         style: {
             position: 'absolute',
@@ -162,5 +167,7 @@ const CONSTS = {
         pathStep: 0.05,
     },
 };
+
+CONSTS.dome.color = CONSTS.scene.backgroundColor;
 
 export default CONSTS;

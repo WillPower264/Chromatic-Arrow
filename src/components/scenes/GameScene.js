@@ -1,4 +1,4 @@
-import { Scene, BoxGeometry, Color, Euler, MeshStandardMaterial, Mesh, Vector3 } from 'three';
+import { Scene, BoxGeometry, Color, Euler, MeshStandardMaterial, Mesh, Vector3, SphereGeometry, DoubleSide } from 'three';
 import { Arrow, Target, Barrier, Splatter, Wind } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
@@ -31,6 +31,7 @@ class GameScene extends Scene {
         // Set background, ground, and lights
         this.background = new Color(backgroundColor);
         this.ground = this.initializeGround();
+        this.dome = this.initializeDome();
         const lights = new BasicLights();
         this.add(lights);
 
@@ -219,6 +220,15 @@ class GameScene extends Scene {
         const mesh = new Mesh(geometry, material);
         mesh.receiveShadow = true;
         mesh.position.setY(yPos);
+        this.add(mesh);
+        return mesh;
+    }
+
+    initializeDome() {
+        const { radius, numSegments, color } = CONSTS.dome;
+        const geometry = new SphereGeometry(radius, numSegments, numSegments);
+        const material = new MeshStandardMaterial({ side: DoubleSide, color });
+        const mesh = new Mesh(geometry, material);
         this.add(mesh);
         return mesh;
     }
