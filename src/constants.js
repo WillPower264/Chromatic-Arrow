@@ -116,7 +116,7 @@ const CONSTS = {
     scene: {
         backgroundColor: 0x050040, // 0x7ec0ee,
         maxTargets: 10,
-        msBetweenTargets: 5 * 1000,
+        msBetweenTargets: 4 * 1000,
         wind: {
           msBetweenSpawn: 100,
           msBetweenChange: 12 * 1000,
