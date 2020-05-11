@@ -85,8 +85,10 @@ class EndScene extends Scene {
 
     disposeSplatter() {
         this.splatter.destruct();
+        this.splatter = null;
         this.mesh.geometry.dispose();
         this.mesh.material.dispose();
+        this.mesh = null;
     }
 
     destruct() {

@@ -93,6 +93,9 @@ class InterfaceScene extends Scene {
     destruct() {
         this.powerbar.destruct();
         this.cross.destruct();
+        this.powerbar = null;
+        this.cross = null;
+        this.state.updateList = null;
         this.dispose();
     }
 

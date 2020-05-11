@@ -23,11 +23,12 @@ class GameScene extends Scene {
             wind: [],
         };
 
-        // Collision helper
+        // Collision helper and splatter
         this.helper = new Mesh(
             new BoxGeometry(1, 1, 10), new MeshStandardMaterial({color: 0xffffff})
         );
         this.helper.visible = false;
+        this.splatter = new Splatter();
 
         // Firing arrow
         this.disableControls = false;
@@ -155,38 +156,38 @@ class GameScene extends Scene {
     }
 
     addSplatterGround(position, color) {
-        const splat = new Splatter(
+        const mesh = this.splatter.getMesh(
           this.ground,
           position,
           new Euler(-Math.PI/2, 0, 0),
           CONSTS.splatter.splatSize,
           color
         );
-        this.add(splat.mesh);
-        this.state.splatters.push(splat);
+        this.add(mesh);
+        this.state.splatters.push(mesh);
     }
 
     addSplatterBarrier(position, barrier, plane, color) {
         const projPos = new Vector3(0, 0, 0);
         plane.projectPoint(position, projPos);
         const rot = barrier.rotation.clone();
-        const splat = new Splatter(
+        const mesh = this.splatter.getMesh(
           barrier.children[0], projPos, rot, CONSTS.splatter.splatSize, color
         );
-        splat.mesh.renderOrder = barrier.children.length;
-        barrier.attach(splat.mesh);
-        this.state.splatters.push(splat);
+        mesh.renderOrder = barrier.children.length;
+        barrier.attach(mesh);
+        this.state.splatters.push(mesh);
     }
 
     addSplatterDome(position, color) {
         const domeHit = position.clone().normalize().multiplyScalar(CONSTS.dome.radius);
         const norm = position.clone().negate().normalize();
         this.helper.lookAt(norm);
-        const splat = new Splatter(
+        const mesh = this.splatter.getMesh(
             this.dome, domeHit, this.helper.rotation, CONSTS.splatter.splatSize, color, true
         );
-        this.add(splat.mesh);
-        this.state.splatters.push(splat);
+        this.add(mesh);
+        this.state.splatters.push(mesh);
     }
 
     createBarriers() {
@@ -224,30 +225,44 @@ class GameScene extends Scene {
 
     destructList(arr) {
         for (let i = 0; i < arr.length; i++) {
-            arr[i].destruct();
+            if (arr[i].destruct) {
+                arr[i].destruct();
+            } else if (arr[i].material) {
+                arr[i].material.dispose();
+                arr[i].geometry.dispose();
+            }
             arr[i] = null;
         }
     }
 
     destruct() {
-        const { arrows, barriers, splatters, targets, wind } = this.state;
+        const { arrows, barriers, splatters, targets, wind, updateList } = this.state;
         // Game objects
         this.destructList(arrows);
         this.destructList(barriers);
         this.destructList(splatters);
         this.destructList(targets);
         this.destructList(wind);
+        this.destructList(updateList);
         // Background and ground
         this.ground.geometry.dispose();
         this.ground.material.dispose();
         this.dome.geometry.dispose();
         this.dome.material.dispose();
+        // Collision helper
+        this.helper.geometry.dispose();
+        this.helper.material.dispose();
         // State
         this.state.arrows = null;
         this.state.barriers = null;
         this.state.splatters = null;
         this.state.targets = null;
         this.state.wind = null;
+        this.state.updateList = null;
+        this.helper = null;
+        this.ground = null;
+        this.dome = null;
+        // Scene
         this.dispose();
     }
 
