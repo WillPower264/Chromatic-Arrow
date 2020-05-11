@@ -66,7 +66,6 @@ const CONSTS = {
     },
     dome: {
         radius: 45,
-        color: 0xff0000,
         numSegments: 32,
     },
     endScene: {
@@ -117,7 +116,7 @@ const CONSTS = {
     scene: {
         backgroundColor: 0x050040, // 0x7ec0ee,
         maxTargets: 10,
-        msBetweenTargets: 5 * 1000,
+        msBetweenTargets: 4 * 1000,
         wind: {
           msBetweenSpawn: 100,
           msBetweenChange: 12 * 1000,
@@ -143,14 +142,46 @@ const CONSTS = {
         splatSize: 4,
     },
     start: {
-      stepsPerSplatter: 6,
-      maxSplatters: 15,
-      xMin: -7,
-      xMax: 7,
-      yMin: -3,
-      yMax: 5,
-      minSize: 5,
-      maxSize: 7,
+        canvas: {
+            size: 100,
+            thickness: 1,
+            color: 'black',
+            position: new Vector3(0, 0, 10),
+        },
+        texts: {
+            title: {
+                name: 'Chromatic Arrow',
+                offset: '30%',
+            },
+            tutorial: {
+                name: 'Tutorial',
+                offset: '42%',
+            },
+            begin: {
+                name: 'Begin',
+                offset: '54%',
+            },
+            style: {
+                position: 'absolute',
+                fontFamily: 'Verdana',
+                fontSize: '55px',
+                color: 'black',
+            }
+        },
+        splatter: {
+            fixed: {
+                xs: [-2, -1.5, 0, 1, 2],
+                ys: [1, 3, 2, 3, 1],
+            },
+            stepsPerSplatter: 6,
+            maxSplatters: 15,
+            xMin: -7,
+            xMax: 7,
+            yMin: -3,
+            yMax: 5,
+            minSize: 5,
+            maxSize: 7,
+        }
     },
     target: {
         radius: 2.5,
@@ -216,7 +247,5 @@ const CONSTS = {
         pathStep: 0.05,
     },
 };
-
-CONSTS.dome.color = CONSTS.scene.backgroundColor;
 
 export default CONSTS;
