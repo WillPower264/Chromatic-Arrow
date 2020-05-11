@@ -26,8 +26,7 @@ class Splatter extends Group {
     getMesh(mesh, position, rotation, scale, color, isDouble) {
         // Update material
         const decalMat = this.materialBase.clone();
-        color = color || CONSTS.randomColor();
-        decalMat.color = new Color(color);
+        decalMat.color = new Color(color || CONSTS.randomColor());
         if (isDouble) {
             decalMat.side = DoubleSide;
         }

@@ -12,6 +12,7 @@ class InterfaceScene extends Scene {
             updateList: [],
             score: 0,
             timeLeft: CONSTS.scene.timeLimit,
+            gaemOver: false,
         };
         // Tutorial mode
         this.isTutorial = isTutorial;
@@ -45,21 +46,6 @@ class InterfaceScene extends Scene {
         this.state.updateList.push(object);
     }
 
-    countDown() {
-        const { timeLeft } = this.state;
-        if (timeLeft < 0) { return; }
-        const min = Math.floor(timeLeft / 60);
-        const sec = timeLeft % 60;
-        const time = `${min}:${sec < 10 ? `0${sec}` : sec}`;
-        this.timer.innerHTML = `${CONSTS.timer.text}${time}`;
-        this.state.timeLeft--;
-        _.delay(() => this.countDown(), 1000);
-    }
-
-    isEnded() {
-        return this.isTutorial ? false : this.state.timeLeft < 0;
-    }
-
     createText(text, style) {
         const textBox = document.createElement('div');
         textBox.innerHTML = text;
@@ -68,11 +54,26 @@ class InterfaceScene extends Scene {
         return textBox;
     }
 
+    countDown() {
+        const { timeLeft } = this.state;
+        if (timeLeft < 0) {
+            this.state.gameOver = true;
+            return;
+        }
+        const min = Math.floor(timeLeft / 60);
+        const sec = timeLeft % 60;
+        const time = `${min}:${sec < 10 ? `0${sec}` : sec}`;
+        this.timer.innerHTML = `${CONSTS.timer.text}${time}`;
+        this.state.timeLeft--;
+        _.delay(() => this.countDown(), 1000);
+    }
+
     updateScore(change) {
         this.state.score += change;
         this.scoreBox.innerHTML = `${CONSTS.scoreBox.text}${this.state.score}`;
     }
 
+    /* Event handlers */
     resizeHandler() {
         this.powerbar.resizeHandler();
     }
@@ -93,14 +94,16 @@ class InterfaceScene extends Scene {
         this.powerbar.setFillColor(e.detail.color);
     }
 
-    update(timeStamp) {
+    /* Update */
+    update() {
         if (!this.disableControls) {
             for (const obj of this.state.updateList) {
-                obj.update(timeStamp);
+                obj.update();
             }
         }
     }
 
+    /* Clean up */
     destruct() {
         // Destruct powerbar and crosshairs
         this.powerbar.destruct();

@@ -40,8 +40,8 @@ class GameScene extends Scene {
 
         // Set background, ground, and lights
         this.background = new Color(backgroundColor);
-        this.ground = this.initializeGround();
-        this.dome = this.initializeDome();
+        this.ground = this.createGround();
+        this.dome = this.createDome();
         const lights = new BasicLights();
         this.add(lights);
 
@@ -58,33 +58,34 @@ class GameScene extends Scene {
 
         // Create barriers, targets, and wind
         if (!isTutorial) {
-            this.createBarriers();
-            this.createTargetLoop();
+            this.initializeBarriers();
+            this.createTargets();
             this.changeWind();
             this.createWind();
         }
     }
 
+    /* Update Lists */
     addToUpdateList(object) {
         this.state.updateList.push(object);
     }
 
-    end() {
-        // Reveal barriers
-        const { barriers } = this.state;
-        for (let i = 0; i < barriers.length; i++) {
-            barriers[i].reveal();
-        }
-        // Disable user input
-        this.disableControls = true;
+    removeFromUpdateList(object) {
+        const ind = this.state.updateList.indexOf(object);
+        this.state.updateList[ind] = this.state.updateList.pop();
+    }
+
+    /* Targets */
+    initializeTargets() {
+        _.times(CONSTS.scene.maxTargets, () => {
+            this.state.targets.push(new Target(this));
+        });
     }
 
     spawnTarget(position) {
         // Check how many targets are in use
-        if (this.state.numTargetsInUse < CONSTS.scene.maxTargets &&
-            this.state.targets !== null) {
+        if (this.state.numTargetsInUse < CONSTS.scene.maxTargets && this.state.targets !== null) {
             // Create new target
-            const { disappearing, msDuration } = CONSTS.target;
             const target = this.state.targets[this.state.numTargetsInUse];
             if (position === undefined) {
                 target.setRandomPosition();
@@ -94,22 +95,25 @@ class GameScene extends Scene {
             target.faceCenter();
             this.state.numTargetsInUse++;
             this.add(target);
-
-            // Set timer to disappear
-            if (disappearing) {
-                _.delay(() => {
-                    if (target.parent !== null) {
-                        target.remove();
-                    }
-                }, msDuration);
-            }
         }
     }
 
-    createTargetLoop() {
+    createTargets() {
         this.spawnTarget();
         // Call function again, but later
-        _.delay(() => this.createTargetLoop(), CONSTS.scene.msBetweenTargets);
+        _.delay(() => this.createTargets(), CONSTS.scene.msBetweenTargets);
+    }
+
+    /* Wind */
+    createWind() {
+        if (this.state.winds === null) {
+            return;
+        }
+        const wind = new Wind(this.windSpeed, this.windVec);
+        this.add(wind);
+        this.state.updateList.push(wind);
+        this.state.winds.push(wind);
+        _.delay(() => this.createWind(), CONSTS.scene.wind.msBetweenSpawn);
     }
 
     changeWind() {
@@ -126,32 +130,63 @@ class GameScene extends Scene {
         _.delay(() => this.changeWind(), CONSTS.scene.wind.msBetweenChange);
     }
 
-    createWind() {
-        if (this.state.winds === null) {
-            return;
-        }
-        const wind = new Wind(this.windSpeed, this.windVec);
-        this.add(wind);
-        this.state.updateList.push(wind);
-        this.state.winds.push(wind);
-        _.delay(() => this.createWind(), CONSTS.scene.wind.msBetweenSpawn);
-    }
-
-    initializeTargets() {
-        _.times(CONSTS.scene.maxTargets, () => {
-            this.state.targets.push(new Target(this));
+    /* Create barriers, ground, dome */
+    initializeBarriers() {
+        _.times(CONSTS.scene.numBarriers, (n) => {
+            const barrier = new Barrier(n);
+            this.add(barrier);
+            this.addToUpdateList(barrier);
+            this.state.barriers.push(barrier);
         });
     }
 
-    removeObj(obj) {
-        // Remove from updateList
-        const ind = this.state.updateList.indexOf(obj);
-        this.state.updateList[ind] = this.state.updateList.pop();
-
-        // Remove from scene
-        this.remove(obj);
+    createGround() {
+        const { size, thickness, color, yPos } = CONSTS.ground;
+        const geometry = new BoxGeometry(size, thickness, size);
+        const material = new MeshStandardMaterial({ color });
+        const mesh = new Mesh(geometry, material);
+        mesh.receiveShadow = true;
+        mesh.position.setY(yPos);
+        this.add(mesh);
+        return mesh;
     }
 
+    createDome() {
+        // Create dome geometry
+        const { radius, numSegments } = CONSTS.dome;
+        const geometry = new SphereGeometry(radius, numSegments, numSegments);
+        geometry.computeFlatVertexNormals();
+
+        // Create dome material
+        const uniforms = {};
+        const vertexShader = `
+        varying vec3 vNormal;
+        void main() {
+            vNormal = normal;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+        }`;
+        const fragmentShader = `
+        precision highp float;
+        varying vec3 vNormal;
+        void main() {
+            // feed into our frag colour
+            vec3 colors = normalize(vNormal)/3.5 + 0.1;
+            gl_FragColor = vec4(colors, 1.0);
+        }`;
+        const shadeMat =  new ShaderMaterial({
+            uniforms,
+            fragmentShader,
+            vertexShader,
+            side: BackSide,
+        });
+
+        // Create dome mesh
+        const mesh = new Mesh(geometry, shadeMat);
+        this.add(mesh);
+        return mesh;
+    }
+
+    /* Splatter code */
     addSplatterGround(position, color) {
         const mesh = this.splatter.getMesh(
           this.ground,
@@ -187,59 +222,14 @@ class GameScene extends Scene {
         this.state.splatters.push(mesh);
     }
 
-    createBarriers() {
-        _.times(CONSTS.scene.numBarriers, (n) => {
-            const barrier = new Barrier(n);
-            this.add(barrier);
-            this.addToUpdateList(barrier);
-            this.state.barriers.push(barrier);
-        });
-    }
-
-    initializeGround() {
-        const { size, thickness, color, yPos } = CONSTS.ground;
-        const geometry = new BoxGeometry(size, thickness, size);
-        const material = new MeshStandardMaterial({ color });
-        const mesh = new Mesh(geometry, material);
-        mesh.receiveShadow = true;
-        mesh.position.setY(yPos);
-        this.add(mesh);
-        return mesh;
-    }
-
-    initializeDome() {
-        // Create dome geometry
-        const { radius, numSegments } = CONSTS.dome;
-        const geometry = new SphereGeometry(radius, numSegments, numSegments);
-        geometry.computeFlatVertexNormals();
-
-        // Create dome material
-        const uniforms = {};
-        const vertexShader = `
-        varying vec3 vNormal;
-        void main() {
-            vNormal = normal;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
-        }`;
-        const fragmentShader = `
-        precision highp float;
-        varying vec3 vNormal;
-        void main() {
-            // feed into our frag colour
-            vec3 colors = normalize(vNormal)/3.5 + 0.1;
-            gl_FragColor = vec4(colors, 1.0);
-        }`;
-        const shadeMat =  new ShaderMaterial({
-            uniforms,
-            fragmentShader,
-            vertexShader,
-            side: BackSide,
-        });
-
-        // Create dome mesh
-        const mesh = new Mesh(geometry, shadeMat);
-        this.add(mesh);
-        return mesh;
+    end() {
+        // Reveal barriers
+        const { barriers } = this.state;
+        for (let i = 0; i < barriers.length; i++) {
+            barriers[i].reveal();
+        }
+        // Disable user input
+        this.disableControls = true;
     }
 
     /* Event handlers */
@@ -282,7 +272,8 @@ class GameScene extends Scene {
         for (let i = len-1; i >= 0; i--) {
             const obj = updateList[i];
             if (obj.isDone()) {
-                this.removeObj(obj);
+                this.removeFromUpdateList(obj);
+                this.remove(obj);
             } else {
                 const windForce = this.windVec.clone().multiplyScalar(
                   this.windSpeed
@@ -297,21 +288,33 @@ class GameScene extends Scene {
         // Destruct game objects
         const { arrows, barriers, splatters, targets, winds } = this.state;
         arrows.forEach((arrow) => arrow.destruct());
-        this.state.arrows = null;
         barriers.forEach((barrier) => barrier.destruct());
-        this.state.barriers = null;
-        splatters.forEach((splatter) => splatter.destruct());
-        this.state.splatters = null;
+        splatters.forEach((splatter) => {
+            splatter.geometry.dispose();
+            splatter.material.dispose();
+        });
         targets.forEach((target) => target.destruct());
-        this.state.targets = null;
         winds.forEach((wind) => wind.destruct());
-        this.state.winds = null;
 
-        // Dispose ground and dome
+
+        // Remove pointers
+        this.state.arrows = null;
+        this.state.barriers = null;
+        this.state.splatters = null;
+        this.state.targets = null;
+        this.state.winds = null;
+        this.state.updateList = null;
+
+        // Dispose collision helper, ground, and dome
+        this.helper.geometry.dispose();
+        this.helper.material.dispose();
+        this.helper = null;
         this.ground.geometry.dispose();
         this.ground.material.dispose();
+        this.ground = null;
         this.dome.geometry.dispose();
         this.dome.material.dispose();
+        this.dome = null;
 
         // Dispose the scene
         this.dispose();

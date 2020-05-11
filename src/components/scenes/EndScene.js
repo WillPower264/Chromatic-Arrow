@@ -10,9 +10,7 @@ class EndScene extends Scene {
 
         // Splatter
         this.color = CONSTS.randomColor();
-        this.createSplatter();
-        this.geom;
-        this.material;
+        this.splatter = this.createSplatter();
 
         // Text
         this.textBoxes = [];
@@ -23,24 +21,26 @@ class EndScene extends Scene {
     }
 
     createSplatter() {
-        if (this.splatter) {
-            this.disposeSplatter();
-        }
+        // Create splatter geometry
         const { innerHeight, innerWidth } = window;
-        const { splatterMaterialProperties: properties } = CONSTS.endScene;
         const s = Math.max(innerWidth, innerHeight);
         const geometry = new PlaneGeometry(s, s);
+
+        // Create splatter material
+        const { splatterMaterialProperties: properties } = CONSTS.endScene;
         const splat = new Splatter();
         const material = new MeshBasicMaterial(_.extend(properties, {
-          map: splat.texture,
-          color: this.color,
+            map: splat.texture,
+            color: this.color,
         }));
+        splat.destruct();
+
+        // Create splatter mesh
         const mesh = new Mesh(geometry, material);
         mesh.rotation.z = CONSTS.fullRotation / 6;
         mesh.position.x -= innerWidth / 16;
         this.add(mesh);
-        this.splatter = splat;
-        this.mesh = mesh;
+        return mesh;
     }
 
     createText(str, top) {
@@ -58,8 +58,11 @@ class EndScene extends Scene {
     /* Event handlers */
     resizeHandler() {
         // reset splatter
-        this.remove(this.mesh);
-        this.createSplatter();
+        this.splatter.geometry.dispose();
+        this.splatter.material.map.dispose();
+        this.splatter.material.dispose();
+        this.remove(this.splatter);
+        this.splatter = this.createSplatter();
 
         // realign textboxes
         this.textBoxes.forEach((textBox) => {
@@ -75,11 +78,10 @@ class EndScene extends Scene {
     /* Clean up */
     destruct() {
         // Destruct splatter
-        this.splatter.destruct();
+        this.splatter.geometry.dispose();
+        this.splatter.material.map.dispose();
+        this.splatter.material.dispose();
         this.splatter = null;
-        this.mesh.geometry.dispose();
-        this.mesh.material.dispose();
-        this.mesh = null;
 
         // Remove textboxes
         this.textBoxes.forEach((textBox) => textBox.remove());

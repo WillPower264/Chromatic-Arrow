@@ -107,16 +107,19 @@ function changeToGame(lastScene, isTut) {
 // Start game handler
 const startToGameHandler = () => {
   changeToGame(startScene, false);
+  startScene = undefined;
 };
 
 // Start tutorial handler
 const startToTutorialHander = () => {
   changeToGame(startScene, true);
+  startScene = undefined;
 };
 
 // Restart tutorial handler
 const endToGameHandler = () => {
   changeToGame(endScene);
+  endScene = undefined;
   window.removeEventListener('click', endToGameHandler, false);
 };
 
@@ -124,6 +127,7 @@ function endGame() {
   // Handle transition between scenes
   const finalScore = interfaceScene.state.score;
   interfaceScene.destruct();
+  interfaceScene = undefined;
   gameScene.end();
   endScene = new EndScene(finalScore);
   composerGame = composeBloom(gameScene, camera, endScene, cameraOrtho);
@@ -206,7 +210,7 @@ const onAnimationFrameHandler = (timeStamp) => {
   } else if (isEnded) {
     renderTwo(gameScene, endScene, timeStamp);
   // End the game
-  } else if (interfaceScene.isEnded()) {
+  } else if (interfaceScene.state.gameOver) {
     endGame();
     renderTwo(gameScene, endScene, timeStamp);
   // Show game scene

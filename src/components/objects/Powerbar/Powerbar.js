@@ -61,6 +61,14 @@ class Powerbar extends Group {
         this.bar.position.setX(CONSTS.powerBar.width / 2);
     }
 
+    /* Event handlers */
+    resizeHandler() {
+        const { width, height, buffer } = CONSTS.powerBar;
+        this.position.x = window.innerWidth / 2 - width / 2 - buffer;
+        this.position.y = -window.innerHeight / 2 + height / 2 + buffer;
+    }
+
+    /* Update */
     update() {
         if (this.isFilling && this.bar.scale.x < CONSTS.powerBar.width) {
             this.bar.scale.x += this.step;
@@ -68,17 +76,12 @@ class Powerbar extends Group {
         }
     }
 
+    /* Clean up */
     destruct() {
         for (let i = 0; i < this.children.length; i++) {
             this.children[i].geometry.dispose();
             this.children[i].material.dispose();
         }
-    }
-
-    resizeHandler() {
-        const { width, height, buffer } = CONSTS.powerBar;
-        this.position.x = window.innerWidth / 2 - width / 2 - buffer;
-        this.position.y = -window.innerHeight / 2 + height / 2 + buffer;
     }
 }
 

@@ -17,7 +17,6 @@ let hasShotThirdTarget = false;
 let hasSpawnedBarriers = false;
 let spawnBarrierTime;
 let hasConcealedBarriers = false;
-let revealedBarriersHit;
 let hasShotBarrier = false;
 let hasSpawnedForthTarget = false;
 let hasShotFourthTarget = false;
@@ -52,7 +51,7 @@ function runTutorial(gameScene, interfaceScene, timeStamp) {
         }
     } else if (hasShotThirdTarget) {
         setText(['', '']);
-        gameScene.createBarriers();
+        gameScene.initializeBarriers();
         const { barriers } = gameScene.state;
         for (let i = 0; i < barriers.length; i++) {
             barriers[i].reveal();
