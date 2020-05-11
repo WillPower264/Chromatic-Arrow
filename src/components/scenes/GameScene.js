@@ -20,7 +20,7 @@ class GameScene extends Scene {
             barriers: [],
             arrows: [],
             splatters: [],
-            wind: [],
+            winds: [],
         };
 
         // Collision helper
@@ -62,9 +62,6 @@ class GameScene extends Scene {
             this.changeWind();
             this.createWind();
         }
-
-        // Add event listeners
-        this.addEventListeners();
     }
 
     addToUpdateList(object) {
@@ -115,7 +112,7 @@ class GameScene extends Scene {
     }
 
     changeWind() {
-        if (this.state.wind === null) {
+        if (this.state.winds === null) {
             return;
         }
         const direction = 2*Math.PI*Math.random();
@@ -129,13 +126,13 @@ class GameScene extends Scene {
     }
 
     createWind() {
-        if (this.state.wind === null) {
+        if (this.state.winds === null) {
             return;
         }
         const wind = new Wind(this.windSpeed, this.windVec);
         this.add(wind);
         this.state.updateList.push(wind);
-        this.state.wind.push(wind);
+        this.state.winds.push(wind);
         _.delay(() => this.createWind(), CONSTS.scene.wind.msBetweenSpawn);
     }
 
@@ -198,86 +195,6 @@ class GameScene extends Scene {
         });
     }
 
-    update(timeStamp) {
-        const { updateList } = this.state;
-
-        // Firing arrow
-        this.currentStep++;
-        if (!this.isFiring) {
-            this.beginFireStep = this.currentStep;
-        }
-
-        // Call update for each object in the updateList
-        const len = updateList.length;
-        for (let i = len-1; i >= 0; i--) {
-            const obj = updateList[i];
-            if (obj.isDone()) {
-                this.removeObj(obj);
-            } else {
-                const windForce = this.windVec.clone().multiplyScalar(
-                  this.windSpeed
-                );
-                obj.update(timeStamp, windForce);
-            }
-        }
-    }
-
-    destructList(arr) {
-        for (let i = 0; i < arr.length; i++) {
-            arr[i].destruct();
-            arr[i] = null;
-        }
-    }
-
-    destruct() {
-        const { arrows, barriers, splatters, targets, wind } = this.state;
-        // Game objects
-        this.destructList(arrows);
-        this.destructList(barriers);
-        this.destructList(splatters);
-        this.destructList(targets);
-        this.destructList(wind);
-        // Background and ground
-        this.ground.geometry.dispose();
-        this.ground.material.dispose();
-        this.dome.geometry.dispose();
-        this.dome.material.dispose();
-        // State
-        this.state.arrows = null;
-        this.state.barriers = null;
-        this.state.splatters = null;
-        this.state.targets = null;
-        this.state.wind = null;
-        this.dispose();
-    }
-
-    addEventListeners() {
-        window.addEventListener("mousedown", () => {
-            this.isFiring = true;
-            window.dispatchEvent(new CustomEvent('newArrowColor', {detail: { color: this.currentArrow.color}}));
-        }, false);
-
-        window.addEventListener("mouseup", () => {
-            // Shoot this arrow
-            if (this.disableControls) { return; }
-            const { chargeRate, baseForce, maxForce} = CONSTS.arrow.movement;
-            const totalTime = this.currentStep - this.beginFireStep;
-            const factor = Math.min(totalTime * chargeRate, 1);
-            this.currentArrow.addForce(
-              this.direction.normalize().clone().multiplyScalar(
-                baseForce + factor * maxForce
-              )
-            );
-            // Create new arrow
-            const { arrows } = this.state;
-            this.currentArrow = new Arrow(this);
-            this.add(this.currentArrow);
-            this.addToUpdateList(this.currentArrow);
-            arrows.push(this.currentArrow);
-            this.isFiring = false;
-        }, false);
-    }
-
     initializeGround() {
         const { size, thickness, color, yPos } = CONSTS.ground;
         const geometry = new BoxGeometry(size, thickness, size);
@@ -322,6 +239,81 @@ class GameScene extends Scene {
         const mesh = new Mesh(geometry, shadeMat);
         this.add(mesh);
         return mesh;
+    }
+
+    /* Event handlers */
+    mousedownHandler() {
+        this.isFiring = true;
+        window.dispatchEvent(new CustomEvent('newArrowColor', {detail: { color: this.currentArrow.color}}));
+    }
+
+    mouseupHandler() {
+        if (this.disableControls) { return; }
+        const { chargeRate, baseForce, maxForce} = CONSTS.arrow.movement;
+        const totalTime = this.currentStep - this.beginFireStep;
+        const factor = Math.min(totalTime * chargeRate, 1);
+        this.currentArrow.addForce(
+            this.direction.normalize().clone().multiplyScalar(
+            baseForce + factor * maxForce
+            )
+        );
+        // Create new arrow
+        const { arrows } = this.state;
+        this.currentArrow = new Arrow(this);
+        this.add(this.currentArrow);
+        this.addToUpdateList(this.currentArrow);
+        arrows.push(this.currentArrow);
+        this.isFiring = false;
+    }
+
+    /* Update */
+    update(timeStamp) {
+        const { updateList } = this.state;
+
+        // Firing arrow
+        this.currentStep++;
+        if (!this.isFiring) {
+            this.beginFireStep = this.currentStep;
+        }
+
+        // Call update for each object in the updateList
+        const len = updateList.length;
+        for (let i = len-1; i >= 0; i--) {
+            const obj = updateList[i];
+            if (obj.isDone()) {
+                this.removeObj(obj);
+            } else {
+                const windForce = this.windVec.clone().multiplyScalar(
+                  this.windSpeed
+                );
+                obj.update(timeStamp, windForce);
+            }
+        }
+    }
+
+    /* Clean up */
+    destruct() {
+        // Destruct game objects
+        const { arrows, barriers, splatters, targets, winds } = this.state;
+        arrows.forEach((arrow) => arrow.destruct());
+        this.state.arrows = null;
+        barriers.forEach((barrier) => barrier.destruct());
+        this.state.barriers = null;
+        splatters.forEach((splatter) => splatter.destruct());
+        this.state.splatters = null;
+        targets.forEach((target) => target.destruct());
+        this.state.targets = null;
+        winds.forEach((wind) => wind.destruct());
+        this.state.winds = null;
+
+        // Dispose ground and dome
+        this.ground.geometry.dispose();
+        this.ground.material.dispose();
+        this.dome.geometry.dispose();
+        this.dome.material.dispose();
+
+        // Dispose the scene
+        this.dispose();
     }
 }
 

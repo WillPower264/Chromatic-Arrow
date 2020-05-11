@@ -43,7 +43,8 @@ class Powerbar extends Group {
         mesh4.position.x -= width / 2;
         this.add(mesh4);
 
-        this.addEventListeners();
+        // Put powerbar in the right place
+        this.resizeHandler();
     }
 
     setFillColor(color) {
@@ -74,18 +75,11 @@ class Powerbar extends Group {
         }
     }
 
-    windowResizeHandler() {
+    resizeHandler() {
         const { width, height, buffer } = CONSTS.powerBar;
         this.position.x = window.innerWidth / 2 - width / 2 - buffer;
         this.position.y = -window.innerHeight / 2 + height / 2 + buffer;
     }
-
-    addEventListeners() {
-        this.windowResizeHandler();
-        window.addEventListener('resize', () => this.windowResizeHandler(), false);
-        window.addEventListener('newArrowColor', (e) => this.setFillColor(e.detail.color), false);
-    }
-
 }
 
 export default Powerbar;

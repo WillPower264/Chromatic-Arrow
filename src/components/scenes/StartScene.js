@@ -38,9 +38,6 @@ class StartScene extends Scene {
         this.divElements.push(this.createText(title.name, title.offset));
         this.divElements.push(this.createButton(tutorial.name, tutorial.offset, tutorialCallback));
         this.divElements.push(this.createButton(begin.name, begin.offset, startGameCallback));
-
-        // Add event listeners
-        this.addEventListeners();
     }
 
     createSplatter() {
@@ -84,11 +81,7 @@ class StartScene extends Scene {
         return button;
     }
 
-    clearText() {
-        this.divElements.forEach((divElement) => divElement.remove());
-        this.divElements = [];
-    }
-
+    /* Event handlers */
     resizeHandler() {
         // realign divElements
         this.divElements.forEach((divElement) => {
@@ -96,11 +89,7 @@ class StartScene extends Scene {
         });
     }
 
-    addEventListeners() {
-        this.resizeHandler();
-        window.addEventListener('resize', () => this.resizeHandler(), false);
-    }
-
+    /* Update */
     update() {
         // Splatter
         const { maxSplatters, stepsPerSplatter } = CONSTS.start.splatter;
@@ -110,13 +99,17 @@ class StartScene extends Scene {
         this.stepCount++;
     }
 
+    /* Clean up */
     destruct() {
-        const { splatters } = this.state;
-        for (let i = 0; i < splatters.length; i++) {
-            splatters[i].destruct();
-            splatters[i] = null;
-        }
+        // Destruct splatters
+        this.state.splatters.forEach((splatter) => splatter.destruct());
         this.state.splatters = null;
+
+        // Remove textboxes and buttons
+        this.divElements.forEach((divElement) => divElement.remove());
+        this.divElements = null;
+
+        // Dispose the scene
         this.dispose();
     }
 }

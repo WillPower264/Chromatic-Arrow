@@ -20,9 +20,6 @@ class EndScene extends Scene {
         _.delay(() => {
             this.textBoxes.push(this.createText('Click Anywhere to Retry', '50%'));
         }, CONSTS.scene.msEndDelay);
-
-        // Add event listeners
-        this.addEventListeners();
     }
 
     createSplatter() {
@@ -58,11 +55,7 @@ class EndScene extends Scene {
         return text;
     }
 
-    clearText() {
-        this.textBoxes.forEach((textBox) => textBox.remove());
-        this.textBoxes = [];
-    }
-
+    /* Event handlers */
     resizeHandler() {
         // reset splatter
         this.remove(this.mesh);
@@ -74,23 +67,23 @@ class EndScene extends Scene {
         });
     }
 
-    addEventListeners() {
-        this.resizeHandler();
-        window.addEventListener('resize', () => this.resizeHandler(), false);
-    }
-
+    /* Update */
     update() {
         // Nothing to update
     }
 
-    disposeSplatter() {
+    /* Clean up */
+    destruct() {
+        // Destruct splatter
         this.splatter.destruct();
         this.mesh.geometry.dispose();
         this.mesh.material.dispose();
-    }
 
-    destruct() {
-        this.disposeSplatter();
+        // Remove textboxes
+        this.textBoxes.forEach((textBox) => textBox.remove());
+        this.textBoxes = null;
+
+        // Dispose the scene
         this.dispose();
     }
 }

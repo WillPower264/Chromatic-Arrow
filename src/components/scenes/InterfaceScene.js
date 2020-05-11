@@ -24,14 +24,14 @@ class InterfaceScene extends Scene {
         this.powerbar = pbar;
 
         // Add crosshairs
-        this.cross = new Crosshairs();
-        this.add(this.cross);
+        this.crosshairs = new Crosshairs();
+        this.add(this.crosshairs);
 
         // Add text
         const { text: scoreText, style: scoreStyle } = CONSTS.scoreBox;
         this.scoreBox = this.createText(`${scoreText}${this.state.score}`, scoreStyle);
         const {text: powerText, style: powerStyle} = CONSTS.powerBar;
-        this.powerBarText = this.createText(powerText, powerStyle);
+        this.powerbarText = this.createText(powerText, powerStyle);
 
         // Add timer and countdown
         if (!isTutorial) {
@@ -39,9 +39,6 @@ class InterfaceScene extends Scene {
             this.timer = this.createText(`${timerText}${this.state.score}`, timerStyle);
             this.countDown();
         }
-
-        // Listeners
-        this.addEventListeners();
     }
 
     addToUpdateList(object) {
@@ -71,15 +68,29 @@ class InterfaceScene extends Scene {
         return textBox;
     }
 
-    clearText() {
-        this.scoreBox.remove();
-        this.powerBarText.remove();
-        if (!this.isTutorial) { this.timer.remove(); }
-    }
-
     updateScore(change) {
         this.state.score += change;
         this.scoreBox.innerHTML = `${CONSTS.scoreBox.text}${this.state.score}`;
+    }
+
+    resizeHandler() {
+        this.powerbar.resizeHandler();
+    }
+
+    mousedownHandler() {
+        this.powerbar.beginFill();
+    }
+
+    mouseupHandler() {
+        this.powerbar.stopFill();
+    }
+
+    addScoreHandler(e) {
+        this.updateScore(e.detail.score);
+    }
+
+    newArrowColorHandler(e) {
+        this.powerbar.setFillColor(e.detail.color);
     }
 
     update(timeStamp) {
@@ -91,21 +102,22 @@ class InterfaceScene extends Scene {
     }
 
     destruct() {
+        // Destruct powerbar and crosshairs
         this.powerbar.destruct();
-        this.cross.destruct();
-        this.dispose();
-    }
+        this.powerbar = null;
+        this.crosshairs.destruct();
+        this.crosshairs = null;
 
-    addEventListeners() {
-        window.addEventListener("mousedown", () => {
-          this.powerbar.beginFill();
-        }, false);
-        window.addEventListener("mouseup", () => {
-          this.powerbar.stopFill();
-        }, false);
-        window.addEventListener('addScore', (e) => {
-            this.updateScore(e.detail.score);
-        }, false);
+        // Remove textboxes
+        this.scoreBox.remove();
+        this.scoreBox = null;
+        this.powerbarText.remove();
+        this.powerbarText = null;
+        this.timer && this.timer.remove();  // Does not exist in tutorial mode
+        this.timer = null;
+
+        // Dispose the scene
+        this.dispose();
     }
 }
 

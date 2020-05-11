@@ -89,7 +89,6 @@ let isTutorial = false;
 
 // Scene change functions
 function changeToGame(lastScene, isTut) {
-  lastScene.clearText();
   lastScene.destruct();
   if (gameScene !== undefined) {
     gameScene.destruct();
@@ -124,7 +123,6 @@ const endToGameHandler = () => {
 function endGame() {
   // Handle transition between scenes
   const finalScore = interfaceScene.state.score;
-  interfaceScene.clearText();
   interfaceScene.destruct();
   gameScene.end();
   endScene = new EndScene(finalScore);
@@ -137,7 +135,6 @@ function endGame() {
 }
 
 function endTutorial() {
-  interfaceScene.clearText();
   interfaceScene.destruct();
   interfaceScene = undefined;
   gameScene.destruct();
@@ -219,3 +216,28 @@ const onAnimationFrameHandler = (timeStamp) => {
   window.requestAnimationFrame(onAnimationFrameHandler);
 };
 window.requestAnimationFrame(onAnimationFrameHandler);
+
+// Add all event listeners
+window.addEventListener('resize', () => {
+  startScene && startScene.resizeHandler();
+  interfaceScene && interfaceScene.resizeHandler();
+  endScene && endScene.resizeHandler();
+}, false);
+
+window.addEventListener('mousedown', () => {
+  interfaceScene && interfaceScene.mousedownHandler();
+  gameScene && gameScene.mousedownHandler();
+}, false);
+
+window.addEventListener('mouseup', () => {
+  interfaceScene && interfaceScene.mouseupHandler();
+  gameScene && gameScene.mouseupHandler();
+}, false);
+
+window.addEventListener('addScore', (e) => {
+  interfaceScene && interfaceScene.addScoreHandler(e);
+});
+
+window.addEventListener('newArrowColor', (e) => {
+  interfaceScene && interfaceScene.newArrowColorHandler(e);
+});
