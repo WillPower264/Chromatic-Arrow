@@ -9,7 +9,10 @@ class EndScene extends Scene {
         super();
 
         // Splatter
-        this.splatter = this.createSplatter();
+        this.color = CONSTS.randomColor();
+        this.createSplatter();
+        this.geom;
+        this.material;
 
         // Text
         this.textBoxes = [];
@@ -23,6 +26,9 @@ class EndScene extends Scene {
     }
 
     createSplatter() {
+        if (this.splatter) {
+            this.disposeSplatter();
+        }
         const { innerHeight, innerWidth } = window;
         const { splatterMaterialProperties: properties } = CONSTS.endScene;
         const s = Math.max(innerWidth, innerHeight);
@@ -30,13 +36,14 @@ class EndScene extends Scene {
         const splat = new Splatter();
         const material = new MeshBasicMaterial(_.extend(properties, {
           map: splat.texture,
-          color: CONSTS.randomColor(),
+          color: this.color,
         }));
         const mesh = new Mesh(geometry, material);
         mesh.rotation.z = CONSTS.fullRotation / 6;
         mesh.position.x -= innerWidth / 16;
         this.add(mesh);
-        return mesh;
+        this.splatter = splat;
+        this.mesh = mesh;
     }
 
     createText(str, top) {
@@ -57,8 +64,8 @@ class EndScene extends Scene {
 
     resizeHandler() {
         // reset splatter
-        this.remove(this.splatter);
-        this.splatter = this.createSplatter();
+        this.remove(this.mesh);
+        this.createSplatter();
 
         // realign textboxes
         this.textBoxes.forEach((textBox) => {
@@ -73,6 +80,17 @@ class EndScene extends Scene {
 
     update() {
         // Nothing to update
+    }
+
+    disposeSplatter() {
+        this.splatter.destruct();
+        this.mesh.geometry.dispose();
+        this.mesh.material.dispose();
+    }
+
+    destruct() {
+        this.disposeSplatter();
+        this.dispose();
     }
 }
 

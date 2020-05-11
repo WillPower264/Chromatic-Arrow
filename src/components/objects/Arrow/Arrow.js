@@ -266,6 +266,13 @@ class Arrow extends Group {
 
         this.handleCollisions(); // call this in the simulation file?
     }
+
+    destruct() {
+        for (let i = 0; i < this.children.length; i++) {
+            this.children[i].geometry.dispose();
+            this.children[i].material.dispose();
+        }
+    }
 }
 
 export default Arrow;

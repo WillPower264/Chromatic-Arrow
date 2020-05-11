@@ -14,6 +14,13 @@ class Crosshairs extends Group {
         this.add(new Mesh(vert, material));
         this.add(new Mesh(hor, material));
     }
+
+    destruct() {
+        for (let i = 0; i < this.children.length; i++) {
+            this.children[i].geometry.dispose();
+            this.children[i].material.dispose();
+        }
+    }
 }
 
 export default Crosshairs;

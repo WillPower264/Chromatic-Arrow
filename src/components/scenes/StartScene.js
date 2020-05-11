@@ -8,6 +8,11 @@ class StartScene extends Scene {
     constructor(startGameCallback, tutorialCallback) {
         // Call parent Scene() constructor
         super();
+
+        this.state = {
+            splatters: [],
+        };
+
         // Timing
         this.stepCount = 0;
         this.splatterCount = 0;
@@ -105,8 +110,19 @@ class StartScene extends Scene {
           this.add(splat.mesh);
           this.splatterCount++;
           this.lastSplatter = timeStamp;
+          this.state.splatters.push(splat);
         }
         this.stepCount++;
+    }
+
+    destruct() {
+        const { splatters } = this.state;
+        for (let i = 0; i < splatters.length; i++) {
+            splatters[i].destruct();
+            splatters[i] = null;
+        }
+        this.state.splatters = null;
+        this.dispose();
     }
 }
 

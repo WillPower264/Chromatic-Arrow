@@ -19,13 +19,13 @@ class Wind extends Group {
 
         // Choose which part of plane to display
         this.setVisibility();
-        const material = new MeshBasicMaterial({
+        this.material = new MeshBasicMaterial({
           color: 0xffffff,
           side: DoubleSide,
           opacity: CONSTS.wind.opacity,
           transparent: true
         });
-        const mesh = new Mesh(this.geom, material);
+        const mesh = new Mesh(this.geom, this.material);
         this.add(mesh);
     }
 
@@ -138,6 +138,11 @@ class Wind extends Group {
     update() {
         this.currStart += this.speed*6;
         this.setVisibility();
+    }
+
+    destruct() {
+        this.geom.dispose();
+        this.material.dispose();
     }
 }
 

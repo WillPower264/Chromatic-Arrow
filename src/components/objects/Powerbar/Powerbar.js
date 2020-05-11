@@ -67,6 +67,13 @@ class Powerbar extends Group {
         }
     }
 
+    destruct() {
+        for (let i = 0; i < this.children.length; i++) {
+            this.children[i].geometry.dispose();
+            this.children[i].material.dispose();
+        }
+    }
+
     windowResizeHandler() {
         const { width, height, buffer } = CONSTS.powerBar;
         this.position.x = window.innerWidth / 2 - width / 2 - buffer;

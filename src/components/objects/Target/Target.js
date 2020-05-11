@@ -85,6 +85,13 @@ class Target extends Group {
         targets[numTargetsInUse] = new Target(this.scene);
         this.scene.remove(this);
     }
+
+    destruct() {
+        for (let i = 0; i < this.children.length; i++) {
+            this.children[i].geometry.dispose();
+            this.children[i].material.dispose();
+        }
+    }
 }
 
 export default Target;

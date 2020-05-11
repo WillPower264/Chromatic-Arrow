@@ -1,5 +1,5 @@
 import { Scene, BoxGeometry, Color, Euler, MeshStandardMaterial, Mesh, Vector3, SphereGeometry, DoubleSide, ShaderMaterial} from 'three';
-   
+
 import { Arrow, Target, Barrier, Splatter, Wind } from 'objects';
 import { BasicLights } from 'lights';
 import _ from 'lodash';
@@ -16,9 +16,12 @@ class GameScene extends Scene {
         // Init state
         this.state = {
             updateList: [],
-            targets: [],
             numTargetsInUse: 0,
+            targets: [],
             barriers: [],
+            arrows: [],
+            splatters: [],
+            wind: [],
         };
 
         // Collision helper
@@ -46,6 +49,7 @@ class GameScene extends Scene {
         this.currentArrow = new Arrow(this);
         this.add(this.currentArrow);
         this.addToUpdateList(this.currentArrow);
+        this.state.arrows.push(this.currentArrow);
 
         // Set up for targets and wind
         this.initializeTargets();
@@ -80,7 +84,8 @@ class GameScene extends Scene {
 
     spawnTarget(position) {
         // Check how many targets are in use
-        if (this.state.numTargetsInUse < CONSTS.scene.maxTargets) {
+        if (this.state.numTargetsInUse < CONSTS.scene.maxTargets &&
+            this.state.targets !== null) {
             // Create new target
             const { disappearing, msDuration } = CONSTS.target;
             const target = this.state.targets[this.state.numTargetsInUse];
@@ -111,6 +116,9 @@ class GameScene extends Scene {
     }
 
     changeWind() {
+        if (this.state.wind === null) {
+            return;
+        }
         const direction = 2*Math.PI*Math.random();
         const { minSpeed, maxSpeed } = CONSTS.scene.wind;
         const speed = _.random(minSpeed, maxSpeed, true);
@@ -121,11 +129,14 @@ class GameScene extends Scene {
         _.delay(() => this.changeWind(), CONSTS.scene.wind.msBetweenChange);
     }
 
-    // TODO: Dispose when done
     createWind() {
+        if (this.state.wind === null) {
+            return;
+        }
         const wind = new Wind(this.windSpeed, this.windVec);
         this.add(wind);
         this.state.updateList.push(wind);
+        this.state.wind.push(wind);
         _.delay(() => this.createWind(), CONSTS.scene.wind.msBetweenSpawn);
     }
 
@@ -153,6 +164,7 @@ class GameScene extends Scene {
           color
         );
         this.add(splat.mesh);
+        this.state.splatters.push(splat);
     }
 
     addSplatterBarrier(position, barrier, plane, color) {
@@ -164,6 +176,7 @@ class GameScene extends Scene {
         );
         splat.mesh.renderOrder = barrier.children.length;
         barrier.attach(splat.mesh);
+        this.state.splatters.push(splat);
     }
 
     addSplatterDome(position, color) {
@@ -174,6 +187,7 @@ class GameScene extends Scene {
             this.dome, domeHit, this.helper.rotation, CONSTS.splatter.splatSize, color, true
         );
         this.add(splat.mesh);
+        this.state.splatters.push(splat);
     }
 
     createBarriers() {
@@ -209,6 +223,35 @@ class GameScene extends Scene {
         }
     }
 
+    destructList(arr) {
+        for (let i = 0; i < arr.length; i++) {
+            arr[i].destruct();
+            arr[i] = null;
+        }
+    }
+
+    destruct() {
+        const { arrows, barriers, splatters, targets, wind } = this.state;
+        // Game objects
+        this.destructList(arrows);
+        this.destructList(barriers);
+        this.destructList(splatters);
+        this.destructList(targets);
+        this.destructList(wind);
+        // Background and ground
+        this.ground.geometry.dispose();
+        this.ground.material.dispose();
+        this.dome.geometry.dispose();
+        this.dome.material.dispose();
+        // State
+        this.state.arrows = null;
+        this.state.barriers = null;
+        this.state.splatters = null;
+        this.state.targets = null;
+        this.state.wind = null;
+        this.dispose();
+    }
+
     addEventListeners() {
         window.addEventListener("mousedown", () => {
             this.isFiring = true;
@@ -227,9 +270,11 @@ class GameScene extends Scene {
               )
             );
             // Create new arrow
+            const { arrows } = this.state;
             this.currentArrow = new Arrow(this);
             this.add(this.currentArrow);
             this.addToUpdateList(this.currentArrow);
+            arrows.push(this.currentArrow);
             this.isFiring = false;
         }, false);
     }
@@ -273,7 +318,7 @@ class GameScene extends Scene {
         })
         const mesh = new Mesh(geometry, shadeMat);
         this.add(mesh);
-        
+
         return mesh;
     }
 }

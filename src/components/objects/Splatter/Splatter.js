@@ -33,8 +33,17 @@ class Splatter extends Group {
         if (isDouble) {
             decalMat.side = DoubleSide;
         }
-        const decalMesh = new Mesh(decalGeom, decalMat);
-        this.mesh = decalMesh;
+        this.material = decalMat;
+        this.geometry = decalGeom;
+        this.mesh = new Mesh(decalGeom, decalMat);
+    }
+
+    destruct() {
+        this.texture.dispose();
+        if (this.material) {
+            this.geometry.dispose();
+            this.material.dispose();
+        }
     }
 }
 

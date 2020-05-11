@@ -90,9 +90,9 @@ let isTutorial = false;
 // Scene change functions
 function changeToGame(lastScene, isTut) {
   lastScene.clearText();
-  lastScene.dispose();
+  lastScene.destruct();
   if (gameScene !== undefined) {
-    gameScene.dispose();
+    gameScene.destruct();
   }
   gameScene = new GameScene(isTut);
   // Set up controls
@@ -125,7 +125,7 @@ function endGame() {
   // Handle transition between scenes
   const finalScore = interfaceScene.state.score;
   interfaceScene.clearText();
-  interfaceScene.dispose();
+  interfaceScene.destruct();
   gameScene.end();
   endScene = new EndScene(finalScore);
   composerGame = composeBloom(gameScene, camera, endScene, cameraOrtho);
@@ -138,9 +138,9 @@ function endGame() {
 
 function endTutorial() {
   interfaceScene.clearText();
-  interfaceScene.dispose();
+  interfaceScene.destruct();
   interfaceScene = undefined;
-  gameScene.dispose();
+  gameScene.destruct();
   gameScene = undefined;
   controls.disable();
   initStartScene();
@@ -164,7 +164,6 @@ function renderOne(projScene, timeStamp) {
 function renderTwo(projScene, orthoScene, timeStamp) {
   const deltaT = clock.getDelta();
   controls.update(deltaT);
-  renderer.clear();
   composerGame.render(deltaT);
   projScene.update && projScene.update(timeStamp);
   camera.getWorldDirection(projScene.direction);

@@ -24,8 +24,8 @@ class InterfaceScene extends Scene {
         this.powerbar = pbar;
 
         // Add crosshairs
-        const cross = new Crosshairs();
-        this.add(cross);
+        this.cross = new Crosshairs();
+        this.add(this.cross);
 
         // Add text
         const { text: scoreText, style: scoreStyle } = CONSTS.scoreBox;
@@ -88,6 +88,12 @@ class InterfaceScene extends Scene {
                 obj.update(timeStamp);
             }
         }
+    }
+
+    destruct() {
+        this.powerbar.destruct();
+        this.cross.destruct();
+        this.dispose();
     }
 
     addEventListeners() {

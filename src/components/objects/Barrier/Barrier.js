@@ -20,9 +20,9 @@ class Barrier extends Group {
 
         // Create invisible barrier with random position
         const { width, height, depth } = CONSTS.barrier;
-        const geometry = new BoxGeometry(width, height, depth);
-        const material = new MeshBasicMaterial();
-        this.add(new Mesh(geometry, material));
+        this.geom = new BoxGeometry(width, height, depth);
+        this.material = new MeshBasicMaterial();
+        this.add(new Mesh(this.geom, this.material));
         this.children[0].visible = false;
         this.setRandomPosition(n);
     }
@@ -81,6 +81,16 @@ class Barrier extends Group {
 
         // Rotate to face camera
         this.rotateOnAxis(CONSTS.directions.yAxis.clone(), this.state.thetaDelta);
+    }
+
+    destruct() {
+        this.geom.dispose();
+        this.material.dispose();
+        // Splatters
+        for (let i = 1; i < this.children.length; i++) {
+            this.children[i].geometry.dispose();
+            this.children[i].material.dispose();
+        }
     }
 }
 
