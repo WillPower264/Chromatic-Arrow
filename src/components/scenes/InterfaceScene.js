@@ -108,6 +108,9 @@ class InterfaceScene extends Scene {
         this.crosshairs.destruct();
         this.crosshairs = null;
 
+        // Clear the updateList
+        this.state.updateList = null;
+
         // Remove textboxes
         this.scoreBox.remove();
         this.scoreBox = null;

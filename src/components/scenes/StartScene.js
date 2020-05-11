@@ -14,7 +14,8 @@ class StartScene extends Scene {
             splatters: [],
         };
 
-        // Timing
+        // Splatters
+        this.splatter = new Splatter();
         this.stepCount = 0;
         this.splatterCount = 0;
 
@@ -31,6 +32,7 @@ class StartScene extends Scene {
         mesh.updateMatrix();
         this.screen = mesh;
         this.add(mesh);
+        this.mesh = mesh;
 
         // Text and buttons
         const { title, tutorial, begin } = texts;
@@ -52,9 +54,9 @@ class StartScene extends Scene {
         const offset = new Vector3(rx, ry, 0);
         const pos = this.screen.position.clone().add(offset);
         const rot = new Euler();
-        const splat = new Splatter(this.screen, pos, rot, size);
-        this.add(splat.mesh);
-        this.state.splatters.push(splat);
+        const mesh = this.splatter.getMesh(this.screen, pos, rot, size);
+        this.add(mesh);
+        this.state.splatters.push(mesh);
         this.splatterCount++;
     }
 
@@ -102,8 +104,17 @@ class StartScene extends Scene {
     /* Clean up */
     destruct() {
         // Destruct splatters
-        this.state.splatters.forEach((splatter) => splatter.destruct());
+        this.state.splatters.forEach((splatter) => {
+            // I think these are just references to geo and mat of this.splatter?
+            splatter.material.dispose();
+            splatter.geometry.dispose();
+        });
         this.state.splatters = null;
+        this.splatter.destruct();
+        this.splatter = null;
+        this.mesh.geometry = null;
+        this.mesh.material = null;
+        this.mesh = null;
 
         // Remove textboxes and buttons
         this.divElements.forEach((divElement) => divElement.remove());

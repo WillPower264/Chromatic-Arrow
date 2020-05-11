@@ -76,8 +76,10 @@ class EndScene extends Scene {
     destruct() {
         // Destruct splatter
         this.splatter.destruct();
+        this.splatter = null;
         this.mesh.geometry.dispose();
         this.mesh.material.dispose();
+        this.mesh = null;
 
         // Remove textboxes
         this.textBoxes.forEach((textBox) => textBox.remove());
