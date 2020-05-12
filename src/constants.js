@@ -84,9 +84,8 @@ const CONSTS = {
         },
     },
     ground: {
-        // color: 0x136d15,
         color: 0x0a0a0f,
-        size: 500,
+        size: 100,
         thickness: 1,
         yPos: 0,
     },
