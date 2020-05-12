@@ -26,7 +26,7 @@ const CONSTS = {
     barrier: {
         width: 6,
         height: 6,
-        depth: 0.2,
+        depth: 0.01,
         spawn: {
             innerRadius: 15,
             outerRadius: 30,
